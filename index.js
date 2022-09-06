@@ -10,8 +10,10 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.DirectMessageReactions,
     GatewayIntentBits.DirectMessages]});
-//Token à masquer par la suite
+//Token à masquer par la suite -- Prod
 const token= 'MTAxNTkzMTYwODc3MzE2OTE5Mw.GPpV-Y.MsmpOQN8XLtXBBpVcI7IzPv-3k6vRMF91FKZik';
+//Token à masquer par la suite -- Rec
+//const token = 'MTAxNjc5NzY3MzE3ODc5MjA3Ng.GTnOz-.WriQ334pUwFn3d7QAMfoH1aaugbRnovoa1ZWbw';
 
 //Connexion du bot
 client.once('ready',()=> {console.log('Félicitations, votre bot est ok !');});
@@ -91,7 +93,7 @@ client.on("messageCreate", async function(message){
 
 //Ajoute des points à une maison en prenant son id et le montant de point à ajouter
 async function addPoints(maison, montant, channel){
-    const messageId = houses.default.maisons[maison].messageId;
+    const messageId = maison.messageId;
     const msg = await channel.messages.fetch(messageId);
 
     //On incrémente le compteur
@@ -99,9 +101,9 @@ async function addPoints(maison, montant, channel){
     cpt += montant;
 
     //On construit le message qui sera appliqué en annule et remplace du précédent
-    const embed = new EmbedBuilder().setColor(houses.default.maisons[maison].couleur)
-        .setTitle(houses.default.maisons[maison].nom)
-        .setThumbnail(houses.default.maisons[maison].blason)
+    const embed = new EmbedBuilder().setColor(maison.couleur)
+        .setTitle(maison.nom)
+        .setThumbnail(maison.blason)
         .setDescription(cpt.toString());
     //On édit le message
     msg.edit({embeds: [embed]});
