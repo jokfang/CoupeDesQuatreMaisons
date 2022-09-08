@@ -1,6 +1,7 @@
 import { Client, EmbedBuilder, GatewayIntentBits } from 'discord.js';
 import {Point} from './commandes/point.js'
 import {newHouseCup} from './commandes/maison.js'
+import {Repository} from './repository/repository.js'
 import * as houses from './data/info.cjs';
 
 //Droit attribué au bot
@@ -19,18 +20,23 @@ const token= 'MTAxNTkzMTYwODc3MzE2OTE5Mw.GPpV-Y.MsmpOQN8XLtXBBpVcI7IzPv-3k6vRMF9
 client.once('ready',()=> {console.log('Félicitations, votre bot est ok !');});
 client.login(token);
 
+//Création de l'accès à la BDD
+const myRepository = new Repository();
+
 //Lorsqu'on reçoit un message:
 client.on("messageCreate", async function(message){
-    try{
+    //try{
         console.log(message.content);
         let isOK = true;
+
         isOK = checkMessage(message.content);
         if (message.content.split(' ')[0] === "!add" && isOK){
             //On récupère la maison     
             let maison = houses.default.maisons.find(element => element.nom == message.content.split(' ')[3]);
 
             //On ajoute les points en modifiant le message, puis on supprime la commande
-            addPoints(maison, parseInt(message.content.split(' ')[1]), message.channel);
+            addPoints(message.content.split(' ')[3], parseInt(message.content.split(' ')[1]), message.channel);
+            //addPoints(maison, parseInt(message.content.split(' ')[1]), message.channel);
             message.delete();
         }
         else if(message.content.split(' ')[0] === "!remove" && isOK){
@@ -84,21 +90,21 @@ client.on("messageCreate", async function(message){
             }
             message.delete();
         }
-    }
+    /*}
     catch(error){
         await message.channel.send("Une erreur a été rencontré, tu peux supprimer ce message et ton appel (ou le montrer à un dév) et retenter");
         console.log(error.message);
-    }
+    }*/
 });
 
 //Ajoute des points à une maison en prenant son id et le montant de point à ajouter
-async function addPoints(maison, montant, channel){
-    const messageId = maison.messageId;
-    const msg = await channel.messages.fetch(messageId);
+async function addPoints(houseName, montant, channel){
+    const maison = await myRepository.getMaison(channel, houseName);
+    const msg = await channel.messages.fetch(maison.messageId);
 
     //On incrémente le compteur
     let cpt = parseInt(msg.embeds[0].data.description);
-    cpt += montant;
+    cpt += parseInt(montant);
 
     //On construit le message qui sera appliqué en annule et remplace du précédent
     const embed = new EmbedBuilder().setColor(maison.couleur)

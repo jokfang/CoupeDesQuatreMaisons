@@ -3,7 +3,8 @@ module.exports = {
                 {
                     "nom": "Gryffondor",
                     "blason" : "https://static.wikia.nocookie.net/harrypotter/images/8/81/Blason_de_Gryffondor.png/revision/latest?cb=20130818150749&path-prefix=fr", 
-                    "couleur": "0xff3300"
+                    "couleur": "0xff3300",
+                    "messageId" : "1017374141839581304"
                 },
                 {
                     "nom": "Serpentard",
