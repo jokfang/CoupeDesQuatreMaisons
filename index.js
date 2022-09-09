@@ -31,12 +31,8 @@ client.on("messageCreate", async function(message){
 
         isOK = checkMessage(message.content);
         if (message.content.split(' ')[0] === "!add" && isOK){
-            //On récupère la maison     
-            let maison = houses.default.maisons.find(element => element.nom == message.content.split(' ')[3]);
-
             //On ajoute les points en modifiant le message, puis on supprime la commande
             addPoints(message.content.split(' ')[3], parseInt(message.content.split(' ')[1]), message.channel);
-            //addPoints(maison, parseInt(message.content.split(' ')[1]), message.channel);
             message.delete();
         }
         else if(message.content.split(' ')[0] === "!remove" && isOK){
