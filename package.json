@@ -2,7 +2,9 @@
   "type": "module",
   "dependencies": {
     "discord.js": "^14.3.0",
-    "env-cmd": "^10.1.0",
     "mysql2": "^2.3.3"
+  },
+  "devDependencies": {
+    "env-cmd": "^10.1.0"
   }
 }
