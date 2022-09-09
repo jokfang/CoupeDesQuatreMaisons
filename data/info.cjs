@@ -12,7 +12,7 @@ module.exports = {
                     "couleur": "0x009933"
                 },
                 {
-                    "nom": "Poufsouffle",
+                    "nom": "Poufsouffle ",
                     "blason" : "https://static.wikia.nocookie.net/harrypotter/images/d/d4/Blason_de_Poufsouffle.png/revision/latest?cb=20150103151525&path-prefix=fr", 
                     "couleur": "0xffff00"
                 },
