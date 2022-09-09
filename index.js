@@ -1,6 +1,6 @@
 import { Client, EmbedBuilder, GatewayIntentBits } from 'discord.js';
 import {Point} from './commandes/point.js'
-import {newHouseCup} from './commandes/maison.js'
+//import {newHouseCup} from './commandes/maison.js'
 import {Repository} from './repository/repository.js'
 import * as data from './data/info.cjs';
 
@@ -14,8 +14,6 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds,
 // MTAxNjc5NzY3MzE3ODc5MjA3Ng.GTnOz-.WriQ334pUwFn3d7QAMfoH1aaugbRnovoa1ZWbw
 const token = data.default.token;
 
-console.log(`${process.env.APP_NAME}`)
-
 //Connexion du bot
 client.once('ready',()=> {console.log('Félicitations, votre bot est ok !');});
 client.login(token);
@@ -25,7 +23,7 @@ const myRepository = new Repository();
 
 //Lorsqu'on reçoit un message:
 client.on("messageCreate", async function(message){
-    //try{
+    try{
         console.log(message.content);
         let isOK = true;
 
@@ -36,43 +34,29 @@ client.on("messageCreate", async function(message){
             message.delete();
         }
         else if(message.content.split(' ')[0] === "!remove" && isOK){
-            //On récupère la maison      
-            let maison = data.default.maisons.find(element => element.nom == message.content.split(' ')[3]).number;
-
             //On retire les points en modifiant le message, puis on supprime la commande
-            removePoint(maison, parseInt(message.content.split(' ')[1]), message.channel);
+            removePoint(message.content.split(' ')[3], parseInt(message.content.split(' ')[1]), message.channel);
             message.delete();
         }
         else if(message.content.split(' ')[0] === "!setBlason" && isOK){
-            //On récupère la maison      
-            let maison = data.default.maisons.find(element => element.nom == message.content.split(' ')[3]).number;
-
             //On modifie le blason, puis on supprime la commande
-            setBlason(maison, message.content.split(' ')[1], message.channel);
+            setBlason(message.content.split(' ')[3], message.content.split(' ')[1], message.channel);
             message.delete();
         }
         else if(message.content.split(' ')[0] === "!setNom" && isOK){
-            //On récupère la maison      
-            let maison = data.default.maisons.find(element => element.nom == message.content.split(' ')[3]).number;
-
             //On modifie le nom, puis on supprime la commande
-            setNom(maison, message.content.split(' ')[1], message.channel);
+            setNom(message.content.split(' ')[3], message.content.split(' ')[1], message.channel);
             message.delete();
         }
         else if(message.content.split(' ')[0] === "!setPoint" && isOK){
-            //On récupère la maison      
-            let maison = data.default.maisons.find(element => element.nom == message.content.split(' ')[3]).number;
-
             //On attribue les points en modifiant le message, puis on supprime la commande
-            setPoint(maison, parseInt(message.content.split(' ')[1]), message.channel);
+            setPoint(message.content.split(' ')[3], parseInt(message.content.split(' ')[1]), message.channel);
             message.delete();
         }
         else if(message.content.split(' ')[0] === "!setCouleur" && isOK){
-            //On récupère la maison      
-            let maison = data.default.maisons.find(element => element.nom == message.content.split(' ')[3]).number;
-
+            
             //On attribue la couleur en modifiant le message, puis on supprime la commande
-            setColor(maison, message.content.split(' ')[1], message.channel);
+            setColor(message.content.split(' ')[3], message.content.split(' ')[1], message.channel);
             message.delete();
         }
         else if(message.content.split(' ')[0] === "!newHouseCup" && isOK){
@@ -86,11 +70,16 @@ client.on("messageCreate", async function(message){
             }
             message.delete();
         }
-    /*}
+        else if(message.content.split(' ')[0] === "!addHouse" && isOK){
+            //Si les points sont renseigné on envois les points, sinon on créé les messages avec 0 points
+            addHouse(message.channel); 
+            message.delete();
+        }
+    }
     catch(error){
         await message.channel.send("Une erreur a été rencontré, tu peux supprimer ce message et ton appel (ou le montrer à un dév) et retenter");
         console.log(error.message);
-    }*/
+    }
 });
 
 //Ajoute des points à une maison en prenant son id et le montant de point à ajouter
@@ -112,9 +101,9 @@ async function addPoints(houseName, montant, channel){
 }
 
 //Retire des points à une maison en prenant son id et le montant de point à retirer
-async function removePoint(maison, montant, channel){
-    const messageId = data.default.maisons[maison].messageId;
-    const msg = await channel.messages.fetch(messageId);
+async function removePoint(houseName, montant, channel){
+    const maison = await myRepository.getMaison(channel, houseName);
+    const msg = await channel.messages.fetch(maison.messageId);
 
     //On décrémente le compteur
     let cpt = parseInt(msg.embeds[0].data.description);
@@ -123,76 +112,83 @@ async function removePoint(maison, montant, channel){
     if(cpt<0){cpt = 0;}
 
     //On construit le message qui sera appliqué en annule et remplace du précédent
-    const embed = new EmbedBuilder().setColor(data.default.maisons[maison].couleur)
-        .setTitle(data.default.maisons[maison].nom)
-        .setThumbnail(data.default.maisons[maison].blason)
+    const embed = new EmbedBuilder().setColor(maison.couleur)
+        .setTitle(maison.nom)
+        .setThumbnail(maison.blason)
         .setDescription(cpt.toString());
     //On édit le message
     msg.edit({embeds: [embed]});
 }
 
-async function setBlason(maison, image, channel){
-    const messageId = data.default.maisons[maison].messageId;
-    const msg = await channel.messages.fetch(messageId);
+async function setBlason(houseName, image, channel){
+    const maison = await myRepository.getMaison(channel, houseName);
+    const msg = await channel.messages.fetch(maison.messageId);
 
     let cpt = parseInt(msg.embeds[0].data.description);
-    data.default.maisons[maison].blason = image
+    maison.blason = image;
+    await myRepository.updateHouse(channel, maison.messageId, maison);
+
     if(cpt<0){cpt = 0;}
 
     //On construit le message qui sera appliqué en annule et remplace du précédent
-    const embed = new EmbedBuilder().setColor(data.default.maisons[maison].couleur)
-        .setTitle(data.default.maisons[maison].nom)
-        .setThumbnail(data.default.maisons[maison].blason)
+    const embed = new EmbedBuilder().setColor(maison.couleur)
+        .setTitle(maison.nom)
+        .setThumbnail(maison.blason)
         .setDescription(cpt.toString());
     //On édit le message
     msg.edit({embeds: [embed]});
 }
 
-async function setNom(maison, nom, channel){
-    const messageId = data.default.maisons[maison].messageId;
-    const msg = await channel.messages.fetch(messageId);
+async function setNom(houseName, nom, channel){
+    const maison = await myRepository.getMaison(channel, houseName);
+    const msg = await channel.messages.fetch(maison.messageId);
 
     let cpt = parseInt(msg.embeds[0].data.description);
-    data.default.maisons[maison].nom = nom
+
+    maison.nom = nom;
+    await myRepository.updateHouse(channel, maison.messageId, maison);
+
     if(cpt<0){cpt = 0;}
 
     //On construit le message qui sera appliqué en annule et remplace du précédent
-    const embed = new EmbedBuilder().setColor(data.default.maisons[maison].couleur)
-        .setTitle(data.default.maisons[maison].nom)
-        .setThumbnail(data.default.maisons[maison].blason)
+    const embed = new EmbedBuilder().setColor(maison.couleur)
+        .setTitle(maison.nom)
+        .setThumbnail(maison.blason)
         .setDescription(cpt.toString());
     //On édit le message
     msg.edit({embeds: [embed]});
 }
 
-async function setColor(maison, couleur, channel){
-    const messageId = data.default.maisons[maison].messageId;
-    const msg = await channel.messages.fetch(messageId);
+async function setColor(houseName, couleur, channel){
+    const maison = await myRepository.getMaison(channel, houseName);
+    const msg = await channel.messages.fetch(maison.messageId);
 
     let cpt = parseInt(msg.embeds[0].data.description);
-    data.default.maisons[maison].couleur = couleur
+
+    maison.couleur = couleur;
+    await myRepository.updateHouse(channel, maison.messageId, maison);
 
     //On construit le message qui sera appliqué en annule et remplace du précédent
-    const embed = new EmbedBuilder().setColor(data.default.maisons[maison].couleur)
-        .setTitle(data.default.maisons[maison].nom)
-        .setThumbnail(data.default.maisons[maison].blason)
+    const embed = new EmbedBuilder().setColor(maison.couleur)
+        .setTitle(maison.nom)
+        .setThumbnail(maison.blason)
         .setDescription(cpt.toString());
     //On édit le message
     msg.edit({embeds: [embed]});
 }
 
-async function setPoint(maison, montant, channel){
-    const messageId = data.default.maisons[maison].messageId;
-    const msg = await channel.messages.fetch(messageId);
+async function setPoint(houseName, montant, channel){
+    const maison = await myRepository.getMaison(channel, houseName);
+    const msg = await channel.messages.fetch(maison.messageId);
 
     let cpt = parseInt(montant);
 
     if(cpt<0){cpt = 0;}
 
     //On construit le message qui sera appliqué en annule et remplace du précédent
-    const embed = new EmbedBuilder().setColor(data.default.maisons[maison].couleur)
-        .setTitle(data.default.maisons[maison].nom)
-        .setThumbnail(data.default.maisons[maison].blason)
+    const embed = new EmbedBuilder().setColor(maison.couleur)
+        .setTitle(maison.nom)
+        .setThumbnail(maison.blason)
         .setDescription(cpt.toString());
     //On édit le message
     msg.edit({embeds: [embed]});
@@ -201,26 +197,56 @@ async function setPoint(maison, montant, channel){
 async function newHouseCups(channel, points){
     //Pour chaque maisons on créé un message
     //Un passage en base de données pourrait être intéressant pour stabiliser le bot
-    for (let i = 0; i < data.default.maisons.length; i++){
-        let point = 0;
+    const maisons = await myRepository.getMaisons(channel);
 
-        //Si les points sont bien renseigné
-        if (points && points.length == data.default.maisons.length) {
-            point = parseInt(points[i]);
+    if(maisons[0]){
+        for (let i = 0; i < maisons.length; i++){
+            const messageId = maisons[i].messageId;
+            let point = 0;
+
+            //Si les points sont bien renseigné
+            if (points && points.length == maisons.length) {
+                point = parseInt(points[i]);
+            }
+            //On constuit le nouveau message
+            const embed = new EmbedBuilder().setColor(maisons[i].couleur)
+            .setTitle(maisons[i].nom)
+            .setThumbnail(maisons[i].blason)
+            .setDescription(point.toString());
+
+            //On envois le message
+            let message = await channel.send({embeds: [embed]});
+
+            //On met à jour les données du bot
+            const newMaison = maisons[i]
+            newMaison.messageId = message.id
+            await myRepository.updateHouse(channel, messageId, newMaison)
         }
-        //On constuit le nouveau message
-        const embed = new EmbedBuilder().setColor(data.default.maisons[i].couleur)
-        .setTitle(data.default.maisons[i].nom)
-        .setThumbnail(data.default.maisons[i].blason)
-        .setDescription(point.toString());
-
-        //On envois le message
-        let message = await channel.send({embeds: [embed]});
-
-        //On met à jour les données du bot
-        data.default.maisons[i].messageId = message.id;
-        data.default.maisons[i].number = i;
+    }else{
+        for (let i = 0; i < 4; i++){
+            addHouse(channel,'Maison'+i.toString(), '','0x0066ff');
+        }
     }
+}
+
+async function addHouse(channel,houseName,blason,couleur){
+    if(!houseName){
+        houseName = 'RenommeMoi';
+    }
+    if(!blason){
+        blason = 'https://www.sticker-blason.com/images/imageshop/produit/2017/05/m_592d833d86daa7.46097717.jpeg';
+    }
+    if(!couleur){
+        couleur = '0x0066ff';
+    }
+
+    const embed = new EmbedBuilder().setColor(couleur)
+            .setTitle(houseName)
+            .setThumbnail(blason)
+            .setDescription('0');
+
+    const messageId = (await channel.send({embeds: [embed]})).id;
+    await myRepository.addHouse(channel, houseName, blason, couleur, messageId);
 }
 
 function checkMessage(message){
@@ -228,12 +254,11 @@ function checkMessage(message){
     if(message.substring(0,1) != '!'){
         return false;
     }
-    if(message.split(' ')[0] == '!newHouseCup'){
-        return true
-    }else if(message.split(' ').length == 4){
-        if(!data.default.maisons.find(element => element.nom == message.split(' ')[3])){
-            return false;
-        }
+    if(message.split(' ').length == 4){
+        //if(!data.default.maisons.find(element => element.nom == message.split(' ')[3])){
+        //    return false;
+        //}
     }
+    
     return true;
 }
