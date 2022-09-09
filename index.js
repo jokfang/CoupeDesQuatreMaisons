@@ -12,9 +12,11 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds,
     GatewayIntentBits.DirectMessageReactions,
     GatewayIntentBits.DirectMessages]});
 //Token à masquer par la suite -- Prod
-const token= 'MTAxNTkzMTYwODc3MzE2OTE5Mw.GPpV-Y.MsmpOQN8XLtXBBpVcI7IzPv-3k6vRMF91FKZik';
+//const token= 'MTAxNTkzMTYwODc3MzE2OTE5Mw.GPpV-Y.MsmpOQN8XLtXBBpVcI7IzPv-3k6vRMF91FKZik';
 //Token à masquer par la suite -- Rec
-//const token = 'MTAxNjc5NzY3MzE3ODc5MjA3Ng.GTnOz-.WriQ334pUwFn3d7QAMfoH1aaugbRnovoa1ZWbw';
+const token = 'MTAxNjc5NzY3MzE3ODc5MjA3Ng.GTnOz-.WriQ334pUwFn3d7QAMfoH1aaugbRnovoa1ZWbw';
+
+console.log(`${process.env.APP_NAME}`)
 
 //Connexion du bot
 client.once('ready',()=> {console.log('Félicitations, votre bot est ok !');});
