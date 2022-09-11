@@ -29,8 +29,14 @@ client.on("messageCreate", async function(message){
 
         isOK = checkMessage(message.content);
         if (message.content.split(' ')[0] === "!add" && isOK){
-            //On ajoute les points en modifiant le message, puis on supprime la commande
-            addPoints(message.content.split(' ')[3], parseInt(message.content.split(' ')[1]), message.channel);
+            const toto = message.content.split(' ')[1];
+            if(!isNaN(message.content.split(' ')[1])){
+                //On ajoute les points en modifiant le message, puis on supprime la commande
+                addPoints(message.content.split(' ')[3], parseInt(message.content.split(' ')[1]), message);
+            }else if(message.content.split(' ')[1].substring(0,2)== '<@'){
+                //On ajoute le membre à la maison
+                addMembre(message.content.split(' ')[3], message);
+            }
             message.delete();
         }
         else if(message.content.split(' ')[0] === "!remove" && isOK){
@@ -83,9 +89,17 @@ client.on("messageCreate", async function(message){
 });
 
 //Ajoute des points à une maison en prenant son id et le montant de point à ajouter
-async function addPoints(houseName, montant, channel){
-    const maison = await myRepository.getMaison(channel, houseName);
-    const msg = await channel.messages.fetch(maison.messageId);
+async function addPoints(houseName, montant, message){
+    let maison;
+    if(houseName.substring(0,2) == '<@'){
+        const maisons = await myRepository.getMaisons(message.channel);
+        let member = message.mentions.members.first();
+        houseName = maisons.find(house => member._roles.find(memberRole => memberRole == house.roleId)).nom;
+        maison = await maisons.find( house => house.nom == houseName);
+    }else{
+        maison = await myRepository.getMaison(message.channel, houseName);
+    }
+    const msg = await message.channel.messages.fetch(maison.messageId);
 
     //On incrémente le compteur
     let cpt = parseInt(msg.embeds[0].data.description);
@@ -194,6 +208,16 @@ async function setPoint(houseName, montant, channel){
     msg.edit({embeds: [embed]});
 }
 
+async function addMembre(houseName, message){
+    let role = message.guild.roles.cache.find(role => role.name == houseName);
+    let member = message.mentions.members.first();
+    const maisons = await myRepository.getMaisons(message.channel)
+    if (!maisons.find(maison => member._roles.find(memberRole => memberRole == maison.roleId))){
+        member.roles.add(role);
+    }
+
+}
+
 async function newHouseCups(channel, points){
     //Pour chaque maisons on créé un message
     //Un passage en base de données pourrait être intéressant pour stabiliser le bot
@@ -246,7 +270,8 @@ async function addHouse(channel,houseName,blason,couleur){
             .setDescription('0');
 
     const messageId = (await channel.send({embeds: [embed]})).id;
-    await myRepository.addHouse(channel, houseName, blason, couleur, messageId);
+    const role = await channel.guild.roles.create({ name: houseName, color: couleur});
+    await myRepository.addHouse(channel, houseName, blason, couleur, messageId, role.id);
 }
 
 function checkMessage(message){

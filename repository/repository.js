@@ -52,7 +52,7 @@ export class Repository{
         return retour[0];
     }
 
-    async addHouse(channel,houseName, blasonURL,couleur, messageId){
+    async addHouse(channel,houseName, blasonURL,couleur, messageId, role){
         //const con = mysql.createConnection({host: "bdd.adkynet.com", user: "u11534_VHEi919q3T", password: "q3hY5r^1^c8ZXsUl43kS3CaD", port: "3306", database: "s11534_HouseCup"});
         const con = mysql.createConnection({
             host: houses.default.host, 
@@ -68,8 +68,8 @@ export class Repository{
             }
             //console.log("Connected to MySQLDB");
         });
-        const query = 'Insert into Coupe values (?,?,?,?,?,?)';
-      	const retour = await con.promise().query(query, [channel.id,channel.guildId,houseName, blasonURL,couleur, messageId]);
+        const query = 'Insert into Coupe values (?,?,?,?,?,?, ?)';
+      	const retour = await con.promise().query(query, [channel.id,channel.guildId,houseName, blasonURL,couleur, messageId, role]);
         con.end();
     }
 
