@@ -81,6 +81,11 @@ client.on("messageCreate", async function(message){
             addHouse(message.channel); 
             message.delete();
         }
+        else if(message.content.split(' ')[0] === "!houseCupHelp" && isOK){
+            //Si les points sont renseigné on envois les points, sinon on créé les messages avec 0 points
+            help(message.channel); 
+            message.delete();
+        }
     }
     catch(error){
         await message.channel.send("Une erreur a été rencontré, tu peux supprimer ce message et ton appel (ou le montrer à un dév) et retenter");
@@ -272,6 +277,49 @@ async function addHouse(channel,houseName,blason,couleur){
     const messageId = (await channel.send({embeds: [embed]})).id;
     const role = await channel.guild.roles.create({ name: houseName, color: couleur});
     await myRepository.addHouse(channel, houseName, blason, couleur, messageId, role.id);
+}
+
+function help(channel){
+    const embed = new EmbedBuilder()
+        .addFields(
+            {
+                name: '!add', 
+                value: 'Permet d\'ajouter des points ou une personne à une maison, !add X to Maison ajoute X points à la maison Maison (possible de remplacer Maison par @machin qui ajoutera des points à la maison de @machin), !add @machin to Maison ajoute @machin à la maison Maison'
+            },
+            {
+                name: '!remove', 
+                value: 'Permet de retirer des points à une maison, !remove X to Maison retire X points à une maison'
+            },
+            {
+                name: '!setBlason', 
+                value: 'Permet de changer le blason d\'une maison, !setBlason URL to Maison applique le blason correspondant à l\'URL indiqué à la maison Maison'
+            },
+            {
+                name: '!setNom', 
+                value: 'Permet de changer le nom d\'une maison, !setNom Nom to Maison applique un nouveau nom Nom indiqué à la maison Maison'
+            },
+            {
+                name: '!setPoint', 
+                value: 'Permet de changer les points d\'une maison, !setPoint X to Maison change les points de la maison Maison afin qu\'ils soient égaux à X'
+            },
+            {
+                name: '!setCouleur', 
+                value: 'Permet de changer la couleur d\'une maison, !setCouleur Couleur to Maison applique la couleur correspondante à la maison Maison, la couleur peut être indiqué en anglais ou en hexadécimal (0xffff00 par exemple)'
+            },
+            {
+                name: '!newHouseCup', 
+                value: 'Lance une nouvelle coupe des quatres maisons, si il n\'y en avait pas eu avant elle créé 4 maisons avec des valeurs par défaut, sinon elle recréé les maisons qui avait été créé sur ce channel'
+            },
+            {
+                name: '!addHouse', 
+                value: 'Ajoute une nouvelle maison appelée RenommeMoi avec des valeurs par défaut, il est conseillé de modifier le nom de celle ci tout de suite après, cela créé également un role avec le même nom qu\'il faudra personnaliser via la modération du discord'
+            },
+            {
+                name: '!houseCupHelp', 
+                value: 'Affiche ce message d\'aide, mais ça tu le sais déjà ;)'
+            }
+        );
+    channel.send({embeds: [embed]});
 }
 
 function checkMessage(message){
