@@ -40,8 +40,13 @@ client.on("messageCreate", async function(message){
             message.delete();
         }
         else if(message.content.split(' ')[0] === "!remove" && isOK){
-            //On retire les points en modifiant le message, puis on supprime la commande
-            removePoint(message.content.split(' ')[3], parseInt(message.content.split(' ')[1]), message.channel);
+            if(!isNaN(message.content.split(' ')[1])){
+                //On retire les points en modifiant le message, puis on supprime la commande
+                removePoint(message.content.split(' ')[3], parseInt(message.content.split(' ')[1]), message);
+            }else if(message.content.split(' ')[1].substring(0,2)== '<@'){
+                //On retire le membre de la maison
+                removeMembre(message.content.split(' ')[3], message);
+            }
             message.delete();
         }
         else if(message.content.split(' ')[0] === "!setBlason" && isOK){
@@ -78,7 +83,21 @@ client.on("messageCreate", async function(message){
         }
         else if(message.content.split(' ')[0] === "!addHouse" && isOK){
             //Si les points sont renseigné on envois les points, sinon on créé les messages avec 0 points
-            addHouse(message.channel); 
+            if(message.content.split(' ').length == '1'){
+                addHouse(message.channel);  
+            }else if (message.content.split(' ').length == '2'){
+                addHouse(message.channel, message.content.split(' ')[1]); 
+            }else if (message.content.split(' ').length == '3'){
+                addHouse(message.channel, message.content.split(' ')[1], '', message.content.split(' ')[2]); 
+            }
+            else if (message.content.split(' ').length == '4'){
+                addHouse(message.channel, message.content.split(' ')[1], message.content.split(' ')[3], message.content.split(' ')[2]); 
+            } 
+            message.delete();
+        }else if(message.content.split(' ')[0] === "!removeHouse" && isOK){
+            //Supprime une maison en utilisant son nom
+            deleteHouse(message, message.content.split(' ')[1]); 
+ 
             message.delete();
         }
         else if(message.content.split(' ')[0] === "!houseCupHelp" && isOK){
@@ -120,9 +139,17 @@ async function addPoints(houseName, montant, message){
 }
 
 //Retire des points à une maison en prenant son id et le montant de point à retirer
-async function removePoint(houseName, montant, channel){
-    const maison = await myRepository.getMaison(channel, houseName);
-    const msg = await channel.messages.fetch(maison.messageId);
+async function removePoint(houseName, montant, message){
+    let maison;
+    if(houseName.substring(0,2) == '<@'){
+        const maisons = await myRepository.getMaisons(message.channel);
+        let member = message.mentions.members.first();
+        houseName = maisons.find(house => member._roles.find(memberRole => memberRole == house.roleId)).nom;
+        maison = await maisons.find( house => house.nom == houseName);
+    }else{
+        maison = await myRepository.getMaison(message.channel, houseName);
+    }
+    const msg = await message.channel.messages.fetch(maison.messageId);
 
     //On décrémente le compteur
     let cpt = parseInt(msg.embeds[0].data.description);
@@ -216,12 +243,20 @@ async function setPoint(houseName, montant, channel){
 async function addMembre(houseName, message){
     let role = message.guild.roles.cache.find(role => role.name == houseName);
     let member = message.mentions.members.first();
-    const maisons = await myRepository.getMaisons(message.channel)
+    const maisons = await myRepository.getMaisons(message.channel);
     if (!maisons.find(maison => member._roles.find(memberRole => memberRole == maison.roleId))){
         member.roles.add(role);
     }
 
 }
+
+async function removeMembre(houseName, message){
+    let role = message.guild.roles.cache.find(role => role.name == houseName);
+    let member = message.mentions.members.first();
+
+    member.roles.remove(role);
+}
+
 
 async function newHouseCups(channel, points){
     //Pour chaque maisons on créé un message
@@ -279,40 +314,72 @@ async function addHouse(channel,houseName,blason,couleur){
     await myRepository.addHouse(channel, houseName, blason, couleur, messageId, role.id);
 }
 
+async function deleteHouse(message, houseName){
+    const maison = await myRepository.getMaison(message.channel, houseName);
+    if(maison){
+        myRepository.deleteMaison(maison.messageId);
+        //delete role
+        const role = await message.guild.roles.cache.get(maison.roleId);
+        if(role){
+            role.delete();
+        }
+        //delete message
+        const msg = await message.channel.messages.fetch(maison.messageId);
+        if(msg){
+            msg.delete();
+        }
+    }
+}
+
 function help(channel){
     const embed = new EmbedBuilder()
         .addFields(
             {
                 name: '!add', 
-                value: 'Permet d\'ajouter des points ou une personne à une maison, !add X to Maison ajoute X points à la maison Maison (possible de remplacer Maison par @machin qui ajoutera des points à la maison de @machin), !add @machin to Maison ajoute @machin à la maison Maison'
+                value: 'Permet d\'ajouter des points ou une personne à une maison.\n'
+                        +'!add X to Maison ajoute X points à la maison Maison (possible de remplacer Maison par @machin qui ajoutera des points à la maison de @machin). \n'
+                        +'!add @machin to Maison ajoute @machin à la maison Maison'
             },
             {
                 name: '!remove', 
-                value: 'Permet de retirer des points à une maison, !remove X to Maison retire X points à une maison'
+                value: 'Permet de retirer des points ou une personne à une maison à une maison. \n'
+                        +'!remove X to Maison retire X points à une maison (cette commande à les mêmes possibilité que !add)'
             },
             {
                 name: '!setBlason', 
-                value: 'Permet de changer le blason d\'une maison, !setBlason URL to Maison applique le blason correspondant à l\'URL indiqué à la maison Maison'
+                value: 'Permet de changer le blason d\'une maison. \n'
+                        +'!setBlason URL to Maison applique le blason correspondant à l\'URL indiqué à la maison Maison'
             },
             {
                 name: '!setNom', 
-                value: 'Permet de changer le nom d\'une maison, !setNom Nom to Maison applique un nouveau nom Nom indiqué à la maison Maison'
+                value: 'Permet de changer le nom d\'une maison. \n'
+                        +'!setNom Nom to Maison applique un nouveau nom Nom indiqué à la maison Maison'
             },
             {
                 name: '!setPoint', 
-                value: 'Permet de changer les points d\'une maison, !setPoint X to Maison change les points de la maison Maison afin qu\'ils soient égaux à X'
+                value: 'Permet de changer les points d\'une maison. \n'
+                        +'!setPoint X to Maison change les points de la maison Maison afin qu\'ils soient égaux à X'
             },
             {
                 name: '!setCouleur', 
-                value: 'Permet de changer la couleur d\'une maison, !setCouleur Couleur to Maison applique la couleur correspondante à la maison Maison, la couleur peut être indiqué en anglais ou en hexadécimal (0xffff00 par exemple)'
+                value: 'Permet de changer la couleur d\'une maison. \n'
+                        +'!setCouleur Couleur to Maison applique la couleur correspondante à la maison Maison, la couleur peut être indiqué en anglais ou en hexadécimal (0xffff00 par exemple)'
             },
             {
                 name: '!newHouseCup', 
-                value: 'Lance une nouvelle coupe des quatres maisons, si il n\'y en avait pas eu avant elle créé 4 maisons avec des valeurs par défaut, sinon elle recréé les maisons qui avait été créé sur ce channel'
+                value: 'Lance une nouvelle coupe des quatres maisons. \n'
+                        +'Si il n\'y en avait pas eu avant elle créé 4 maisons avec des valeurs par défaut, sinon elle recréé les maisons qui avait été créé sur ce channel'
             },
             {
                 name: '!addHouse', 
-                value: 'Ajoute une nouvelle maison appelée RenommeMoi avec des valeurs par défaut, il est conseillé de modifier le nom de celle ci tout de suite après, cela créé également un role avec le même nom qu\'il faudra personnaliser via la modération du discord'
+                value: 'Ajoute une nouvelle maison avec des valeurs par défaut. \n'
+                        +'!addHouse Nom Couleur URL (attributs optionnels, on peut faire un !addHouse Nom ou un !addHouse Nom Couleur) ajoute une maison avec un Nom, une Couleur(voir !setCouleur pour le fonctionnement) et un blason correspondant à URL\n'
+                        +'il est conseillé de modifier le nom de celle ci tout de suite après, cela créé également un role avec le même nom qu\'il faudra personnaliser via la modération du discord'
+            },
+            {
+                name: '!removeHouse', 
+                value: 'Supprime une maison, son role et son message. \n'
+                        +'!removeHouse Maison supprime la maison Maison'
             },
             {
                 name: '!houseCupHelp', 
