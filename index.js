@@ -1,11 +1,11 @@
 import { Client, EmbedBuilder, GatewayIntentBits } from "discord.js";
+import * as data from "./data/info.cjs";
 import { help } from "./commandes/help.js";
 import { newHouseCup, addHouse, deleteHouse } from "./commandes/maison.js";
 import { addMembre, removeMembre } from "./commandes/membre.js";
 import { setPoint, addPoint, removePoint } from "./commandes/point.js";
 import { setColor, setNom, setBlason } from "./commandes/setMaison.js";
 import { Repository } from "./repository/repository.js";
-import * as data from "./data/info.cjs";
 
 //Droit attribué au bot
 const client = new Client({
@@ -131,9 +131,9 @@ client.on("messageCreate", async function (message) {
       deleteHouse(message, message.content.split(" ")[1]);
 
       message.delete();
-    } else if (message.content.split(" ")[0] === "!houseCupHelp" && isOK) {
+    } else if (message.content.split(" ")[0] === "!helpHouseCup" && isOK) {
       //Si les points sont renseigné on envois les points, sinon on créé les messages avec 0 points
-      help(message.channel);
+      help(message);
       message.delete();
     }
   } catch (error) {

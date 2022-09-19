@@ -1,7 +1,7 @@
 import { EmbedBuilder } from "discord.js";
 
 //Ajoute des points à une maison en prenant son id et le montant de point à ajouter
-export function help(channel) {
+export function help(message) {
   const embed = new EmbedBuilder().addFields(
     {
       name: "!add",
@@ -60,9 +60,9 @@ export function help(channel) {
         "!removeHouse Maison supprime la maison Maison",
     },
     {
-      name: "!houseCupHelp",
+      name: "!helpHouseCup",
       value: "Affiche ce message d'aide, mais ça tu le sais déjà ;)",
     }
   );
-  channel.send({ embeds: [embed] });
+  message.author.send({ embeds: [embed] });
 }
