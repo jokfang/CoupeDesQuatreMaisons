@@ -73,3 +73,21 @@ export async function addHouse(channel, houseName, blason, couleur) {
     role.id
   );
 }
+
+export async function deleteHouse(message, houseName) {
+  const myRepository = new Repository();
+  const maison = await myRepository.getMaison(message.channel, houseName);
+  if (maison) {
+    myRepository.deleteMaison(maison.messageId);
+    //delete role
+    const role = await message.guild.roles.cache.get(maison.roleId);
+    if (role) {
+      role.delete();
+    }
+    //delete message
+    const msg = await message.channel.messages.fetch(maison.messageId);
+    if (msg) {
+      msg.delete();
+    }
+  }
+}
