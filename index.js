@@ -1,7 +1,7 @@
 import { Client, EmbedBuilder, GatewayIntentBits } from "discord.js";
 import { Point } from "./commandes/point.js";
 import { help } from "./commandes/help.js";
-//import {newHouseCup} from './commandes/maison.js'
+import { newHouseCup, addHouse } from "./commandes/maison.js";
 import { Repository } from "./repository/repository.js";
 import * as data from "./data/info.cjs";
 
@@ -97,9 +97,9 @@ client.on("messageCreate", async function (message) {
     } else if (message.content.split(" ")[0] === "!newHouseCup" && isOK) {
       //Si les points sont renseigné on envois les points, sinon on créé les messages avec 0 points
       if (message.content.split(" ").length > 1) {
-        newHouseCups(message.channel, message.content.split(" ")[1].split("."));
+        newHouseCup(message.channel, message.content.split(" ")[1].split("."));
       } else {
-        newHouseCups(message.channel);
+        newHouseCup(message.channel);
       }
       message.delete();
     } else if (message.content.split(" ")[0] === "!addHouse" && isOK) {
@@ -306,75 +306,6 @@ async function removeMembre(houseName, message) {
   let member = message.mentions.members.first();
 
   member.roles.remove(role);
-}
-
-async function newHouseCups(channel, points) {
-  //Pour chaque maisons on créé un message
-  //Un passage en base de données pourrait être intéressant pour stabiliser le bot
-  const maisons = await myRepository.getMaisons(channel);
-
-  if (maisons[0]) {
-    for (let i = 0; i < maisons.length; i++) {
-      const messageId = maisons[i].messageId;
-      let point = 0;
-
-      //Si les points sont bien renseigné
-      if (points && points.length == maisons.length) {
-        point = parseInt(points[i]);
-      }
-      //On constuit le nouveau message
-      const embed = new EmbedBuilder()
-        .setColor(maisons[i].couleur)
-        .setTitle(maisons[i].nom)
-        .setThumbnail(maisons[i].blason)
-        .setDescription(point.toString());
-
-      //On envois le message
-      let message = await channel.send({ embeds: [embed] });
-
-      //On met à jour les données du bot
-      const newMaison = maisons[i];
-      newMaison.messageId = message.id;
-      await myRepository.updateHouse(channel, messageId, newMaison);
-    }
-  } else {
-    for (let i = 0; i < 4; i++) {
-      addHouse(channel, "Maison" + i.toString(), "", "0x0066ff");
-    }
-  }
-}
-
-async function addHouse(channel, houseName, blason, couleur) {
-  if (!houseName) {
-    houseName = "RenommeMoi";
-  }
-  if (!blason) {
-    blason =
-      "https://www.sticker-blason.com/images/imageshop/produit/2017/05/m_592d833d86daa7.46097717.jpeg";
-  }
-  if (!couleur) {
-    couleur = "0x0066ff";
-  }
-
-  const embed = new EmbedBuilder()
-    .setColor(couleur)
-    .setTitle(houseName)
-    .setThumbnail(blason)
-    .setDescription("0");
-
-  const messageId = (await channel.send({ embeds: [embed] })).id;
-  const role = await channel.guild.roles.create({
-    name: houseName,
-    color: couleur,
-  });
-  await myRepository.addHouse(
-    channel,
-    houseName,
-    blason,
-    couleur,
-    messageId,
-    role.id
-  );
 }
 
 async function deleteHouse(message, houseName) {
