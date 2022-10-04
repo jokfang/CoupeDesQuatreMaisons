@@ -33,6 +33,12 @@ export async function removePoint(houseName, montant, message) {
       member._roles.find((memberRole) => memberRole == house.roleId)
     ).nom;
     maison = await maisons.find((house) => house.nom == houseName);
+    myRepository.updateMemberPoint(
+      message.channel,
+      member.id,
+      maison.roleId,
+      montant * -1
+    );
   } else {
     maison = await myRepository.getMaison(message.channel, houseName);
   }
@@ -67,6 +73,12 @@ export async function addPoint(houseName, montant, message) {
       member._roles.find((memberRole) => memberRole == house.roleId)
     ).nom;
     maison = await maisons.find((house) => house.nom == houseName);
+    myRepository.updateMemberPoint(
+      message.channel,
+      member.id,
+      maison.roleId,
+      montant
+    );
   } else {
     maison = await myRepository.getMaison(message.channel, houseName);
   }
