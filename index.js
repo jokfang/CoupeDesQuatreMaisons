@@ -1,11 +1,15 @@
 import { Client, EmbedBuilder, GatewayIntentBits } from "discord.js";
 import * as data from "./data/info.cjs";
+import { showDuel, counter, createDataDuel } from "./commandes/game.js";
 import { help } from "./commandes/help.js";
 import { newHouseCup, addHouse, deleteHouse } from "./commandes/maison.js";
 import { addMembre, removeMembre } from "./commandes/membre.js";
 import { setPoint, addPoint, removePoint } from "./commandes/point.js";
 import { setColor, setNom, setBlason } from "./commandes/setMaison.js";
 import { Repository } from "./repository/repository.js";
+export let attackLinkHouse = 'Disney';
+
+
 
 //Droit attribué au bot
 const client = new Client({
@@ -19,7 +23,8 @@ const client = new Client({
   ],
 });
 // MTAxNjc5NzY3MzE3ODc5MjA3Ng.GTnOz-.WriQ334pUwFn3d7QAMfoH1aaugbRnovoa1ZWbw
-const token = data.default.token;
+const token = data.
+  default.token;
 
 //Connexion du bot
 client.once("ready", () => {
@@ -29,6 +34,7 @@ client.login(token);
 
 //Création de l'accès à la BDD
 const myRepository = new Repository();
+
 
 //Lorsqu'on reçoit un message:
 client.on("messageCreate", async function (message) {
@@ -129,11 +135,29 @@ client.on("messageCreate", async function (message) {
     } else if (message.content.split(" ")[0] === "!removeHouse" && isOK) {
       //Supprime une maison en utilisant son nom
       deleteHouse(message, message.content.split(" ")[1]);
-
       message.delete();
     } else if (message.content.split(" ")[0] === "!helpHouseCup" && isOK) {
       //Si les points sont renseigné on envois les points, sinon on créé les messages avec 0 points
       help(message);
+      message.delete();
+    } else if ((message.content.split(" ")[0] === "!attaque") && isOK) {
+        const dataDuel = await createDataDuel(message);
+        showDuel(dataDuel, message);
+        
+    } else if (message.content.split(" ")[0] === "!contre" && isOK){
+      const opponent = message.member.displayName;
+      const spell = message.content.split(" ")[1];
+      if (spell != undefined) {
+        counter(message, opponent, spell);
+      } else {
+        await message.channel.send("Vous n'avez pas rentrée de sort, ou il n'a pas réussi à étre lu.");
+      }
+    } else if (message.content.split(" ")[0] === "!setDuel") {
+      if (message.content.split(" ")[1] === 'HarryPotter') {
+        attackLinkHouse = 'Potter';
+      } else if (message.content.split(" ")[1] === 'Dinsey') {
+        attackLinkHouse = 'Disney';
+      }
       message.delete();
     }
   } catch (error) {

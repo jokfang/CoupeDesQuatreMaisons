@@ -66,7 +66,7 @@ export class Repository {
       }
       //console.log("Connected to MySQLDB");
     });
-    const query = "Insert into Coupe values (?,?,?,?,?,?, ?)";
+    const query = "Insert into Coupe values (?,?,?,?,?,?,?)";
     const retour = await con
       .promise()
       .query(query, [
