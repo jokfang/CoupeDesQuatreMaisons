@@ -24,19 +24,17 @@ export async function removeMembre(houseName, message) {
 export async function houseMembre(member, message) {
   const myRepository = new Repository();
   const maisons = await myRepository.getMaisons(message.channel);
-  let houseMember = false;
+  let houseMember;
 
   for (let maison of maisons) {
-    if ( 
-      member._roles.find((memberRole) => memberRole == maison.roleId)
-      ) {
+    if (member._roles.find((memberRole) => memberRole == maison.roleId)) {
       houseMember = await maison.nom;
     }
-  } 
-  
-  if (houseMember == false) {
-    const  duelMessage = member.displayName + " n'a pas de maison."
-    await message.channel.send(duelMessage);
+  }
+
+  if (!houseMember) {
+    const duelMessage = member.displayName + " n'a pas de maison.";
+    await message.author.send(duelMessage);
   } else {
     return houseMember;
   }
