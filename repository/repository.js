@@ -43,8 +43,8 @@ export class Repository {
       }
       //console.log("Connected to MySQLDB");
     });
-    const query = "select * from Coupe where channel = ?";
-    const retour = await con.promise().query(query, [channel.id]);
+    const query = "select * from Coupe where serveur = ?";
+    const retour = await con.promise().query(query, [channel.guildId]);
     con.end();
 
     return retour[0];
@@ -66,7 +66,7 @@ export class Repository {
       }
       //console.log("Connected to MySQLDB");
     });
-    const query = "Insert into Coupe values (?,?,?,?,?,?, ?)";
+    const query = "Insert into Coupe values (?,?,?,?,?,?,?)";
     const retour = await con
       .promise()
       .query(query, [
