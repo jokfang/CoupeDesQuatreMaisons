@@ -1,17 +1,20 @@
 import { Repository } from "../repository/repository.js";
+import { cupActive } from "../librairy/cupInfo.js";
+import { channelBox } from "../index.js";
 
 export async function addMembre(houseName, message) {
   let role = message.guild.roles.cache.find((role) => role.name == houseName);
   let member = message.mentions.members.first();
   const myRepository = new Repository();
-  const maisons = await myRepository.getMaisons(message.channel);
+  const channelCup = channelBox[cupActive];
+  const maisons = await myRepository.getMaisons(channelCup);
   if (
     !maisons.find((maison) =>
       member._roles.find((memberRole) => memberRole == maison.roleId)
     )
   ) {
     member.roles.add(role);
-    myRepository.addMember(message.channel, member.id, role.id);
+    myRepository.addMember(channelCup, member.id, role.id);
   }
 }
 
@@ -19,14 +22,15 @@ export async function removeMembre(houseName, message) {
   let role = message.guild.roles.cache.find((role) => role.name == houseName);
   let member = message.mentions.members.first();
   const myRepository = new Repository();
-
+  const channelCup = channelBox[cupActive];
   member.roles.remove(role);
-  myRepository.deleteMember(message.channel, member.id, role.id);
+  myRepository.deleteMember(channelCup, member.id, role.id);
 }
 
 export async function houseMembre(member, message) {
   const myRepository = new Repository();
-  const maisons = await myRepository.getMaisons(message.channel);
+  const channelCup = channelBox[cupActive];
+  const maisons = await myRepository.getMaisons(channelCup);
   let houseMember;
 
   for (let maison of maisons) {

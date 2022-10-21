@@ -6,10 +6,9 @@ import { newHouseCup, addHouse, deleteHouse } from "./commandes/maison.js";
 import { addMembre, removeMembre } from "./commandes/membre.js";
 import { setPoint, addPoint, removePoint } from "./commandes/point.js";
 import { setColor, setNom, setBlason } from "./commandes/setMaison.js";
+import { getChannelBox, idRoom } from "./librairy/cupInfo.js";
 import { Repository } from "./repository/repository.js";
-export let attackLinkHouse = 'Disney';
-
-
+export let channelBox = getChannelBox();
 
 //Droit attribué au bot
 const client = new Client({
@@ -23,12 +22,16 @@ const client = new Client({
   ],
 });
 // MTAxNjc5NzY3MzE3ODc5MjA3Ng.GTnOz-.WriQ334pUwFn3d7QAMfoH1aaugbRnovoa1ZWbw
-const token = data.
-  default.token;
+const token = data.default.token;
 
 //Connexion du bot
 client.once("ready", () => {
   console.log("Félicitations, votre bot est ok !");
+  
+  // Récpèrer les Channel avec leur ID
+  channelBox.commandChannel = client.channels.cache.get(idRoom.commandChannel);
+  channelBox.maison = client.channels.cache.get(idRoom.maison);
+  channelBox.ohana = client.channels.cache.get(idRoom.ohana);
 });
 client.login(token);
 
@@ -152,14 +155,7 @@ client.on("messageCreate", async function (message) {
       } else {
         await message.channel.send("Vous n'avez pas rentrée de sort, ou il n'a pas réussi à étre lu.");
       }
-    } else if (message.content.split(" ")[0] === "!setDuel") {
-      if (message.content.split(" ")[1] === 'HarryPotter') {
-        attackLinkHouse = 'Potter';
-      } else if (message.content.split(" ")[1] === 'Dinsey') {
-        attackLinkHouse = 'Disney';
-      }
-      message.delete();
-    }
+    } 
   } catch (error) {
     await message.channel.send(
       "Une erreur a été rencontré, tu peux supprimer ce message et ton appel (ou le montrer à un dév) et retenter"
@@ -181,3 +177,5 @@ function checkMessage(message) {
 
   return true;
 }
+
+  

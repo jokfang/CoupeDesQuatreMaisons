@@ -1,5 +1,5 @@
 import { Client, EmbedBuilder, GatewayIntentBits } from "discord.js";
-import { attackLinkHouse } from "../index.js";
+import { cupActive, listCupActive } from "../librairy/cupInfo.js";
 import { getRandomInt } from "../commandes/items.js";
 import { addPoint, removePoint } from "../commandes/point.js";
 import { houseMembre } from "../commandes/membre.js";
@@ -64,9 +64,9 @@ export async function showDuel(dataDuel, message) {
     const embedTitle = "Duel Lancé !";
 
     let houseDescription;
-    if (attackLinkHouse == "Potter") {
+    if (cupActive == listCupActive[0]) {
       houseDescription = " de la maison ";
-    } else if (attackLinkHouse == "Disney") {
+    } else if (cupActive == listCupActive[1]) {
       houseDescription = " de la Ohana des ";
     }
 
@@ -169,7 +169,7 @@ export async function duel(messageBox, dataDuel) {
   await dataDuel.channel.send({ embeds: [embed] });
 
   //Ajout de point automatique à solutionner
-  /*if (!duelNull) {
+ /*if (!duelNull) {
     await addPoint(dataWin.houseWinner, 10, messageBox.messageBot);
     await removePoint(dataWin.houseLooser, 10, messageBox.messageBot);
   }*/
@@ -460,10 +460,10 @@ async function findWinMessage(dataWin) {
 }
 
 function checkSpell(spell, house, message) {
-  let spellOk = false;
+  let spellOk;
 
   //Coupe des 4 Maisons
-  if (attackLinkHouse === "Potter") {
+  if (cupActive === listCupActive[0]) {
     const listSpell = dataGames.default.listSpellPotter;
     if (listSpell.find((spells) => spells == spell)) {
       spellOk = true;
@@ -473,7 +473,7 @@ function checkSpell(spell, house, message) {
   }
 
   // Ohana Games
-  else if (attackLinkHouse === "Disney") {
+  else if (cupActive === listCupActive[1]) {
     const listHouse = dataGames.default.listAttackDisney;
 
     if (
