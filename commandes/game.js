@@ -1,9 +1,10 @@
 import { Client, EmbedBuilder, GatewayIntentBits } from "discord.js";
-import { attackLinkHouse } from "../index.js";
+import { cupActive } from "../librairy/cupInfo.js";
 import { getRandomInt } from "../commandes/items.js";
 import { addPoint, removePoint } from "../commandes/point.js";
 import { houseMembre } from "../commandes/membre.js";
 import * as dataGames from "../librairy/game.cjs";
+import { Repository } from "./repository/repository.js";
 import { SpellRepository } from "../repository/spellRepository.js";
 
 export async function createDataDuel(message) {
@@ -63,13 +64,11 @@ export async function showDuel(dataDuel, message) {
     );
   } else {
     const embedTitle = "Duel Lancé !";
-
-    let houseDescription;
-    if (attackLinkHouse == "Potter") {
+    /*let houseDescription;
+    if (cupActive == listCupActive[0]) {
       houseDescription = " de la maison ";
-    } else if (attackLinkHouse == "Disney") {
-      houseDescription = " de la Ohana des ";
-    }
+    } else if (cupActive == listCupActive[1]) {*/
+    const houseDescription = " de la Ohana des ";
 
     const duelMessage =
       "@" +
@@ -342,10 +341,10 @@ async function createWinMessage(dataWin, channel) {
 }
 
 function checkSpell(spell, house, message) {
-  let spellOk = false;
+  let spellOk;
 
   //Coupe des 4 Maisons
-  if (attackLinkHouse === "Potter") {
+  /*if (cupActive === listCupActive[0]) {
     const listSpell = dataGames.default.listSpellPotter;
     if (listSpell.find((spells) => spells == spell)) {
       spellOk = true;
@@ -355,23 +354,22 @@ function checkSpell(spell, house, message) {
   }
 
   // Ohana Games
-  else if (attackLinkHouse === "Disney") {
-    const listHouse = dataGames.default.listAttackDisney;
+  else  if (cupActive === listCupActive[1]) {*/
+  const listHouse = dataGames.default.listAttackDisney;
 
-    if (
-      (house === "Princesses" && listHouse[0].indexOf(spell) != -1) ||
-      (house === "Super-Héros" && listHouse[1].indexOf(spell) != -1) ||
-      (house === "Vilains" && listHouse[2].indexOf(spell) != -1) ||
-      (house === "Pirates" && listHouse[3].indexOf(spell) != -1) ||
-      1 == 1
-    ) {
-      spellOk = true;
-    } else {
-      message.author.send(
-        "Vous ne pouvez pas utliser l'attaque d'une autre équipe."
-      );
-    }
+  if (
+    (house === "Princesses" && listHouse[0].indexOf(spell) != -1) ||
+    (house === "Super-Héros" && listHouse[1].indexOf(spell) != -1) ||
+    (house === "Vilains" && listHouse[2].indexOf(spell) != -1) ||
+    (house === "Pirates" && listHouse[3].indexOf(spell) != -1)
+  ) {
+    spellOk = true;
+  } else {
+    message.author.send(
+      "Vous ne pouvez pas utliser l'attaque d'une autre équipe."
+    );
   }
+
   return spellOk;
 }
 

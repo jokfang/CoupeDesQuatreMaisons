@@ -204,4 +204,27 @@ export class Repository {
       .query(query, [points, user, channel.guildId, channel.id, maison]);
     con.end();
   }
+
+  async getCupActive(guildId) {
+    const con = mysql.createConnection({
+      host: houses.default.host,
+      user: houses.default.user,
+      password: houses.default.password,
+      port: houses.default.port,
+      database: houses.default.database,
+    });
+    con.connect(function (err) {
+      if (err) {
+        if (err.message.code === "ETIMEDOUT") {
+          console.log("TimeOut de la BDD");
+        }
+      }
+      //console.log("Connected to MySQLDB");
+    });
+    const query = "select distinct channel from Coupe where serveur = ? ";
+    const retour = await con.promise().query(query, [guildId]);
+    con.end();
+
+    return retour[0];
+  }
 }
