@@ -10,9 +10,8 @@ export function getChannelBox(client) {
 export const idRoom = {
   commandChannel: "1031371693454807151",
   maison: "1026619386481627256",
-  ohana: "1030935712129892362",
+  ohana: "1021509224343281764",
 };
-export let attackLinkHouse = cupActive;
 
 //export const listCupActive = ["potter", "ohana"];
 export const cupActive = "1021509224343281764"; //tout en minuscule.

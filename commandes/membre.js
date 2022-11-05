@@ -1,12 +1,12 @@
 import { Repository } from "../repository/repository.js";
-import { cupActive } from "../librairy/cupInfo.js";
 import { channelBox } from "../index.js";
 
 export async function addMembre(houseName, message) {
   let role = message.guild.roles.cache.find((role) => role.name == houseName);
   let member = message.mentions.members.first();
   const myRepository = new Repository();
-  const channelCup = channelBox[cupActive];
+  //const channelCup = channelBox[cupActive];
+  const channelCup = channelBox.ohana;
   const maisons = await myRepository.getMaisons(channelCup);
   if (
     !maisons.find((maison) =>
@@ -22,14 +22,16 @@ export async function removeMembre(houseName, message) {
   let role = message.guild.roles.cache.find((role) => role.name == houseName);
   let member = message.mentions.members.first();
   const myRepository = new Repository();
-  const channelCup = channelBox[cupActive];
+  //const channelCup = channelBox[cupActive];
+  const channelCup = channelBox.ohana;
   member.roles.remove(role);
   myRepository.deleteMember(channelCup, member.id, role.id);
 }
 
 export async function houseMembre(member, message) {
   const myRepository = new Repository();
-  const channelCup = channelBox[cupActive];
+  //const channelCup = channelBox[cupActive];
+  const channelCup = channelBox.ohana;
   const maisons = await myRepository.getMaisons(channelCup);
   let houseMember;
 
