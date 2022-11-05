@@ -4,6 +4,7 @@ import { getRandomInt } from "../commandes/items.js";
 import { addPoint, removePoint } from "../commandes/point.js";
 import { houseMembre } from "../commandes/membre.js";
 import * as dataGames from "../librairy/game.cjs";
+import { SpellRepository } from "../repository/spellRepository.js";
 
 export async function createDataDuel(message) {
   let dataDuelInit = {
@@ -100,7 +101,7 @@ export async function counter(message, opponent, spell) {
   if (messageBox.messageAttack) {
     let dataDuel = await createDataDuel(messageBox.messageAttack);
 
-    if (opponent === dataDuel.opponent || 1 == 1) {
+    if (opponent === dataDuel.opponent) {
       const spellOk = checkSpell(
         spell.toLowerCase(),
         dataDuel.houseOpponent,
@@ -109,7 +110,7 @@ export async function counter(message, opponent, spell) {
 
       if (spellOk) {
         dataDuel.spellOpponent = spell.toLowerCase();
-        duel(messageBox, dataDuel);
+        duel(messageBox, dataDuel, message.channel);
       }
     } else {
       message.author.send("Erreur, vous n'êtes pas la cible du duel.");
@@ -121,7 +122,7 @@ export async function counter(message, opponent, spell) {
   }
 }
 
-export async function duel(messageBox, dataDuel) {
+export async function duel(messageBox, dataDuel, channel) {
   const rng_Challenger = getRandomInt(1, 11);
   const rng_Opponent = getRandomInt(1, 11);
 
@@ -152,7 +153,7 @@ export async function duel(messageBox, dataDuel) {
   }
 
   // Création du message du combat
-  const winMessage = await findWinMessage(dataWin);
+  const winMessage = await createWinMessage(dataWin, channel);
   const challengerResult =
     dataDuel.spellChallenger + " (" + rng_Challenger + ")";
   const opponentResult = dataDuel.spellOpponent + " (" + rng_Opponent + ")";
@@ -178,11 +179,24 @@ export async function duel(messageBox, dataDuel) {
   await messageBox.messageCounter.delete();
 }
 
-async function findWinMessage(dataWin) {
+async function createWinMessage(dataWin, channel) {
+  const mySpellRepository = new SpellRepository();
+  const spells = await mySpellRepository.getSpells(channel);
   let winMessage;
   const points = 10;
 
-  switch (dataWin.spellWinner) {
+  //on construit le winMessage
+  winMessage = spells
+    .find((spell) => spell.spellName == dataWin.spellWinner)
+    .spellMessage.replace("@nameWinner", dataWin.nameWinner)
+    .replace("@nameLooser", dataWin.nameLooser)
+    .replace("@points", points)
+    .replace("@houseLooser", dataWin.houseLooser);
+  if (!winMessage) {
+    winMessage =
+      "Oh ! Leurs attaques s'entre-choc et s'annulent toutes les deux. c'est une égalité !";
+  }
+  /*switch (dataWin.spellWinner) {
     // Coupe des 4 maisons
     case "avada_kedavra":
       winMessage =
@@ -319,142 +333,10 @@ async function findWinMessage(dataWin) {
         dataWin.houseLooser +
         ".";
       break;
-    // Ohana Games
-    case "Chant":
-      winMessage =
-        dataWin.nameWinner +
-        " et les autres princesses chantent une berceuse endormant " +
-        dataWin.nameLooser +
-        ". L'équipe des Princesses rècupère " +
-        points +
-        " points de l'équipe des " +
-        dataWin.houseLooser +
-        ".";
-      break;
-    case "Coup_de_talon":
-      winMessage =
-        dataWin.nameWinner +
-        " met un coup de talon sur " +
-        dataWin.nameLooser +
-        " le mettant hors de combat. L'équipe des Princesses rècupère " +
-        points +
-        " points de l'équipe des " +
-        dataWin.houseLooser +
-        ".";
-      break;
-    case "charme":
-      winMessage =
-        dataWin.nameWinner +
-        " utilise ses charmes pour envouter " +
-        dataWin.nameLooser +
-        " le faisant admettre sa défaite. L'équipe des Princesses rècupère " +
-        points +
-        " points de l'équipe des " +
-        dataWin.houseLooser +
-        ".";
-      break;
-    case "rassemblement":
-      winMessage =
-        dataWin.nameWinner +
-        " et les autres Super-Héros se rassemblent pour mettre un dérrouiller " +
-        dataWin.nameLooser +
-        ". L'équipe des Super-Héros rècupère " +
-        points +
-        " points de l'équipe des " +
-        dataWin.houseLooser +
-        ".";
-      break;
-    case "uppercut":
-      winMessage =
-        dataWin.nameWinner +
-        " met un uppercant fracassant sur " +
-        dataWin.nameLooser +
-        " envoyant vers d'autres cieux. L'équipe des Super-Héros rècupère " +
-        points +
-        " points de l'équipe des " +
-        dataWin.houseLooser +
-        ".";
-      break;
-    case "laser":
-      winMessage =
-        dataWin.nameWinner +
-        " fait sortir un laser de ses yeux pour blesser " +
-        dataWin.nameLooser +
-        " et remporter la victoire. L'équipe des Super-Héros rècupère " +
-        points +
-        " points de l'équipe des " +
-        dataWin.houseLooser +
-        ".";
-      break;
-    case "sbire":
-      winMessage =
-        dataWin.nameWinner +
-        " envoie ses sbires pour maltraiter " +
-        dataWin.nameLooser +
-        ". L'équipe des Vilains rècupère " +
-        points +
-        " points de l'équipe des " +
-        dataWin.houseLooser +
-        ".";
-      break;
-    case "pomme_empoisonnée":
-      winMessage =
-        dataWin.nameWinner +
-        " force " +
-        dataWin.nameLooser +
-        " a manger une pomme qui lui donne une envie d'aller au toilette. L'équipe des Vilains rècupère " +
-        points +
-        " points de l'équipe des " +
-        dataWin.houseLooser +
-        ".";
-      break;
-    case "transformation":
-      winMessage =
-        dataWin.nameWinner +
-        " transforme " +
-        dataWin.nameLooser +
-        " en crapaud. L'équipe des Vilains rècupère " +
-        points +
-        " points de l'équipe des " +
-        dataWin.houseLooser;
-      break;
-    case "abordage":
-      winMessage =
-        dataWin.nameWinner +
-        " lance un abordage et met fin au combat après que " +
-        dataWin.nameLooser +
-        " soit entourée par les Pirates. L'équipe des Pirates rècpère " +
-        points +
-        " points de l'équipe des " +
-        dataWin.houseLooser +
-        ".";
-      break;
-    case "coup_de_crochet":
-      winMessage =
-        dataWin.nameWinner +
-        " esquive l'attaque de " +
-        dataWin.nameLooser +
-        " et contre avec un coup de crochet. L'équipe des Pirates rècpère " +
-        points +
-        " points de l'équipe des " +
-        dataWin.houseLooser +
-        ".";
-      break;
-    case "lancer_de_baril":
-      winMessage =
-        dataWin.nameWinner +
-        " lance un baril de poudre sur " +
-        dataWin.nameLooser +
-        " qui se retrouve blessé après l'explosion. L'équipe des Pirates récupère " +
-        points +
-        " points de l'équipe des " +
-        dataWin.houseLooser +
-        ".";
-      break;
     default:
       winMessage =
         "Oh ! Leurs attaques s'entre-choc et s'annulent toutes les deux. c'est une égalité !";
-  }
+  }*/
 
   return winMessage;
 }
@@ -480,7 +362,8 @@ function checkSpell(spell, house, message) {
       (house === "Princesses" && listHouse[0].indexOf(spell) != -1) ||
       (house === "Super-Héros" && listHouse[1].indexOf(spell) != -1) ||
       (house === "Vilains" && listHouse[2].indexOf(spell) != -1) ||
-      (house === "Pirates" && listHouse[3].indexOf(spell) != -1)
+      (house === "Pirates" && listHouse[3].indexOf(spell) != -1) ||
+      1 == 1
     ) {
       spellOk = true;
     } else {
