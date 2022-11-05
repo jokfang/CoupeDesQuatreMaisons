@@ -1,9 +1,10 @@
 import { Client, EmbedBuilder, GatewayIntentBits } from "discord.js";
-import { cupActive, listCupActive } from "../librairy/cupInfo.js";
+import { cupActive } from "../librairy/cupInfo.js";
 import { getRandomInt } from "../commandes/items.js";
 import { addPoint, removePoint } from "../commandes/point.js";
 import { houseMembre } from "../commandes/membre.js";
 import * as dataGames from "../librairy/game.cjs";
+import { Repository } from "./repository/repository.js";
 
 export async function createDataDuel(message) {
   let dataDuelInit = {
@@ -62,13 +63,11 @@ export async function showDuel(dataDuel, message) {
     );
   } else {
     const embedTitle = "Duel Lancé !";
-
-    let houseDescription;
+    /*let houseDescription;
     if (cupActive == listCupActive[0]) {
       houseDescription = " de la maison ";
-    } else if (cupActive == listCupActive[1]) {
-      houseDescription = " de la Ohana des ";
-    }
+    } else if (cupActive == listCupActive[1]) {*/
+    const houseDescription = " de la Ohana des ";
 
     const duelMessage =
       "@" +
@@ -169,7 +168,7 @@ export async function duel(messageBox, dataDuel) {
   await dataDuel.channel.send({ embeds: [embed] });
 
   //Ajout de point automatique à solutionner
- /*if (!duelNull) {
+  /*if (!duelNull) {
     await addPoint(dataWin.houseWinner, 10, messageBox.messageBot);
     await removePoint(dataWin.houseLooser, 10, messageBox.messageBot);
   }*/
@@ -463,7 +462,7 @@ function checkSpell(spell, house, message) {
   let spellOk;
 
   //Coupe des 4 Maisons
-  if (cupActive === listCupActive[0]) {
+  /*if (cupActive === listCupActive[0]) {
     const listSpell = dataGames.default.listSpellPotter;
     if (listSpell.find((spells) => spells == spell)) {
       spellOk = true;
@@ -473,22 +472,22 @@ function checkSpell(spell, house, message) {
   }
 
   // Ohana Games
-  else if (cupActive === listCupActive[1]) {
-    const listHouse = dataGames.default.listAttackDisney;
+  else  if (cupActive === listCupActive[1]) {*/
+  const listHouse = dataGames.default.listAttackDisney;
 
-    if (
-      (house === "Princesses" && listHouse[0].indexOf(spell) != -1) ||
-      (house === "Super-Héros" && listHouse[1].indexOf(spell) != -1) ||
-      (house === "Vilains" && listHouse[2].indexOf(spell) != -1) ||
-      (house === "Pirates" && listHouse[3].indexOf(spell) != -1)
-    ) {
-      spellOk = true;
-    } else {
-      message.author.send(
-        "Vous ne pouvez pas utliser l'attaque d'une autre équipe."
-      );
-    }
+  if (
+    (house === "Princesses" && listHouse[0].indexOf(spell) != -1) ||
+    (house === "Super-Héros" && listHouse[1].indexOf(spell) != -1) ||
+    (house === "Vilains" && listHouse[2].indexOf(spell) != -1) ||
+    (house === "Pirates" && listHouse[3].indexOf(spell) != -1)
+  ) {
+    spellOk = true;
+  } else {
+    message.author.send(
+      "Vous ne pouvez pas utliser l'attaque d'une autre équipe."
+    );
   }
+
   return spellOk;
 }
 
