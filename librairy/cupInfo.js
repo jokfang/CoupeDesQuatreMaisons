@@ -21,4 +21,5 @@ export const bareme = {
   subT2: 20,
   subT3: 50,
   bits: 5,
+  duel: 10,
 };

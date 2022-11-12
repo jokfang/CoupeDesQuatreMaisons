@@ -1,10 +1,10 @@
 import { Client, EmbedBuilder, GatewayIntentBits } from "discord.js";
-import { cupActive } from "../librairy/cupInfo.js";
+import { cupActive, bareme } from "../librairy/cupInfo.js";
 import { getRandomInt } from "../commandes/items.js";
 import { addPoint, removePoint } from "../commandes/point.js";
 import { houseMembre } from "../commandes/membre.js";
 import * as dataGames from "../librairy/game.cjs";
-import { Repository } from "./repository/repository.js";
+import { Repository } from "../repository/repository.js";
 import { SpellRepository } from "../repository/spellRepository.js";
 
 export async function createDataDuel(message) {
@@ -168,11 +168,13 @@ export async function duel(messageBox, dataDuel, channel) {
     );
   await dataDuel.channel.send({ embeds: [embed] });
 
-  //Ajout de point automatique à solutionner
-  /*if (!duelNull) {
-    await addPoint(dataWin.houseWinner, 10, messageBox.messageBot);
-    await removePoint(dataWin.houseLooser, 10, messageBox.messageBot);
-  }*/
+  if (!duelNull) {
+    const cptChannel = channel.messages.client.channels.cache.get(
+      "1021509224343281764"
+    );
+    cptChannel.send("!add " + bareme.duel + " to " + dataWin.houseLooser);
+    cptChannel.send("!remove " + bareme.duel + " to " + dataWin.houseWinner);
+  }
   await messageBox.messageAttack.delete();
   await messageBox.messageBot.delete();
   await messageBox.messageCounter.delete();

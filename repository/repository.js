@@ -182,7 +182,7 @@ export class Repository {
   }
 
   async updateMemberPoint(channel, user, maison, points) {
-    const con = mysql.createConnection({
+    /*const con = mysql.createConnection({
       host: houses.default.host,
       user: houses.default.user,
       password: houses.default.password,
@@ -202,7 +202,7 @@ export class Repository {
     const retour = await con
       .promise()
       .query(query, [points, user, channel.guildId, channel.id, maison]);
-    con.end();
+    con.end();*/
   }
 
   async getCupActive(guildId) {
