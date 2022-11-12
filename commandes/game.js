@@ -187,7 +187,7 @@ async function createWinMessage(dataWin, channel) {
   const points = 10;
 
   //on construit le winMessage
-  winMessage = spells
+  winMessage = await spells
     .find((spell) => spell.spellName == dataWin.spellWinner)
     .spellMessage.replace("@nameWinner", dataWin.nameWinner)
     .replace("@nameLooser", dataWin.nameLooser)
@@ -342,7 +342,7 @@ async function createWinMessage(dataWin, channel) {
   return winMessage;
 }
 
-function checkSpell(spell, house, message) {
+async function checkSpell(spell, house, message) {
   let spellOk;
 
   //Coupe des 4 Maisons
@@ -357,18 +357,28 @@ function checkSpell(spell, house, message) {
 
   // Ohana Games
   else  if (cupActive === listCupActive[1]) {*/
-  const listHouse = dataGames.default.listAttackDisney;
+  let listHouse;
+  switch (house) {
+    case "Princesses":
+      listHouse = dataGames.default.listAttackDisney[0];
+      break;
+    case "Super-Héros":
+      listHouse = dataGames.default.listAttackDisney[1];
+      break;
+    case "Vilains":
+      listHouse = dataGames.default.listAttackDisney[2];
+      break;
+    case "Pirates":
+      listHouse = dataGames.default.listAttackDisney[3];
+      break;
+  }
 
-  if (
-    (house === "Princesses" && listHouse[0].indexOf(spell) != -1) ||
-    (house === "Super-Héros" && listHouse[1].indexOf(spell) != -1) ||
-    (house === "Vilains" && listHouse[2].indexOf(spell) != -1) ||
-    (house === "Pirates" && listHouse[3].indexOf(spell) != -1)
-  ) {
+  if (listHouse.indexOf(spell) != -1) {
     spellOk = true;
   } else {
     message.author.send(
-      "Vous ne pouvez pas utliser l'attaque d'une autre équipe."
+      "Vous ne pouvez pas utliser l'attaque d'une autre équipe. Voici la liste des attaques disponibles : \n" +
+        listHouse
     );
   }
 

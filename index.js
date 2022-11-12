@@ -27,7 +27,7 @@ const token = data.default.token;
 //Connexion du bot
 client.once("ready", () => {
   console.log("Félicitations, votre bot est ok !");
-  
+
   // Récpèrer les Channel avec leur ID
   channelBox.commandChannel = client.channels.cache.get(idRoom.commandChannel);
   channelBox.maison = client.channels.cache.get(idRoom.maison);
@@ -37,7 +37,6 @@ client.login(token);
 
 //Création de l'accès à la BDD
 const myRepository = new Repository();
-
 
 //Lorsqu'on reçoit un message:
 client.on("messageCreate", async function (message) {
@@ -143,19 +142,22 @@ client.on("messageCreate", async function (message) {
       //Si les points sont renseigné on envois les points, sinon on créé les messages avec 0 points
       help(message);
       message.delete();
-    } else if ((message.content.split(" ")[0] === "!attaque") && isOK) {
-        const dataDuel = await createDataDuel(message);
-        showDuel(dataDuel, message);
-        
-    } else if (message.content.split(" ")[0] === "!contre" && isOK){
+    } else if (message.content.split(" ")[0] === "!attaque" && isOK) {
+      const dataDuel = await createDataDuel(message);
+      showDuel(dataDuel, message);
+      message.delete();
+    } else if (message.content.split(" ")[0] === "!contre" && isOK) {
       const opponent = message.member.displayName;
       const spell = message.content.split(" ")[1];
       if (spell != undefined) {
         counter(message, opponent, spell);
       } else {
-        await message.channel.send("Vous n'avez pas rentrée de sort, ou il n'a pas réussi à étre lu.");
+        await message.channel.send(
+          "Vous n'avez pas rentrée de sort, ou il n'a pas réussi à étre lu."
+        );
       }
-    } 
+      message.delete();
+    }
   } catch (error) {
     await message.channel.send(
       "Une erreur a été rencontré, tu peux supprimer ce message et ton appel (ou le montrer à un dév) et retenter"
@@ -177,5 +179,3 @@ function checkMessage(message) {
 
   return true;
 }
-
-  
