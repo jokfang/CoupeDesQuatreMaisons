@@ -42,7 +42,7 @@ export async function createDataDuel(message) {
   dataDuelInit.spellChallenger = spell.toLowerCase();
   dataDuelInit.idOpponent = opponent.id;
   dataDuelInit.opponent = opponent.displayName;
-  dataDuelInit.houseOpponent = await houseMembre(opponent, message);
+  dataDuelInit.houseOpponent = await houseMembre(opponent, message, challenger);
   const spellOk = checkSpell(
     spell.toLowerCase(),
     dataDuelInit.houseChallenger,
@@ -172,8 +172,8 @@ export async function duel(messageBox, dataDuel, channel) {
     const cptChannel = channel.messages.client.channels.cache.get(
       "1021509224343281764"
     );
-    cptChannel.send("!add " + bareme.duel + " to " + dataWin.houseLooser);
-    cptChannel.send("!remove " + bareme.duel + " to " + dataWin.houseWinner);
+    cptChannel.send("!add " + bareme.duel + " to " + dataWin.houseWinner);
+    cptChannel.send("!remove " + bareme.duel + " to " + dataWin.houseLooser);
   }
   await messageBox.messageAttack.delete();
   await messageBox.messageBot.delete();
