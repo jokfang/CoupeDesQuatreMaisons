@@ -187,15 +187,19 @@ async function createWinMessage(dataWin, channel) {
   const points = 10;
 
   //on construit le winMessage
-  winMessage = await spells
-    .find((spell) => spell.spellName == dataWin.spellWinner)
-    .spellMessage.replace("@nameWinner", dataWin.nameWinner)
-    .replace("@nameLooser", dataWin.nameLooser)
-    .replace("@points", points)
-    .replace("@houseLooser", dataWin.houseLooser);
-  if (!winMessage) {
-    winMessage =
-      "Oh ! Leurs attaques s'entre-choc et s'annulent toutes les deux. c'est une égalité !";
+  if (spells) {
+    winMessage = await spells.find(
+      (spell) => spell.spellName == dataWin.spellWinner
+    ).spellMessage;
+    winMessage = await winMessage
+      .replace("@nameWinner", dataWin.nameWinner)
+      .replace("@nameLooser", dataWin.nameLooser)
+      .replace("@points", points)
+      .replace("@houseLooser", dataWin.houseLooser);
+    if (!winMessage) {
+      winMessage =
+        "Oh ! Leurs attaques s'entre-choc et s'annulent toutes les deux. c'est une égalité !";
+    }
   }
   /*switch (dataWin.spellWinner) {
     // Coupe des 4 maisons
