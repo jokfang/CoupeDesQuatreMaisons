@@ -43,7 +43,7 @@ export async function createDataDuel(message) {
   dataDuelInit.idOpponent = opponent.id;
   dataDuelInit.opponent = opponent.displayName;
   dataDuelInit.houseOpponent = await houseMembre(opponent, message, challenger);
-  const spellOk = checkSpell(
+  const spellOk = await checkSpell(
     spell.toLowerCase(),
     dataDuelInit.houseChallenger,
     message
@@ -101,7 +101,7 @@ export async function counter(message, opponent, spell) {
     let dataDuel = await createDataDuel(messageBox.messageAttack);
 
     if (opponent === dataDuel.opponent) {
-      const spellOk = checkSpell(
+      const spellOk = await checkSpell(
         spell.toLowerCase(),
         dataDuel.houseOpponent,
         message
