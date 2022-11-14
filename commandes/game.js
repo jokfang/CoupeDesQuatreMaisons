@@ -83,7 +83,7 @@ export async function showDuel(dataDuel, message) {
       dataDuel.houseOpponent +
       ".";
     const footerMessage =
-      "Pour lancer le combat, réponder à se message avec !contre [Sort].";
+      "Pour lancer le combat, répondez à ce message avec !contre [Sort].";
 
     //Créer le message et l'envoyer*
     const embedShowDuel = new EmbedBuilder()
