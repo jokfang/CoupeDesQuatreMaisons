@@ -1,13 +1,20 @@
 import { Client, EmbedBuilder, GatewayIntentBits } from "discord.js";
+import { Repository } from "./repository/repository.js";
 import * as data from "./data/info.cjs";
-import { showDuel, counter, createDataDuel } from "./commandes/game.js";
+// commandes
 import { help } from "./commandes/help.js";
 import { newHouseCup, addHouse, deleteHouse } from "./commandes/maison.js";
 import { addMembre, removeMembre } from "./commandes/membre.js";
 import { setPoint, addPoint, removePoint } from "./commandes/point.js";
 import { setColor, setNom, setBlason } from "./commandes/setMaison.js";
-import { getChannelBox, idRoom } from "./librairy/cupInfo.js";
-import { Repository } from "./repository/repository.js";
+import { getButtonInterface, getButtonInterface_PointByHouse, getButtonInterface_house, getButtonInterface_PointByMember } from "./commandes/interface.js";
+import { showDuel, counter, createDataDuel } from "./commandes/game.js";
+//Librairy
+import { bareme, bareme_multiple, getChannelBox, idRoom } from "./librairy/cupInfo.js";
+import * as role from "./librairy/role.cjs"
+// Outils
+import * as timers from "node:timers/promises"
+const wait = timers.setTimeout;
 export let channelBox = getChannelBox();
 
 //Droit attribué au bot
@@ -40,12 +47,15 @@ const myRepository = new Repository();
 
 //Lorsqu'on reçoit un message:
 client.on("messageCreate", async function (message) {
+  // Droit Modération
+  const moderationRoleByMessage = message.member._roles.find((memberRole) => memberRole == role.default.administrateur) || message.member._roles.find((memberRole) => memberRole == role.default.moderateur);
+  
   try {
     console.log(message.content);
     let isOK = true;
 
     isOK = checkMessage(message.content);
-    if (message.content.split(" ")[0] === "!add" && isOK) {
+    if (message.content.split(" ")[0] === "!add" && moderationRoleByMessage && isOK) {
       const toto = message.content.split(" ")[1];
       if (!isNaN(message.content.split(" ")[1])) {
         //On ajoute les points en modifiant le message, puis on supprime la commande
@@ -59,7 +69,7 @@ client.on("messageCreate", async function (message) {
         addMembre(message.content.split(" ")[3], message);
       }
       message.delete();
-    } else if (message.content.split(" ")[0] === "!remove" && isOK) {
+    } else if (message.content.split(" ")[0] === "!remove" && moderationRoleByMessage && isOK) {
       if (!isNaN(message.content.split(" ")[1])) {
         //On retire les points en modifiant le message, puis on supprime la commande
         removePoint(
@@ -72,7 +82,7 @@ client.on("messageCreate", async function (message) {
         removeMembre(message.content.split(" ")[3], message);
       }
       message.delete();
-    } else if (message.content.split(" ")[0] === "!setBlason" && isOK) {
+    } else if (message.content.split(" ")[0] === "!setBlason" && moderationRoleByMessage && isOK) {
       //On modifie le blason, puis on supprime la commande
       setBlason(
         message.content.split(" ")[3],
@@ -80,7 +90,7 @@ client.on("messageCreate", async function (message) {
         message.channel
       );
       message.delete();
-    } else if (message.content.split(" ")[0] === "!setNom" && isOK) {
+    } else if (message.content.split(" ")[0] === "!setNom" && moderationRoleByMessage && isOK) {
       //On modifie le nom, puis on supprime la commande
       setNom(
         message.content.split(" ")[3],
@@ -88,7 +98,7 @@ client.on("messageCreate", async function (message) {
         message.channel
       );
       message.delete();
-    } else if (message.content.split(" ")[0] === "!setPoint" && isOK) {
+    } else if (message.content.split(" ")[0] === "!setPoint" && moderationRoleByMessage && isOK) {
       //On attribue les points en modifiant le message, puis on supprime la commande
       setPoint(
         message.content.split(" ")[3],
@@ -96,7 +106,7 @@ client.on("messageCreate", async function (message) {
         message.channel
       );
       message.delete();
-    } else if (message.content.split(" ")[0] === "!setCouleur" && isOK) {
+    } else if (message.content.split(" ")[0] === "!setCouleur" && moderationRoleByMessage && isOK) {
       //On attribue la couleur en modifiant le message, puis on supprime la commande
       setColor(
         message.content.split(" ")[3],
@@ -104,7 +114,7 @@ client.on("messageCreate", async function (message) {
         message.channel
       );
       message.delete();
-    } else if (message.content.split(" ")[0] === "!newHouseCup" && isOK) {
+    } else if (message.content.split(" ")[0] === "!newHouseCup" && moderationRoleByMessage && isOK) {
       //Si les points sont renseigné on envois les points, sinon on créé les messages avec 0 points
       if (message.content.split(" ").length > 1) {
         newHouseCup(message.channel, message.content.split(" ")[1].split("."));
@@ -112,7 +122,7 @@ client.on("messageCreate", async function (message) {
         newHouseCup(message.channel);
       }
       message.delete();
-    } else if (message.content.split(" ")[0] === "!addHouse" && isOK) {
+    } else if (message.content.split(" ")[0] === "!addHouse" && moderationRoleByMessage && isOK) {
       //Si les points sont renseigné on envois les points, sinon on créé les messages avec 0 points
       if (message.content.split(" ").length == "1") {
         addHouse(message.channel);
@@ -134,9 +144,13 @@ client.on("messageCreate", async function (message) {
         );
       }
       message.delete();
-    } else if (message.content.split(" ")[0] === "!removeHouse" && isOK) {
+    } else if (message.content.split(" ")[0] === "!removeHouse" && moderationRoleByMessage && isOK) {
       //Supprime une maison en utilisant son nom
       deleteHouse(message, message.content.split(" ")[1]);
+      message.delete();
+    } else if ((message.content.split(" ")[0] === "!bouton") && moderationRoleByMessage && isOK) {
+      // Ouvre l'interface des boutons
+      getButtonInterface(message);
       message.delete();
     } else if (message.content.split(" ")[0] === "!helpHouseCup" && isOK) {
       //Si les points sont renseigné on envois les points, sinon on créé les messages avec 0 points
@@ -179,3 +193,52 @@ function checkMessage(message) {
 
   return true;
 }
+
+client.on("interactionCreate", interaction => {
+  //Droit Modération
+  const moderationRoleByInteraction = interaction.member._roles.find((memberRole) => memberRole == role.default.administrateur) || interaction.member._roles.find((memberRole) => memberRole == role.default.moderateur);
+
+  if (interaction.isButton()) {
+    if (moderationRoleByInteraction) {
+      let point;
+      switch (interaction.customId.split("_")[0]) {
+        case 'interfacePointByHouse':
+          getButtonInterface_PointByHouse(interaction);
+          break;
+        case 'interfacePointByMember':
+          //getButtonInterface_PointByMember(interaction);
+          interaction.reply({ content: "Cette interface est encore en construction.", ephemeral: true });
+          break;
+        case 'interfacePoint':
+          getButtonInterface_house(interaction, interaction.customId.split("_")[1]);
+          break;
+        case 'interfaceExit':
+          interaction.message.delete();
+          break;
+        case 'add':
+          point = bareme[interaction.customId.split("_")[2]];
+
+          addPoint(
+            interaction.customId.split("_")[1],
+            point,
+          );
+          interaction.reply({ content: "Vous avez ajoutée " + point + " points à l\'Ohana des " + interaction.customId.split("_")[1], ephemeral: false });
+          wait(10);
+          interaction.deleteReply();
+          break;
+        case 'addMultiple':
+          point = bareme_multiple[interaction.customId.split("_")[2] + "_" + interaction.customId.split("_")[3]];
+
+          addPoint(
+            interaction.customId.split("_")[1],
+            point,
+          );
+          interaction.reply({ content: "Vous avez ajoutée " + point + " points à l\'Ohana des " + interaction.customId.split("_")[1], ephemeral: false });
+          wait(10);
+          interaction.deleteReply();
+          break;
+        default:
+      }
+    }
+  }
+})

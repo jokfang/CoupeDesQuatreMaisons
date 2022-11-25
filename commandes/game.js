@@ -1,5 +1,5 @@
 import { Client, EmbedBuilder, GatewayIntentBits } from "discord.js";
-import { cupActive, bareme } from "../librairy/cupInfo.js";
+import { cupActive, baremeGame } from "../librairy/cupInfo.js";
 import { getRandomInt } from "../commandes/items.js";
 import { addPoint, removePoint } from "../commandes/point.js";
 import { houseMembre } from "../commandes/membre.js";
@@ -172,8 +172,8 @@ export async function duel(messageBox, dataDuel, channel) {
     const cptChannel = channel.messages.client.channels.cache.get(
       "1021509224343281764"
     );
-    cptChannel.send("!add " + bareme.duel + " to " + dataWin.houseWinner);
-    cptChannel.send("!remove " + bareme.duel + " to " + dataWin.houseLooser);
+    cptChannel.send("!add " + baremeGame.duel + " to " + dataWin.houseWinner);
+    cptChannel.send("!remove " + baremeGame.duel + " to " + dataWin.houseLooser);
   }
   await messageBox.messageAttack.delete();
   await messageBox.messageBot.delete();
