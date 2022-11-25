@@ -16,7 +16,7 @@ export const idRoom = {
 //export const listCupActive = ["potter", "ohana"];
 export const cupActive = "1021509224343281764"; //tout en minuscule.
 
-export const role = {
+export const roles = {
   //ID des Roles
   administrateur: "935655300730613850",
   moderateur: "936625195656024104",

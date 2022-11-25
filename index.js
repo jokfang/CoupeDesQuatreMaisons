@@ -7,13 +7,23 @@ import { newHouseCup, addHouse, deleteHouse } from "./commandes/maison.js";
 import { addMembre, removeMembre } from "./commandes/membre.js";
 import { setPoint, addPoint, removePoint } from "./commandes/point.js";
 import { setColor, setNom, setBlason } from "./commandes/setMaison.js";
-import { getButtonInterface, getButtonInterface_PointByHouse, getButtonInterface_house, getButtonInterface_PointByMember } from "./commandes/interface.js";
+import {
+  getButtonInterface,
+  getButtonInterface_PointByHouse,
+  getButtonInterface_house,
+  getButtonInterface_PointByMember,
+} from "./commandes/interface.js";
 import { showDuel, counter, createDataDuel } from "./commandes/game.js";
 //Librairy
-import { bareme, bareme_multiple, getChannelBox, idRoom } from "./librairy/cupInfo.js";
-import * as role from "./librairy/role.cjs"
+import {
+  bareme,
+  bareme_multiple,
+  getChannelBox,
+  idRoom,
+  roles,
+} from "./librairy/cupInfo.js";
 // Outils
-import * as timers from "node:timers/promises"
+import * as timers from "node:timers/promises";
 const wait = timers.setTimeout;
 export let channelBox = getChannelBox();
 
@@ -47,15 +57,12 @@ const myRepository = new Repository();
 
 //Lorsqu'on reçoit un message:
 client.on("messageCreate", async function (message) {
-  // Droit Modération
-  const moderationRoleByMessage = message.member._roles.find((memberRole) => memberRole == role.default.administrateur) || message.member._roles.find((memberRole) => memberRole == role.default.moderateur);
-  
   try {
     console.log(message.content);
     let isOK = true;
 
     isOK = checkMessage(message.content);
-    if (message.content.split(" ")[0] === "!add" && moderationRoleByMessage && isOK) {
+    if (message.content.split(" ")[0] === "!add" && isOK) {
       const toto = message.content.split(" ")[1];
       if (!isNaN(message.content.split(" ")[1])) {
         //On ajoute les points en modifiant le message, puis on supprime la commande
@@ -69,7 +76,7 @@ client.on("messageCreate", async function (message) {
         addMembre(message.content.split(" ")[3], message);
       }
       message.delete();
-    } else if (message.content.split(" ")[0] === "!remove" && moderationRoleByMessage && isOK) {
+    } else if (message.content.split(" ")[0] === "!remove" && isOK) {
       if (!isNaN(message.content.split(" ")[1])) {
         //On retire les points en modifiant le message, puis on supprime la commande
         removePoint(
@@ -82,7 +89,7 @@ client.on("messageCreate", async function (message) {
         removeMembre(message.content.split(" ")[3], message);
       }
       message.delete();
-    } else if (message.content.split(" ")[0] === "!setBlason" && moderationRoleByMessage && isOK) {
+    } else if (message.content.split(" ")[0] === "!setBlason" && isOK) {
       //On modifie le blason, puis on supprime la commande
       setBlason(
         message.content.split(" ")[3],
@@ -90,7 +97,7 @@ client.on("messageCreate", async function (message) {
         message.channel
       );
       message.delete();
-    } else if (message.content.split(" ")[0] === "!setNom" && moderationRoleByMessage && isOK) {
+    } else if (message.content.split(" ")[0] === "!setNom" && isOK) {
       //On modifie le nom, puis on supprime la commande
       setNom(
         message.content.split(" ")[3],
@@ -98,7 +105,7 @@ client.on("messageCreate", async function (message) {
         message.channel
       );
       message.delete();
-    } else if (message.content.split(" ")[0] === "!setPoint" && moderationRoleByMessage && isOK) {
+    } else if (message.content.split(" ")[0] === "!setPoint" && isOK) {
       //On attribue les points en modifiant le message, puis on supprime la commande
       setPoint(
         message.content.split(" ")[3],
@@ -106,7 +113,7 @@ client.on("messageCreate", async function (message) {
         message.channel
       );
       message.delete();
-    } else if (message.content.split(" ")[0] === "!setCouleur" && moderationRoleByMessage && isOK) {
+    } else if (message.content.split(" ")[0] === "!setCouleur" && isOK) {
       //On attribue la couleur en modifiant le message, puis on supprime la commande
       setColor(
         message.content.split(" ")[3],
@@ -114,7 +121,7 @@ client.on("messageCreate", async function (message) {
         message.channel
       );
       message.delete();
-    } else if (message.content.split(" ")[0] === "!newHouseCup" && moderationRoleByMessage && isOK) {
+    } else if (message.content.split(" ")[0] === "!newHouseCup" && isOK) {
       //Si les points sont renseigné on envois les points, sinon on créé les messages avec 0 points
       if (message.content.split(" ").length > 1) {
         newHouseCup(message.channel, message.content.split(" ")[1].split("."));
@@ -122,7 +129,7 @@ client.on("messageCreate", async function (message) {
         newHouseCup(message.channel);
       }
       message.delete();
-    } else if (message.content.split(" ")[0] === "!addHouse" && moderationRoleByMessage && isOK) {
+    } else if (message.content.split(" ")[0] === "!addHouse" && isOK) {
       //Si les points sont renseigné on envois les points, sinon on créé les messages avec 0 points
       if (message.content.split(" ").length == "1") {
         addHouse(message.channel);
@@ -144,23 +151,23 @@ client.on("messageCreate", async function (message) {
         );
       }
       message.delete();
-    } else if (message.content.split(" ")[0] === "!removeHouse" && moderationRoleByMessage && isOK) {
+    } else if (message.content.split(" ")[0] === "!removeHouse" && isOK) {
       //Supprime une maison en utilisant son nom
       deleteHouse(message, message.content.split(" ")[1]);
       message.delete();
-    } else if ((message.content.split(" ")[0] === "!bouton") && moderationRoleByMessage && isOK) {
+    } else if (message.content.split(" ")[0] === "!bouton" && isOK) {
       // Ouvre l'interface des boutons
       getButtonInterface(message);
       message.delete();
-    } else if (message.content.split(" ")[0] === "!helpHouseCup" && isOK) {
+    } else if (message.content.split(" ")[0] === "!helpHouseCup") {
       //Si les points sont renseigné on envois les points, sinon on créé les messages avec 0 points
       help(message);
       message.delete();
-    } else if (message.content.split(" ")[0] === "!attaque" && isOK) {
+    } else if (message.content.split(" ")[0] === "!attaque") {
       const dataDuel = await createDataDuel(message);
       showDuel(dataDuel, message);
       message.delete();
-    } else if (message.content.split(" ")[0] === "!contre" && isOK) {
+    } else if (message.content.split(" ")[0] === "!contre") {
       const opponent = message.member.displayName;
       const spell = message.content.split(" ")[1];
       if (spell != undefined) {
@@ -182,58 +189,87 @@ client.on("messageCreate", async function (message) {
 
 function checkMessage(message) {
   message = message + "";
-  if (message.substring(0, 1) != "!") {
+  // Droit Modération
+  const moderationRoleByMessage =
+    message.member._roles.find(
+      (memberRole) => memberRole == roles.administrateur
+    ) ||
+    message.member._roles.find((memberRole) => memberRole == roles.moderateur);
+  if (!moderationRoleByMessage) {
     return false;
   }
-  if (message.split(" ").length == 4) {
-    //if(!data.default.maisons.find(element => element.nom == message.split(' ')[3])){
-    //    return false;
-    //}
+  if (message.substring(0, 1) != "!") {
+    return false;
   }
 
   return true;
 }
 
-client.on("interactionCreate", interaction => {
+client.on("interactionCreate", (interaction) => {
   //Droit Modération
-  const moderationRoleByInteraction = interaction.member._roles.find((memberRole) => memberRole == role.default.administrateur) || interaction.member._roles.find((memberRole) => memberRole == role.default.moderateur);
+  const moderationRoleByInteraction =
+    interaction.member._roles.find(
+      (memberRole) => memberRole == role.default.administrateur
+    ) ||
+    interaction.member._roles.find(
+      (memberRole) => memberRole == role.default.moderateur
+    );
 
   if (interaction.isButton()) {
     if (moderationRoleByInteraction) {
       let point;
       switch (interaction.customId.split("_")[0]) {
-        case 'interfacePointByHouse':
+        case "interfacePointByHouse":
           getButtonInterface_PointByHouse(interaction);
           break;
-        case 'interfacePointByMember':
+        case "interfacePointByMember":
           //getButtonInterface_PointByMember(interaction);
-          interaction.reply({ content: "Cette interface est encore en construction.", ephemeral: true });
+          interaction.reply({
+            content: "Cette interface est encore en construction.",
+            ephemeral: true,
+          });
           break;
-        case 'interfacePoint':
-          getButtonInterface_house(interaction, interaction.customId.split("_")[1]);
+        case "interfacePoint":
+          getButtonInterface_house(
+            interaction,
+            interaction.customId.split("_")[1]
+          );
           break;
-        case 'interfaceExit':
+        case "interfaceExit":
           interaction.message.delete();
           break;
-        case 'add':
+        case "add":
           point = bareme[interaction.customId.split("_")[2]];
 
-          addPoint(
-            interaction.customId.split("_")[1],
-            point,
-          );
-          interaction.reply({ content: "Vous avez ajoutée " + point + " points à l\'Ohana des " + interaction.customId.split("_")[1], ephemeral: false });
+          addPoint(interaction.customId.split("_")[1], point);
+          interaction.reply({
+            content:
+              "Vous avez ajoutée " +
+              point +
+              " points à l'Ohana des " +
+              interaction.customId.split("_")[1],
+            ephemeral: false,
+          });
           wait(10);
           interaction.deleteReply();
           break;
-        case 'addMultiple':
-          point = bareme_multiple[interaction.customId.split("_")[2] + "_" + interaction.customId.split("_")[3]];
+        case "addMultiple":
+          point =
+            bareme_multiple[
+              interaction.customId.split("_")[2] +
+                "_" +
+                interaction.customId.split("_")[3]
+            ];
 
-          addPoint(
-            interaction.customId.split("_")[1],
-            point,
-          );
-          interaction.reply({ content: "Vous avez ajoutée " + point + " points à l\'Ohana des " + interaction.customId.split("_")[1], ephemeral: false });
+          addPoint(interaction.customId.split("_")[1], point);
+          interaction.reply({
+            content:
+              "Vous avez ajoutée " +
+              point +
+              " points à l'Ohana des " +
+              interaction.customId.split("_")[1],
+            ephemeral: false,
+          });
           wait(10);
           interaction.deleteReply();
           break;
@@ -241,4 +277,4 @@ client.on("interactionCreate", interaction => {
       }
     }
   }
-})
+});
