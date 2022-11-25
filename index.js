@@ -61,7 +61,7 @@ client.on("messageCreate", async function (message) {
     console.log(message.content);
     let isOK = true;
 
-    isOK = checkMessage(message.content);
+    isOK = checkMessage(message);
     if (message.content.split(" ")[0] === "!add" && isOK) {
       const toto = message.content.split(" ")[1];
       if (!isNaN(message.content.split(" ")[1])) {
@@ -188,7 +188,7 @@ client.on("messageCreate", async function (message) {
 });
 
 function checkMessage(message) {
-  message = message + "";
+  let messageContent = message.content + "";
   // Droit Modération
   const moderationRoleByMessage =
     message.member._roles.find(
@@ -198,7 +198,7 @@ function checkMessage(message) {
   if (!moderationRoleByMessage) {
     return false;
   }
-  if (message.substring(0, 1) != "!") {
+  if (messageContent.substring(0, 1) != "!") {
     return false;
   }
 
@@ -209,10 +209,10 @@ client.on("interactionCreate", (interaction) => {
   //Droit Modération
   const moderationRoleByInteraction =
     interaction.member._roles.find(
-      (memberRole) => memberRole == role.default.administrateur
+      (memberRole) => memberRole == roles.administrateur
     ) ||
     interaction.member._roles.find(
-      (memberRole) => memberRole == role.default.moderateur
+      (memberRole) => memberRole == roles.moderateur
     );
 
   if (interaction.isButton()) {
