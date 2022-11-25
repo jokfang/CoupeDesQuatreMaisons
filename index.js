@@ -1,13 +1,30 @@
 import { Client, EmbedBuilder, GatewayIntentBits } from "discord.js";
+import { Repository } from "./repository/repository.js";
 import * as data from "./data/info.cjs";
-import { showDuel, counter, createDataDuel } from "./commandes/game.js";
+// commandes
 import { help } from "./commandes/help.js";
 import { newHouseCup, addHouse, deleteHouse } from "./commandes/maison.js";
 import { addMembre, removeMembre } from "./commandes/membre.js";
 import { setPoint, addPoint, removePoint } from "./commandes/point.js";
 import { setColor, setNom, setBlason } from "./commandes/setMaison.js";
-import { getChannelBox, idRoom } from "./librairy/cupInfo.js";
-import { Repository } from "./repository/repository.js";
+import {
+  getButtonInterface,
+  getButtonInterface_PointByHouse,
+  getButtonInterface_house,
+  getButtonInterface_PointByMember,
+} from "./commandes/interface.js";
+import { showDuel, counter, createDataDuel } from "./commandes/game.js";
+//Librairy
+import {
+  bareme,
+  bareme_multiple,
+  getChannelBox,
+  idRoom,
+  roles,
+} from "./librairy/cupInfo.js";
+// Outils
+import * as timers from "node:timers/promises";
+const wait = timers.setTimeout;
 export let channelBox = getChannelBox();
 
 //Droit attribué au bot
@@ -44,7 +61,7 @@ client.on("messageCreate", async function (message) {
     console.log(message.content);
     let isOK = true;
 
-    isOK = checkMessage(message.content);
+    isOK = checkMessage(message);
     if (message.content.split(" ")[0] === "!add" && isOK) {
       const toto = message.content.split(" ")[1];
       if (!isNaN(message.content.split(" ")[1])) {
@@ -138,15 +155,19 @@ client.on("messageCreate", async function (message) {
       //Supprime une maison en utilisant son nom
       deleteHouse(message, message.content.split(" ")[1]);
       message.delete();
-    } else if (message.content.split(" ")[0] === "!helpHouseCup" && isOK) {
+    } else if (message.content.split(" ")[0] === "!bouton" && isOK) {
+      // Ouvre l'interface des boutons
+      getButtonInterface(message);
+      message.delete();
+    } else if (message.content.split(" ")[0] === "!helpHouseCup") {
       //Si les points sont renseigné on envois les points, sinon on créé les messages avec 0 points
       help(message);
       message.delete();
-    } else if (message.content.split(" ")[0] === "!attaque" && isOK) {
+    } else if (message.content.split(" ")[0] === "!attaque") {
       const dataDuel = await createDataDuel(message);
       showDuel(dataDuel, message);
       message.delete();
-    } else if (message.content.split(" ")[0] === "!contre" && isOK) {
+    } else if (message.content.split(" ")[0] === "!contre") {
       const opponent = message.member.displayName;
       const spell = message.content.split(" ")[1];
       if (spell != undefined) {
@@ -167,15 +188,93 @@ client.on("messageCreate", async function (message) {
 });
 
 function checkMessage(message) {
-  message = message + "";
-  if (message.substring(0, 1) != "!") {
+  let messageContent = message.content + "";
+  // Droit Modération
+  const moderationRoleByMessage =
+    message.member._roles.find(
+      (memberRole) => memberRole == roles.administrateur
+    ) ||
+    message.member._roles.find((memberRole) => memberRole == roles.moderateur);
+  if (!moderationRoleByMessage) {
     return false;
   }
-  if (message.split(" ").length == 4) {
-    //if(!data.default.maisons.find(element => element.nom == message.split(' ')[3])){
-    //    return false;
-    //}
+  if (messageContent.substring(0, 1) != "!") {
+    return false;
   }
 
   return true;
 }
+
+client.on("interactionCreate", (interaction) => {
+  //Droit Modération
+  const moderationRoleByInteraction =
+    interaction.member._roles.find(
+      (memberRole) => memberRole == roles.administrateur
+    ) ||
+    interaction.member._roles.find(
+      (memberRole) => memberRole == roles.moderateur
+    );
+
+  if (interaction.isButton()) {
+    if (moderationRoleByInteraction) {
+      let point;
+      switch (interaction.customId.split("_")[0]) {
+        case "interfacePointByHouse":
+          getButtonInterface_PointByHouse(interaction);
+          break;
+        case "interfacePointByMember":
+          //getButtonInterface_PointByMember(interaction);
+          interaction.reply({
+            content: "Cette interface est encore en construction.",
+            ephemeral: true,
+          });
+          break;
+        case "interfacePoint":
+          getButtonInterface_house(
+            interaction,
+            interaction.customId.split("_")[1]
+          );
+          break;
+        case "interfaceExit":
+          interaction.message.delete();
+          break;
+        case "add":
+          point = bareme[interaction.customId.split("_")[2]];
+
+          addPoint(interaction.customId.split("_")[1], point);
+          interaction.reply({
+            content:
+              "Vous avez ajoutée " +
+              point +
+              " points à l'Ohana des " +
+              interaction.customId.split("_")[1],
+            ephemeral: false,
+          });
+          wait(10);
+          interaction.deleteReply();
+          break;
+        case "addMultiple":
+          point =
+            bareme_multiple[
+              interaction.customId.split("_")[2] +
+                "_" +
+                interaction.customId.split("_")[3]
+            ];
+
+          addPoint(interaction.customId.split("_")[1], point);
+          interaction.reply({
+            content:
+              "Vous avez ajoutée " +
+              point +
+              " points à l'Ohana des " +
+              interaction.customId.split("_")[1],
+            ephemeral: false,
+          });
+          wait(10);
+          interaction.deleteReply();
+          break;
+        default:
+      }
+    }
+  }
+});
