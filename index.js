@@ -166,7 +166,6 @@ client.on("messageCreate", async function (message) {
     } else if (message.content.split(" ")[0] === "!attaque") {
       const dataDuel = await createDataDuel(message);
       showDuel(dataDuel, message);
-      message.delete();
     } else if (message.content.split(" ")[0] === "!contre") {
       const opponent = message.member.displayName;
       const spell = message.content.split(" ")[1];
@@ -177,7 +176,6 @@ client.on("messageCreate", async function (message) {
           "Vous n'avez pas rentrée de sort, ou il n'a pas réussi à étre lu."
         );
       }
-      message.delete();
     }
   } catch (error) {
     await message.channel.send(
