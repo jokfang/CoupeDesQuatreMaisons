@@ -188,11 +188,9 @@ client.on("messageCreate", async function (message) {
 function checkMessage(message) {
   let messageContent = message.content + "";
   // Droit Modération
-  const moderationRoleByMessage =
-    message.member._roles.find(
-      (memberRole) => memberRole == roles.administrateur
-    ) ||
-    message.member._roles.find((memberRole) => memberRole == roles.moderateur);
+  const moderationRoleByMessage = message.member._roles.find((memberRole) =>
+    [roles.administrateur, roles.moderateur, roles.BOT].includes(memberRole)
+  );
   if (!moderationRoleByMessage) {
     return false;
   }

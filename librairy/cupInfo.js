@@ -20,6 +20,7 @@ export const roles = {
   //ID des Roles
   administrateur: "935655300730613850",
   moderateur: "936625195656024104",
+  BOT: "935667324931965028",
 };
 
 // Barème des Bits & Subs
