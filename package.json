@@ -5,6 +5,7 @@
     "mysql2": "^2.3.3"
   },
   "devDependencies": {
+    "@types/node": "^18.11.10",
     "env-cmd": "^10.1.0"
   }
 }

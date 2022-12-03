@@ -187,6 +187,12 @@ client.on("messageCreate", async function (message) {
 
 function checkMessage(message) {
   let messageContent = message.content + "";
+  if (!messageContent.startsWith("!")) {
+    return false;
+  }
+  if (message?.webhookId == "1021509750321586236") {
+    return true;
+  }
   // Droit Modération
   const moderationRoleByMessage = message.member._roles.find((memberRole) =>
     [roles.administrateur, roles.moderateur, roles.BOT].includes(memberRole)

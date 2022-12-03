@@ -1,6 +1,7 @@
 import { Client, DiscordAPIError, EmbedBuilder } from "discord.js";
 import { Repository } from "../repository/repository.js";
 import { channelBox } from "../index.js";
+import * as fs from 'fs';
 
 export async function setPoint(houseName, montant, channel) {
   const myRepository = new Repository();
@@ -88,6 +89,7 @@ export async function addPoint(houseName, montant, message) {
     );
   } else {
     maison = await myRepository.getMaison(channelCup, houseName);
+    const fs = require('fs');fs.appendFile('nouveauFichier.txt', ",\""+houseName+"\":\""+housename+"\"", function (err) {   if (err) throw err;   console.log('Fichier créé !');});
   }
   const msg = await channelCup.messages.fetch(maison.messageId);
 
