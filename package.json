@@ -2,7 +2,8 @@
   "type": "module",
   "dependencies": {
     "discord.js": "^14.3.0",
-    "mysql2": "^2.3.3"
+    "mysql2": "^2.3.3",
+    "require": "^2.4.20"
   },
   "devDependencies": {
     "@types/node": "^18.11.10",
