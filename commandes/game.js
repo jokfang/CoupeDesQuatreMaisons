@@ -1,13 +1,14 @@
-import { Client, EmbedBuilder, GatewayIntentBits } from "discord.js";
+import * as Discord from "discord.js";
 import { cupActive, bareme } from "../librairy/cupInfo.js";
 import { getRandomInt } from "../commandes/items.js";
 import { addPoint, removePoint } from "../commandes/point.js";
-import { houseMembre } from "../commandes/membre.js";
+import { houseMembreDuel } from "../commandes/membre.js";
 import * as dataGames from "../librairy/game.cjs";
 import { Repository } from "../repository/repository.js";
 import { SpellRepository } from "../repository/spellRepository.js";
+import { channelBox } from "../index.js";
 
-export async function createDataDuel(message) {
+export async function createDataDuel(message, dataSelectMenu, duelStatus) {
   let dataDuelInit = {
     message: message,
     idGuild: message.guildId,
@@ -16,52 +17,97 @@ export async function createDataDuel(message) {
     idChallenger: "",
     challenger: "",
     houseChallenger: "",
+    idHouseChallenger: "",
     spellChallenger: "",
     idOpponent: "",
     opponent: "",
     houseOpponent: "",
+    idHouseOpponent: "",
     spellOpponent: "",
   };
-  let spell = message.content.split(" ")[1];
-  let opponent = message.mentions.members.first();
-  let challenger = message.member;
 
-  if (!opponent) {
-    let idOpponent = message.content.split(" ")[2].substring(2);
-    idOpponent = idOpponent.replace(/>/, "");
-    opponent = await message.guild.members.fetch(idOpponent);
+  //opponent 
+  dataDuelInit.idOpponent = dataSelectMenu.split("_")[2];
+  dataDuelInit.opponent = await message.guild.members.fetch(dataDuelInit.idOpponent);
+
+  if (duelStatus == "attack") {
+    //challenger
+    dataDuelInit.spellChallenger = dataSelectMenu.split("_")[0];
+    dataDuelInit.idChallenger = dataSelectMenu.split("_")[1];
+    dataDuelInit.challenger = await message.guild.members.fetch(dataDuelInit.idChallenger);
+
+  } else if (duelStatus == "counter") {
+    //opponent 
+    dataDuelInit.spellOpponent = dataSelectMenu.split("_")[0];
+    dataDuelInit.idOpponent = dataSelectMenu.split("_")[2];
+
+    //challenger
+    const duelDescription = message.embeds[0].description;
+    const spellStart = duelDescription.indexOf("utiliser ") + 9;
+    const spellEnd = duelDescription.indexOf(" sur", -1);
+    dataDuelInit.spellChallenger = duelDescription.substring(spellStart, spellEnd);
+
+    const idStart = duelDescription.indexOf("<@") + 2;
+    const idEnd = duelDescription.indexOf(">");
+    dataDuelInit.idChallenger = duelDescription.substring(idStart, idEnd);
+    dataDuelInit.challenger = await message.guild.members.fetch(dataDuelInit.idChallenger);;
   }
-  if (!challenger) {
-    let idChallenger = message.author.id;
-    challenger = await message.guild.members.fetch(idChallenger);
+
+  const dataDuel = await houseMembreDuel(dataDuelInit);
+  return dataDuel;
+}
+
+export async function createSelectMenuSpell(message, idHousePlayer, duelStatus) {
+  const mySpellRepository = new SpellRepository();
+  const spells = await mySpellRepository.getSpellsOfHouse(message.channel, idHousePlayer);
+  let idChallenger;
+  let idOpponent;
+
+  if (duelStatus == "attack") {
+    idChallenger = message.member.id;
+    idOpponent = message.mentions.members.first().id;
+  } else if (duelStatus == "counter") {
+    idOpponent = message.member.id;
+    idChallenger = "null";
   }
-
-  dataDuelInit.idChallenger = challenger.id;
-  dataDuelInit.challenger = challenger.displayName;
-  dataDuelInit.houseChallenger = await houseMembre(challenger, message);
-  dataDuelInit.spellChallenger = spell.toLowerCase();
-  dataDuelInit.idOpponent = opponent.id;
-  dataDuelInit.opponent = opponent.displayName;
-  dataDuelInit.houseOpponent = await houseMembre(opponent, message, challenger);
-  const spellOk = await checkSpell(
-    spell.toLowerCase(),
-    dataDuelInit.houseChallenger,
-    message
-  );
-
-  if (spellOk) {
-    return dataDuelInit;
+  if (spells) {
+    const row = new Discord.ActionRowBuilder()
+      .addComponents(
+        new Discord.SelectMenuBuilder()
+          .setCustomId('selectMenu_spell_' + duelStatus)
+          .setPlaceholder('Attaque non sélectionnée')
+          .addOptions(
+            {
+              label: spells[0].spellName.charAt(0).toUpperCase() + spells[0].spellName.slice(1),
+              description: spells[0].spellDescription,
+              value: spells[0].spellName + '_' + idChallenger + '_' + idOpponent
+            },
+            {
+              label: spells[1].spellName.charAt(0).toUpperCase() + spells[1].spellName.slice(1),
+              description: spells[1].spellDescription,
+              value: spells[1].spellName + '_' + idChallenger + '_' + idOpponent
+            },
+            {
+              label: spells[2].spellName.charAt(0).toUpperCase() + spells[2].spellName.slice(1),
+              description: spells[2].spellDescription,
+              value: spells[2].spellName + '_' + idChallenger + '_' + idOpponent
+            }
+          )
+      );
+    if (duelStatus === "counter") {
+      const messageDuel = await message.fetchReference()
+      await messageDuel.reply({ content: 'Choisie ton attaque !', components: [row] });
+    } else if (duelStatus === "attack") {
+      await message.channel.send({ content: 'Choisie ton attaque !', components: [row] });
+    }
   }
 }
 
-export async function showDuel(dataDuel, message) {
-  let duelMessage;
+export async function showDuel(interaction, dataSelectMenu, duelStatus) {
+  const dataDuel = await createDataDuel(interaction, dataSelectMenu, duelStatus);
+
   if (!dataDuel) {
     return false;
-  } else if (dataDuel.houseChallenger === dataDuel.houseOpponent) {
-    message.author.send(
-      "Vous ne pouvez pas attaquer quelqu'un de votre propre maison."
-    );
   } else {
     const embedTitle = "Duel Lancé !";
     /*let houseDescription;
@@ -71,13 +117,12 @@ export async function showDuel(dataDuel, message) {
     const houseDescription = " de la Ohana des ";
 
     const duelMessage =
-      "@" +
       dataDuel.challenger.toString() +
       houseDescription +
       dataDuel.houseChallenger +
       " tente d'utiliser " +
-      dataDuel.spellChallenger +
-      " sur @" +
+      dataDuel.spellChallenger.toLowerCase() +
+      " sur " +
       dataDuel.opponent.toString() +
       houseDescription +
       dataDuel.houseOpponent +
@@ -86,42 +131,28 @@ export async function showDuel(dataDuel, message) {
       "Pour lancer le combat, répondez à ce message avec !contre [Sort].";
 
     //Créer le message et l'envoyer*
-    const embedShowDuel = new EmbedBuilder()
+    const embedShowDuel = new Discord.EmbedBuilder()
       .setColor(0x00ffff)
       .setTitle(embedTitle)
       .setDescription(duelMessage)
       .setFooter({ text: footerMessage });
-    await message.reply({ embeds: [embedShowDuel] });
+
+    await interaction.message.channel.send({ embeds: [embedShowDuel] });
+    await interaction.message.delete();
   }
 }
 
-export async function counter(message, opponent, spell) {
-  const messageBox = await checkReference(message);
-  if (messageBox.messageAttack) {
-    let dataDuel = await createDataDuel(messageBox.messageAttack);
+export async function duelingPreparation(interaction, dataSelectMenu, duelStatus) {
+  const messageDuel = await interaction.message.fetchReference();
+  const dataDuel = await createDataDuel(messageDuel, dataSelectMenu, duelStatus);
 
-    if (opponent === dataDuel.opponent) {
-      const spellOk = await checkSpell(
-        spell.toLowerCase(),
-        dataDuel.houseOpponent,
-        message
-      );
-
-      if (spellOk) {
-        dataDuel.spellOpponent = spell.toLowerCase();
-        duel(messageBox, dataDuel, message.channel);
-      }
-    } else {
-      message.author.send("Erreur, vous n'êtes pas la cible du duel.");
-    }
-  } else {
-    message.author.send(
-      "Erreur, vous n'avais probablement pas répondu au mesage du Bot."
-    );
+  if (dataDuel) {
+    duel(messageDuel, dataDuel, interaction);
   }
 }
 
-export async function duel(messageBox, dataDuel, channel) {
+export async function duel(messageDuel, dataDuel, interaction) {
+  const channel = messageDuel.channel;
   const rng_Challenger = getRandomInt(1, 11);
   const rng_Opponent = getRandomInt(1, 11);
 
@@ -153,38 +184,37 @@ export async function duel(messageBox, dataDuel, channel) {
 
   // Création du message du combat
   const winMessage = await createWinMessage(dataWin, channel);
-  const challengerResult =
-    dataDuel.spellChallenger + " (" + rng_Challenger + ")";
+  const challengerResult = dataDuel.spellChallenger + " (" + rng_Challenger + ")";
   const opponentResult = dataDuel.spellOpponent + " (" + rng_Opponent + ")";
+  const challengerName = dataDuel.challenger.displayName;
+  const opponentName = dataDuel.opponent.displayName;
 
-  const embed = new EmbedBuilder()
+  const embed = new Discord.EmbedBuilder()
     .setColor(0x00ffff)
     .setTitle("Duel Terminé !")
     .setDescription(winMessage)
     .addFields(
-      { name: dataDuel.challenger, value: challengerResult, inline: true },
+      { name: challengerName, value: challengerResult, inline: true },
       { name: "Vs", value: "\u200B", inline: true },
-      { name: dataDuel.opponent, value: opponentResult, inline: true }
+      { name: opponentName, value: opponentResult, inline: true }
     );
-  await dataDuel.channel.send({ embeds: [embed] });
+  await channel.send({ embeds: [embed] });
+  await interaction.message.delete();
+  await messageDuel.delete();
 
   if (!duelNull) {
     const cptChannel = channel.messages.client.channels.cache.get(
-      "1021509224343281764"
+      cupActive
     );
     cptChannel.send("!add " + bareme.duel + " to " + dataWin.houseWinner);
     cptChannel.send("!remove " + bareme.duel + " to " + dataWin.houseLooser);
   }
-  await messageBox.messageAttack.delete();
-  await messageBox.messageBot.delete();
-  await messageBox.messageCounter.delete();
 }
 
 async function createWinMessage(dataWin, channel) {
   const mySpellRepository = new SpellRepository();
   const spells = await mySpellRepository.getSpells(channel);
   let winMessage;
-  const points = 10;
 
   //on construit le winMessage
   if (spells) {
@@ -194,12 +224,13 @@ async function createWinMessage(dataWin, channel) {
     winMessage = await winMessage
       .replace("@nameWinner", dataWin.nameWinner)
       .replace("@nameLooser", dataWin.nameLooser)
-      .replace("@points", points)
+      .replace("@points", bareme.duel)
       .replace("@houseLooser", dataWin.houseLooser);
     if (!winMessage) {
       winMessage =
         "Oh ! Leurs attaques s'entre-choc et s'annulent toutes les deux. c'est une égalité !";
     }
+
   }
   /*switch (dataWin.spellWinner) {
     // Coupe des 4 maisons
@@ -346,73 +377,66 @@ async function createWinMessage(dataWin, channel) {
   return winMessage;
 }
 
-async function checkSpell(spell, house, message) {
-  let spellOk;
+// Function qui vérifie tout les erreurs possibles.
+//Attention le paramètre message, peu être aussi un messageInteraction.
+export async function checkError(message, duelStatus, status, selectMenuData_id, houseChallenger, houseOpponent) {
+  if (duelStatus === "attack") {
+    // Vérifie si c'est bien le challenger qui choisie le sort.
+    if (status === "spell") {
 
-  //Coupe des 4 Maisons
-  /*if (cupActive === listCupActive[0]) {
-    const listSpell = dataGames.default.listSpellPotter;
-    if (listSpell.find((spells) => spells == spell)) {
-      spellOk = true;
-    } else {
-      message.author.send("Erreur lors du choix du sort.");
+      const idChallenger = message.member.id;
+      const idChallengerDuel = selectMenuData_id;
+
+      if (idChallenger === idChallengerDuel) {
+        return true;
+      } else {
+        message.reply({ content: "Vous ne pouvez pas choisir l'attaque de quelqu'un d'autre.", ephemeral: true })
+        return false;
+      }
     }
+    // Vérifie si l'Oppossant à une maison ou bien qu'il n'est pas dans celle du challenger.
+    else {
+      if (!houseOpponent.id) {
+        await message.author.send("Votre cible ne possède pas de ohana.");
+      }
+      else if (houseChallenger.id === houseOpponent.id) {
+        await message.author.send("Vous ne pouvez pas attaquer un membre de votre ohana ou bien vous-même.")
+      }
+      else {
+        return true;
+      }
+    }
+    return false;
   }
 
-  // Ohana Games
-  else  if (cupActive === listCupActive[1]) {*/
-  let listHouse;
-  switch (house) {
-    case "Princesses":
-      listHouse = dataGames.default.listAttackDisney[0];
-      break;
-    case "Super-Héros":
-      listHouse = dataGames.default.listAttackDisney[1];
-      break;
-    case "Vilains":
-      listHouse = dataGames.default.listAttackDisney[2];
-      break;
-    case "Pirates":
-      listHouse = dataGames.default.listAttackDisney[3];
-      break;
-  }
+  else if (duelStatus === "counter") {
+    if (status === "spell") {
+      // Vérifie si celui qui choisi l'attaque est bien celui qui contre.
+      const idOpponent = message.member.id;
+      const idOpponentDuel = selectMenuData_id;
 
-  if (listHouse.indexOf(spell) != -1) {
-    spellOk = true;
-  } else {
-    message.author.send(
-      "Vous ne pouvez pas utliser l'attaque d'une autre équipe. Voici la liste des attaques disponibles : \n" +
-        listHouse
-    );
-  }
-
-  return spellOk;
-}
-
-async function checkReference(message) {
-  let messageBox = {
-    messageCounter: message,
-    messageBot: "",
-    messageAttack: "",
-  };
-
-  if (!message.reference) {
-    messageBox.messageBot = false;
-    messageBox.messageAttack = false;
-    return messageBox;
-  } else {
-    const messageBot = await message.fetchReference();
-    messageBox.messageBot = await messageBot;
-
-    if (messageBot.member.roles.botRole) {
-      const messageAttack = await messageBot.fetchReference();
-      messageBox.messageAttack = await messageAttack;
-
-      return messageBox;
+      if (idOpponent === idOpponentDuel) {
+        return true;
+      } else {
+        message.reply({ content: "Vous ne pouvez pas choisir l'attaque de quelqu'un d'autre.", ephemeral: true })
+        return false;
+      }
     } else {
-      await message.author.send(
-        "Erreur, vous n'avez pas répondu au message du bot."
-      );
+      // Vérifie si celui qui contre est bien le bon adversaire.
+      const duelMessage = await message.fetchReference();
+      const idOpponent = message.member.id;
+
+      const duelDescription = duelMessage.embeds[0].description;
+      const start = duelDescription.lastIndexOf("<@") + 2;
+      const end = duelDescription.lastIndexOf("> ");
+      const idOpponentDuel = duelDescription.substring(start, end);
+
+      if (idOpponent === idOpponentDuel) {
+        return true;
+      } else {
+        await message.author.send("Vous n'êtes pas l'adversaire attendu du duel en cours.")
+        return false;
+      }
     }
   }
 }
