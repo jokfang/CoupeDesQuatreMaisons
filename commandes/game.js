@@ -96,9 +96,9 @@ export async function createSelectMenuSpell(message, idHousePlayer, duelStatus) 
       );
     if (duelStatus === "counter") {
       const messageDuel = await message.fetchReference()
-      await messageDuel.reply({ content: 'Choisie ton attaque !', components: [row] });
+      await messageDuel.reply({ content: 'Choisis ton attaque !', components: [row], ephemeral: true });
     } else if (duelStatus === "attack") {
-      await message.channel.send({ content: 'Choisie ton attaque !', components: [row] });
+      await message.channel.send({ content: 'Choisis ton attaque !', components: [row], ephemeral: true });
     }
   }
 }
@@ -381,7 +381,7 @@ async function createWinMessage(dataWin, channel) {
 //Attention le paramètre message, peu être aussi un messageInteraction.
 export async function checkError(message, duelStatus, status, selectMenuData_id, houseChallenger, houseOpponent) {
   if (duelStatus === "attack") {
-    // Vérifie si c'est bien le challenger qui choisie le sort.
+    // Vérifie si c'est bien le challenger qui choisis le sort.
     if (status === "spell") {
 
       const idChallenger = message.member.id;
