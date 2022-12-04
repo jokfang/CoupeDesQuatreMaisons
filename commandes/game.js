@@ -128,7 +128,7 @@ export async function showDuel(interaction, dataSelectMenu, duelStatus) {
       dataDuel.houseOpponent +
       ".";
     const footerMessage =
-      "Pour lancer le combat, répondez à ce message avec !contre [Sort].";
+      "Pour répondre à cette attaque, répondez à ce message avec \"!contre\".";
 
     //Créer le message et l'envoyer*
     const embedShowDuel = new Discord.EmbedBuilder()
