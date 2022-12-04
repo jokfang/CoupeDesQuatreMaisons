@@ -4,24 +4,13 @@ import * as data from "./data/info.cjs";
 // commandes
 import { help } from "./commandes/help.js";
 import { newHouseCup, addHouse, deleteHouse } from "./commandes/maison.js";
-import { addMembre, removeMembre } from "./commandes/membre.js";
+import { addMembre, removeMembre, houseMembre } from "./commandes/membre.js";
 import { setPoint, addPoint, removePoint } from "./commandes/point.js";
 import { setColor, setNom, setBlason } from "./commandes/setMaison.js";
-import {
-  getButtonInterface,
-  getButtonInterface_PointByHouse,
-  getButtonInterface_house,
-  getButtonInterface_PointByMember,
-} from "./commandes/interface.js";
-import { showDuel, counter, createDataDuel } from "./commandes/game.js";
+import { getButtonInterface, getButtonInterface_PointByHouse, getButtonInterface_house, getButtonInterface_PointByMember } from "./commandes/interface.js";
+import { createSelectMenuSpell, showDuel, checkError, duelingPreparation } from "./commandes/game.js";
 //Librairy
-import {
-  bareme,
-  bareme_multiple,
-  getChannelBox,
-  idRoom,
-  roles,
-} from "./librairy/cupInfo.js";
+import { bareme, bareme_multiple, getChannelBox, idRoom, roles } from "./librairy/cupInfo.js";
 // Outils
 import * as timers from "node:timers/promises";
 const wait = timers.setTimeout;
@@ -163,19 +152,28 @@ client.on("messageCreate", async function (message) {
       //Si les points sont renseigné on envois les points, sinon on créé les messages avec 0 points
       help(message);
       message.delete();
-    } else if (message.content.split(" ")[0] === "!attaque") {
-      const dataDuel = await createDataDuel(message);
-      showDuel(dataDuel, message);
-    } else if (message.content.split(" ")[0] === "!contre") {
-      const opponent = message.member.displayName;
-      const spell = message.content.split(" ")[1];
-      if (spell != undefined) {
-        counter(message, opponent, spell);
-      } else {
-        await message.channel.send(
-          "Vous n'avez pas rentrée de sort, ou il n'a pas réussi à étre lu."
-        );
+    } else if (message.content.split(" ")[0] === "!duel") {
+      const duelStatus = "attack";
+      const houseChallenger = await houseMembre(message.member);
+      const houseOpponent = await houseMembre(message.mentions.members.first());
+      if (await checkError(message, duelStatus, false, false, houseChallenger, houseOpponent)) {
+        createSelectMenuSpell(message, houseChallenger.id, duelStatus);
       }
+      await message.delete();
+
+    } else if (message.content.split(" ")[0] === "!contre") {
+      const duelStatus = "counter";
+
+      if (message.reference) {
+        if (await checkError(message, duelStatus)) {
+          const houseOpponent = await houseMembre(message.member);
+          createSelectMenuSpell(message, houseOpponent.id, duelStatus);
+        }
+      } else {
+        await message.author.send("Vous n'avez pas répondu au message de duel du bot.")
+      }
+      message.delete();
+
     }
   } catch (error) {
     await message.channel.send(
@@ -185,35 +183,15 @@ client.on("messageCreate", async function (message) {
   }
 });
 
-function checkMessage(message) {
-  let messageContent = message.content + "";
-  if (!messageContent.startsWith("!")) {
-    return false;
-  }
-  if (message?.webhookId == "1021509750321586236") {
-    return true;
-  }
-  // Droit Modération
-  const moderationRoleByMessage = message.member._roles.find((memberRole) =>
-    [roles.administrateur, roles.moderateur, roles.BOT].includes(memberRole)
-  );
-  if (!moderationRoleByMessage) {
-    return false;
-  }
-  if (messageContent.substring(0, 1) != "!") {
-    return false;
-  }
-
-  return true;
-}
-
-client.on("interactionCreate", (interaction) => {
+//Lorsqu'on reçoit une interaction (Bouton, Select menu,...)
+client.on("interactionCreate", async (interaction) => {
   //Droit Modération
+
   const moderationRoleByInteraction =
-    interaction.member._roles.find(
+    interaction.message.member._roles.find(
       (memberRole) => memberRole == roles.administrateur
     ) ||
-    interaction.member._roles.find(
+    interaction.message.member._roles.find(
       (memberRole) => memberRole == roles.moderateur
     );
 
@@ -258,9 +236,9 @@ client.on("interactionCreate", (interaction) => {
         case "addMultiple":
           point =
             bareme_multiple[
-              interaction.customId.split("_")[2] +
-                "_" +
-                interaction.customId.split("_")[3]
+            interaction.customId.split("_")[2] +
+            "_" +
+            interaction.customId.split("_")[3]
             ];
 
           addPoint(interaction.customId.split("_")[1], point);
@@ -279,4 +257,37 @@ client.on("interactionCreate", (interaction) => {
       }
     }
   }
+  else if (interaction.isSelectMenu()) {
+    if (interaction.customId.split("_")[1] === "spell") {
+      const dataSelectMenu = interaction.values[0];
+      const duelStatus = interaction.customId.split("_")[2];
+
+      if (interaction.customId.split("_")[2] == "attack") {
+        if (await checkError(interaction, duelStatus, interaction.customId.split("_")[1], interaction.values[0].split("_")[1])) {
+          showDuel(interaction, dataSelectMenu, duelStatus);
+        }
+      }
+      else if (interaction.customId.split("_")[2] == "counter") {
+        if (await checkError(interaction, duelStatus, interaction.customId.split("_")[1], interaction.values[0].split("_")[2])) {
+          duelingPreparation(interaction, dataSelectMenu, duelStatus)
+        }
+      }
+    }
+  }
 });
+
+function checkMessage(message) {
+  let messageContent = message.content + "";
+  // Droit Modération
+  const moderationRoleByMessage = message.member._roles.find((memberRole) =>
+    [roles.administrateur, roles.moderateur, roles.BOT].includes(memberRole)
+  );
+  if (!moderationRoleByMessage) {
+    return false;
+  }
+  if (messageContent.substring(0, 1) != "!") {
+    return false;
+  }
+
+  return true;
+}

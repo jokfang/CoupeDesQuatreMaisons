@@ -28,4 +28,29 @@ export class SpellRepository {
 
     return retour[0];
   }
+
+  async getSpellsOfHouse(channel, idHousePlayer) {
+    const con = mysql.createConnection({
+      host: houses.default.host,
+      user: houses.default.user,
+      password: houses.default.password,
+      port: houses.default.port,
+      database: houses.default.database,
+    });
+    con.connect(function (err) {
+      if (err) {
+        if (err.message.code === "ETIMEDOUT") {
+          console.log("TimeOut de la BDD");
+        }
+      }
+      //console.log("Connected to MySQLDB");
+    });
+    const query = "select * from Spell where channelId = ? and serverId = ? and roleId = ?";
+    const retour = await con
+      .promise()
+      .query(query, [channel.id, channel.guildId, idHousePlayer]);
+    con.end();
+
+    return retour[0];
+  }
 }
