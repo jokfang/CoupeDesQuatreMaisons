@@ -96,9 +96,9 @@ export async function createSelectMenuSpell(message, idHousePlayer, duelStatus) 
       );
     if (duelStatus === "counter") {
       const messageDuel = await message.fetchReference()
-      await messageDuel.reply({ content: 'Choisis ton attaque !', components: [row], ephemeral: true });
+      await messageDuel.reply({ content: '<@'+idOpponent+'> choisis ton attaque !', components: [row], ephemeral: true });
     } else if (duelStatus === "attack") {
-      await message.channel.send({ content: 'Choisis ton attaque !', components: [row], ephemeral: true });
+      await message.channel.send({ content: '<@'+idChallenger+'> choisis ton attaque !', components: [row], ephemeral: true });
     }
   }
 }
