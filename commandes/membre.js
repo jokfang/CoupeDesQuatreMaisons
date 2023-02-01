@@ -1,13 +1,13 @@
 import { Repository } from "../repository/repository.js";
 import { channelBox } from "../index.js";
-import { bareme } from "../librairy/cupInfo.js";
+import { bareme, idRoom } from "../librairy/cupInfo.js";
 
 export async function addMembre(houseName, message) {
   let role = message.guild.roles.cache.find((role) => role.name == houseName);
   let member = message.mentions.members.first();
   const myRepository = new Repository();
-  //const channelCup = channelBox[cupActive];
-  const channelCup = channelBox.ohana;
+
+  const channelCup = channelBox.hogwart;
   const maisons = await myRepository.getMaisons(channelCup);
   if (
     !maisons.find((maison) =>
@@ -23,16 +23,16 @@ export async function removeMembre(houseName, message) {
   let role = message.guild.roles.cache.find((role) => role.name == houseName);
   let member = message.mentions.members.first();
   const myRepository = new Repository();
-  //const channelCup = channelBox[cupActive];
-  const channelCup = channelBox.ohana;
+
+  const channelCup = channelBox.hogwart;
   member.roles.remove(role);
   myRepository.deleteMember(channelCup, member.id, role.id);
 }
 
 export async function houseMembre(member) {
   const myRepository = new Repository();
-  //const channelCup = channelBox[cupActive];
-  const channelCup = channelBox.ohana;
+
+  const channelCup = channelBox.hogwart;
   const maisons = await myRepository.getMaisons(channelCup);
   let houseMember = {
     name: '',
@@ -50,8 +50,8 @@ export async function houseMembre(member) {
 
 export async function houseMembreDuel(dataDuel) {
   const myRepository = new Repository();
-  //const channelCup = channelBox[cupActive];
-  const channelCup = channelBox.ohana;
+
+  const channelCup = channelBox.hogwart;
   const maisons = await myRepository.getMaisons(channelCup);
 
   for (let maison of maisons) {
@@ -72,7 +72,7 @@ export async function houseMembreDuel(dataDuel) {
       "Tu oses attaquer Blue ! Tu n'as aucun pouvoir ici ! Tu perds 10 points !"
     );
     const cptChannel = message.channel.messages.client.channels.cache.get(
-      "1021509224343281764"
+      idRoom.hogwart
     );
     cptChannel.send("!remove " + bareme.duel + " to " + dataDuel.houseChallenger);
     for (let maison of maisons) {

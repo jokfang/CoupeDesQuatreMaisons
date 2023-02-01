@@ -1,0 +1,17 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "previewLimit": 50,
+            "server": "mysql1.par1.adky.net",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "Coupe",
+            "database": "s12418_HouseCup",
+            "username": "u12418_Q2we7hlbXu",
+            "askForPassword": true
+        }
+    ]
+}

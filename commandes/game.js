@@ -1,12 +1,11 @@
 import * as Discord from "discord.js";
-import { cupActive, bareme } from "../librairy/cupInfo.js";
+import { idRoom, bareme } from "../librairy/cupInfo.js";
 import { getRandomInt } from "../commandes/items.js";
 import { addPoint, removePoint } from "../commandes/point.js";
 import { houseMembreDuel } from "../commandes/membre.js";
 import * as dataGames from "../librairy/game.cjs";
 import { Repository } from "../repository/repository.js";
 import { SpellRepository } from "../repository/spellRepository.js";
-import { channelBox } from "../index.js";
 
 export async function createDataDuel(message, dataSelectMenu, duelStatus) {
   let dataDuelInit = {
@@ -204,7 +203,7 @@ export async function duel(messageDuel, dataDuel, interaction) {
 
   if (!duelNull) {
     const cptChannel = channel.messages.client.channels.cache.get(
-      cupActive
+      idRoom.hogwart
     );
     cptChannel.send("!add " + bareme.duel + " to " + dataWin.houseWinner);
     cptChannel.send("!remove " + bareme.duel + " to " + dataWin.houseLooser);

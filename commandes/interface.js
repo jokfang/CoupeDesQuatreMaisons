@@ -36,7 +36,7 @@ export function getButtonInterface(message) {
 
 export async function getButtonInterface_PointByHouse(interaction) {
   const myRepository = new Repository();
-  const channelCup = channelBox.ohana;
+  const channelCup = channelBox.hogwart;
   const maisons = await myRepository.getMaisons(channelCup);
 
   // Création des boutons pour les quatre premières maisons
@@ -80,7 +80,7 @@ export async function getButtonInterface_PointByHouse(interaction) {
 
 export async function getButtonInterface_house(interaction, house) {
   const myRepository = new Repository();
-  const channelCup = channelBox.ohana;
+  const channelCup = channelBox.hogwart;
   const maisons = await myRepository.getMaisons(channelCup);
 
   let rowBits = new Discord.ActionRowBuilder().addComponents(
@@ -157,7 +157,7 @@ export async function getButtonInterface_house(interaction, house) {
 
 export async function getButtonInterface_PointByMember(interaction) {
   const myRepository = new Repository();
-  const channelCup = channelBox.ohana;
+  const channelCup = channelBox.hogwart;
   const maisons = await myRepository.getMaisons(channelCup);
 
   const rowMember = new Discord.ActionRowBuilder();

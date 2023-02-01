@@ -5,8 +5,8 @@ import fs from 'fs';
 
 export async function setPoint(houseName, montant, channel) {
   const myRepository = new Repository();
-  //const channelCup = channelBox[cupActive];
-  const channelCup = channelBox.ohana;
+
+  const channelCup = channelBox.hogwart;
   const maison = await myRepository.getMaison(channelCup, houseName);
   const msg = await channelCup.messages.fetch(maison.messageId);
 
@@ -30,8 +30,8 @@ export async function setPoint(houseName, montant, channel) {
 export async function removePoint(houseName, montant, message) {
   let maison;
   const myRepository = new Repository();
-  //const channelCup = channelBox[cupActive];
-  const channelCup = channelBox.ohana;
+
+  const channelCup = channelBox.hogwart;
   if (houseName.substring(0, 2) == "<@") {
     const maisons = await myRepository.getMaisons(channelCup);
     let member = message.mentions.members.first();
@@ -72,8 +72,8 @@ export async function removePoint(houseName, montant, message) {
 export async function addPoint(houseName, montant, message) {
   let maison;
   const myRepository = new Repository();
-  //const channelCup = channelBox[cupActive];
-  const channelCup = channelBox.ohana;
+
+  const channelCup = channelBox.hogwart;
   if (houseName.substring(0, 2) == "<@") {
     const maisons = await myRepository.getMaisons(channelCup);
     let member = message.mentions.members.first();

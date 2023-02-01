@@ -35,9 +35,7 @@ client.once("ready", () => {
   console.log("Félicitations, votre bot est ok !");
 
   // Récpèrer les Channel avec leur ID
-  channelBox.commandChannel = client.channels.cache.get(idRoom.commandChannel);
-  channelBox.maison = client.channels.cache.get(idRoom.maison);
-  channelBox.ohana = client.channels.cache.get(idRoom.ohana);
+  channelBox.hogwart = client.channels.cache.get(idRoom.hogwart);
 });
 client.login(token);
 
