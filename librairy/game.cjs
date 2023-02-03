@@ -11,6 +11,7 @@ module.exports = {
     "silencio",
     "stupéfix",
     "serpentasortia",
+    "wingardium leviosa"
   ],
   listAttackDisney: [
     ["chant", "charme", "coup de talon"], // Princesses
