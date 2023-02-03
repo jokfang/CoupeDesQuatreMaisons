@@ -70,34 +70,25 @@ export async function createSelectMenuSpell(message, idHousePlayer, duelStatus) 
     idChallenger = "null";
   }
   if (spells) {
-    const row = new Discord.ActionRowBuilder()
-      .addComponents(
-        new Discord.SelectMenuBuilder()
-          .setCustomId('selectMenu_spell_' + duelStatus)
-          .setPlaceholder('Attaque non sélectionnée')
-          .addOptions(
-            {
-              label: spells[0].spellName.charAt(0).toUpperCase() + spells[0].spellName.slice(1),
-              description: spells[0].spellDescription,
-              value: spells[0].spellName + '_' + idChallenger + '_' + idOpponent
-            },
-            {
-              label: spells[1].spellName.charAt(0).toUpperCase() + spells[1].spellName.slice(1),
-              description: spells[1].spellDescription,
-              value: spells[1].spellName + '_' + idChallenger + '_' + idOpponent
-            },
-            {
-              label: spells[2].spellName.charAt(0).toUpperCase() + spells[2].spellName.slice(1),
-              description: spells[2].spellDescription,
-              value: spells[2].spellName + '_' + idChallenger + '_' + idOpponent
-            }
-          )
-      );
+    const list = new Discord.SelectMenuBuilder()
+    .setCustomId('selectMenu_spell_' + duelStatus)
+    .setPlaceholder('Sort non sélectionné')
+    for (let i = 0; i < spells.length;i++){
+      list.addOptions(
+        {
+          label: spells[i].spellName.charAt(0).toUpperCase() + spells[i].spellName.slice(1),
+          description: spells[i].spellDescription,
+          value: spells[i].spellName + '_' + idChallenger + '_' + idOpponent
+        }
+      )
+    }
+    const row = new Discord.ActionRowBuilder().addComponents(list);
+
     if (duelStatus === "counter") {
       const messageDuel = await message.fetchReference()
-      await messageDuel.reply({ content: '<@'+idOpponent+'> choisis ton attaque !', components: [row], ephemeral: true });
+      await messageDuel.reply({ content: '<@'+idOpponent+'> choisis ton Sort !', components: [row], ephemeral: true });
     } else if (duelStatus === "attack") {
-      await message.channel.send({ content: '<@'+idChallenger+'> choisis ton attaque !', components: [row], ephemeral: true });
+      await message.channel.send({ content: '<@'+idChallenger+'> choisis ton Sort !', components: [row], ephemeral: true });
     }
   }
 }
@@ -113,7 +104,7 @@ export async function showDuel(interaction, dataSelectMenu, duelStatus) {
     if (cupActive == listCupActive[0]) {
       houseDescription = " de la maison ";
     } else if (cupActive == listCupActive[1]) {*/
-    const houseDescription = " de la Ohana des ";
+    const houseDescription = " de la maison ";
 
     const duelMessage =
       dataDuel.challenger.toString() +
@@ -396,10 +387,10 @@ export async function checkError(message, duelStatus, status, selectMenuData_id,
     // Vérifie si l'Oppossant à une maison ou bien qu'il n'est pas dans celle du challenger.
     else {
       if (!houseOpponent.id) {
-        await message.author.send("Votre cible ne possède pas de ohana.");
+        await message.author.send("Votre cible ne possède pas de maison.");
       }
       else if (houseChallenger.id === houseOpponent.id) {
-        await message.author.send("Vous ne pouvez pas attaquer un membre de votre ohana ou bien vous-même.")
+        await message.author.send("Vous ne pouvez pas attaquer un membre de votre maison ou bien vous-même.")
       }
       else {
         return true;

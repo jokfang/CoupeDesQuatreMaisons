@@ -45,7 +45,7 @@ export class SpellRepository {
       }
       //console.log("Connected to MySQLDB");
     });
-    const query = "select * from Spell where channelId = ? and serverId = ? and roleId = ?";
+    const query = "select * from Spell where channelId = ? and serverId = ? and roleId is null";
     const retour = await con
       .promise()
       .query(query, [channel.id, channel.guildId, idHousePlayer]);

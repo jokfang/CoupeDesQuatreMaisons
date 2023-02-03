@@ -224,7 +224,7 @@ client.on("interactionCreate", async (interaction) => {
             content:
               "Vous avez ajoutée " +
               point +
-              " points à l'Ohana des " +
+              " points à la maison " +
               interaction.customId.split("_")[1],
             ephemeral: false,
           });
@@ -244,7 +244,7 @@ client.on("interactionCreate", async (interaction) => {
             content:
               "Vous avez ajoutée " +
               point +
-              " points à l'Ohana des " +
+              " points à la maison " +
               interaction.customId.split("_")[1],
             ephemeral: false,
           });
