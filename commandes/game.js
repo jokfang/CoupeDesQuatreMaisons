@@ -259,33 +259,6 @@ async function createWinMessage(dataWin, channel) {
         dataWin.houseLooser +
         ".";
       break;
-    case "crache_limace":
-      winMessage =
-        "Aie ! " +
-        dataWin.nameLooser +
-        " se met à cracher des limaces à cause du sort de " +
-        dataWin.nameWinner +
-        ". La maison " +
-        dataWin.houseWinner +
-        " récupère " +
-        points +
-        " points de la maison " +
-        dataWin.houseLooser +
-        ".";
-      break;
-    case "expelliarmus":
-      winMessage =
-        dataWin.nameWinner +
-        " réussi à désarmer " +
-        dataWin.nameLooser +
-        " de sa baguette magique. La maison " +
-        dataWin.houseWinner +
-        " récupère " +
-        points +
-        " points de la maison " +
-        dataWin.houseLooser +
-        ".";
-      break;
     case "petrificus_totalus":
       winMessage =
         dataWin.nameLooser +
