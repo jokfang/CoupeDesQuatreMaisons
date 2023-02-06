@@ -8,7 +8,7 @@ import { addMembre, removeMembre, houseMembre } from "./commandes/membre.js";
 import { setPoint, addPoint, removePoint } from "./commandes/point.js";
 import { setColor, setNom, setBlason } from "./commandes/setMaison.js";
 import { getButtonInterface, getButtonInterface_PointByHouse, getButtonInterface_house, getButtonInterface_PointByMember } from "./commandes/interface.js";
-import { createSelectMenuSpell, showDuel, checkError, duelingPreparation } from "./commandes/game.js";
+import { createSelectMenuSpell, showDuel, checkError, duelingPreparation, aWildMonsterAppear } from "./commandes/game.js";
 //Librairy
 import { bareme, bareme_multiple, getChannelBox, idRoom, roles } from "./librairy/cupInfo.js";
 // Outils
@@ -172,6 +172,12 @@ client.on("messageCreate", async function (message) {
       }
       message.delete();
 
+    } else {
+      const sec = new Date().getSeconds().toString();
+      const min = new Date().getMinutes().toString();
+      if (message.author.id != '1015931608773169193' && sec%45 == 0 && min%2 == 0) {
+        aWildMonsterAppear(message);
+      }
     }
   } catch (error) {
     await message.channel.send(

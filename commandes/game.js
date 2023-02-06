@@ -49,7 +49,9 @@ export async function createDataDuel(message, dataSelectMenu, duelStatus) {
     const idStart = duelDescription.indexOf("<@") + 2;
     const idEnd = duelDescription.indexOf(">");
     dataDuelInit.idChallenger = duelDescription.substring(idStart, idEnd);
-    dataDuelInit.challenger = await message.guild.members.fetch(dataDuelInit.idChallenger);;
+    if (duelDescription != 'une créature attaque, défendez Poudlard') {
+      dataDuelInit.challenger = await message.guild.members.fetch(dataDuelInit.idChallenger);
+    }
   }
 
   const dataDuel = await houseMembreDuel(dataDuelInit);
@@ -143,8 +145,13 @@ export async function duelingPreparation(interaction, dataSelectMenu, duelStatus
 
 export async function duel(messageDuel, dataDuel, interaction) {
   const channel = messageDuel.channel;
-  const rng_Challenger = getRandomInt(1, 11);
-  const rng_Opponent = getRandomInt(1, 11);
+  let rng_Challenger = getRandomInt(1, 11);
+  let rng_Opponent = getRandomInt(1, 11);
+
+  if (dataDuel.idChallenger == 'u' && rng_Challenger > rng_Opponent) {
+    rng_Opponent = rng_Challenger;
+    rng_Challenger -= 1;
+  }
 
   let dataWin = {
     nameWinner: "",
@@ -174,9 +181,19 @@ export async function duel(messageDuel, dataDuel, interaction) {
 
   // Création du message du combat
   const winMessage = await createWinMessage(dataWin, channel);
-  const challengerResult = dataDuel.spellChallenger + " (" + rng_Challenger + ")";
+  let challengerResult = '';
+  if (dataDuel.idChallenger == 'u') {
+    challengerResult = "Attaque" + " (" + rng_Challenger + ")";
+  } else {
+    challengerResult = dataDuel.spellChallenger + " (" + rng_Challenger + ")";
+  }
   const opponentResult = dataDuel.spellOpponent + " (" + rng_Opponent + ")";
-  const challengerName = dataDuel.challenger.displayName;
+  let challengerName = '';
+  if (dataDuel.idChallenger == 'u') {
+    challengerName = 'une créature';
+  }
+  else { challengerName = dataDuel.challenger.displayName; }
+
   const opponentName = dataDuel.opponent.displayName;
 
   const embed = new Discord.EmbedBuilder()
@@ -197,13 +214,18 @@ export async function duel(messageDuel, dataDuel, interaction) {
       idRoom.hogwart
     );
     cptChannel.send("!add " + bareme.duel + " to " + dataWin.houseWinner);
-    cptChannel.send("!remove " + bareme.duel + " to " + dataWin.houseLooser);
+    if (dataDuel.idChallenger != 'u') {
+      cptChannel.send("!remove " + bareme.duel + " to " + dataWin.houseLooser);
+    }
   }
 }
 
 async function createWinMessage(dataWin, channel) {
   const mySpellRepository = new SpellRepository();
   const spells = await mySpellRepository.getSpells(channel);
+  if (dataWin.nameLooser == '') {
+    dataWin.nameLooser = 'une créature';
+  }
   let winMessage;
 
   //on construit le winMessage
@@ -421,7 +443,7 @@ export async function checkError(message, duelStatus, status, selectMenuData_id,
       const end = duelDescription.lastIndexOf("> ");
       const idOpponentDuel = duelDescription.substring(start, end);
 
-      if (idOpponent === idOpponentDuel) {
+      if (idOpponent === idOpponentDuel || duelDescription == 'une créature attaque, défendez Poudlard') {
         return true;
       } else {
         await message.author.send("Vous n'êtes pas l'adversaire attendu du duel en cours.")
@@ -429,4 +451,23 @@ export async function checkError(message, duelStatus, status, selectMenuData_id,
       }
     }
   }
+}
+
+export async function aWildMonsterAppear(message) {
+    const embedTitle = "Une créature apparait !";
+
+    const duelMessage =
+      "une créature attaque, défendez Poudlard";
+    const footerMessage =
+      "Pour répondre à cette attaque, répondez à ce message avec \"!contre\".";
+
+    //Créer le message et l'envoyer*
+    const embedShowDuel = new Discord.EmbedBuilder()
+      .setColor(0x00ffff)
+      .setTitle(embedTitle)
+      .setDescription(duelMessage)
+      .setFooter({ text: footerMessage })
+      .setThumbnail('https://bookstr.com/wp-content/uploads/2019/07/Scroutt_2.png');
+
+  message.channel.messages.client.channels.cache.get('1064843417663844363').send({ embeds: [embedShowDuel] });
 }

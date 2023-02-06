@@ -56,9 +56,11 @@ export async function houseMembreDuel(dataDuel) {
 
   for (let maison of maisons) {
     // check house Challenger
-    if (await dataDuel.challenger._roles.find((memberRole) => memberRole == maison.roleId)) {
-      dataDuel.houseChallenger = await maison.nom;
-      dataDuel.idHouseChallenger = await maison.roleId;
+    if (dataDuel.idChallenger != 'u') {
+      if (await dataDuel.challenger._roles.find((memberRole) => memberRole == maison.roleId)) {
+        dataDuel.houseChallenger = await maison.nom;
+        dataDuel.idHouseChallenger = await maison.roleId;
+      }
     }
     // check house Opponnent
     if (await dataDuel.opponent._roles.find((memberRole) => memberRole == maison.roleId)) {
@@ -80,7 +82,7 @@ export async function houseMembreDuel(dataDuel) {
         cptChannel.send("!add " + bareme.duel + " to " + maison.nom);
       }
     }
-  } else if (dataDuel.houseChallenger.length === 0 || dataDuel.houseOpponent.length === 0) {
+  } else if ((dataDuel.houseChallenger.length === 0 || dataDuel.houseOpponent.length === 0) && dataDuel.idChallenger != 'u') {
     error_noHouse(dataDuel);
   } else {
     return dataDuel;
