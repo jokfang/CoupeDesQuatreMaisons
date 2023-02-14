@@ -221,6 +221,7 @@ export async function duel(messageDuel, dataDuel, interaction) {
 }
 
 async function createWinMessage(dataWin, channel) {
+  let winMessage;
   const mySpellRepository = new SpellRepository();
   const spells = await mySpellRepository.getSpells(channel);
   if (spells) {
@@ -230,7 +231,6 @@ async function createWinMessage(dataWin, channel) {
     if (dataWin.nameLooser == '') {
       dataWin.nameLooser = 'une créature';
     }
-    let winMessage;
 
   	//on construit le winMessage
   
