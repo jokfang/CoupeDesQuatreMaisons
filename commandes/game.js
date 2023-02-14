@@ -223,16 +223,21 @@ export async function duel(messageDuel, dataDuel, interaction) {
 async function createWinMessage(dataWin, channel) {
   const mySpellRepository = new SpellRepository();
   const spells = await mySpellRepository.getSpells(channel);
-  if (dataWin.nameLooser == '') {
-    dataWin.nameLooser = 'une créature';
-  }
-  let winMessage;
-
-  //on construit le winMessage
   if (spells) {
     winMessage = await spells.find(
       (spell) => spell.spellName == dataWin.spellWinner
-    ).spellMessage;
+    );
+    if (dataWin.nameLooser == '') {
+      dataWin.nameLooser = 'une créature';
+    }
+    let winMessage;
+
+  	//on construit le winMessage
+  
+    if(!winMessage){
+        winMessage = spells[0];
+    }
+    winMessage = winMessage.spellMessage;
     winMessage = await winMessage
       .replace("@nameWinner", dataWin.nameWinner)
       .replace("@nameLooser", dataWin.nameLooser)
@@ -252,6 +257,33 @@ async function createWinMessage(dataWin, channel) {
         "à tuer " +
         dataWin.nameLooser +
         " avec le sort interdit, Avada Kedavra. La maison " +
+        dataWin.houseWinner +
+        " récupère " +
+        points +
+        " points de la maison " +
+        dataWin.houseLooser +
+        ".";
+      break;
+    case "crache_limace":
+      winMessage =
+        "Aie ! " +
+        dataWin.nameLooser +
+        " se met à cracher des limaces à cause du sort de " +
+        dataWin.nameWinner +
+        ". La maison " +
+        dataWin.houseWinner +
+        " récupère " +
+        points +
+        " points de la maison " +
+        dataWin.houseLooser +
+        ".";
+      break;
+    case "expelliarmus":
+      winMessage =
+        dataWin.nameWinner +
+        " réussi à désarmer " +
+        dataWin.nameLooser +
+        " de sa baguette magique. La maison " +
         dataWin.houseWinner +
         " récupère " +
         points +

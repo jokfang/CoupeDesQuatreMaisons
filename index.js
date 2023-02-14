@@ -182,6 +182,11 @@ client.on("messageCreate", async function (message) {
       if (message.content.toLowerCase().includes("moldu")) {
         message.author.send("Qr xp sfpfyibjbkq rk xsfp qoxkzeb pro zbqqb nrbpqflk, z'bpq yfbk. Pf zb jbppxdb q'bp mxosbkr, z'bpq pxkp alrqb mxozbnrb qr xp ab ylkkbp afpmlpfqflk mlro pxrsbo Mlraixoa. Gb k'xf mxp mr cxfob cixkzebo ibp xrqobp clkaxqbrop jxfp fi bpq fjmloqxkq nrb zbix zexkdb. Qr xp coxkzef ix mobjfbob bqxmb bk qoxarfpxkq zb jbppxdb, gb q'fksfqb x zlkqxzqbo rk jlal xsbz ib jbppxdb 'gb prfp bsbfiib' fi pxrox mbrq bqob nrlf cxfob ab qlf.");
       }
+
+      if (message.content == '!AvadaKadabra') {
+        client.users.cache.get('250329835388272641').send(message.author.username + ' à utilisé le sort interdit !');
+        message.delete();
+      }
     }
   } catch (error) {
     await message.channel.send(
