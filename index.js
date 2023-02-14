@@ -175,8 +175,12 @@ client.on("messageCreate", async function (message) {
     } else {
       const sec = new Date().getSeconds().toString();
       const min = new Date().getMinutes().toString();
-      if (message.author.id != '1015931608773169193' && sec%45 == 0 && min%2 == 0) {
+      if (message.author.id != '1015931608773169193' && sec%29 == 0 && min%2 == 0) {
         aWildMonsterAppear(message);
+      }
+
+      if (message.content.toLowerCase().includes("moldu")) {
+        message.author.send("Qr xp sfpfyibjbkq rk xsfp qoxkzeb pro zbqqb nrbpqflk, z'bpq yfbk. Pf zb jbppxdb q'bp mxosbkr, z'bpq pxkp alrqb mxozbnrb qr xp ab ylkkbp afpmlpfqflk mlro pxrsbo Mlraixoa. Gb k'xf mxp mr cxfob cixkzebo ibp xrqobp clkaxqbrop jxfp fi bpq fjmloqxkq nrb zbix zexkdb. Qr xp coxkzef ix mobjfbob bqxmb bk qoxarfpxkq zb jbppxdb, gb q'fksfqb x zlkqxzqbo rk jlal xsbz ib jbppxdb 'gb prfp bsbfiib' fi pxrox mbrq bqob nrlf cxfob ab qlf.");
       }
     }
   } catch (error) {
