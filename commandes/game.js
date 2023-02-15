@@ -226,7 +226,7 @@ async function createWinMessage(dataWin, channel) {
   const spells = await mySpellRepository.getSpells(channel);
   if (spells) {
     winMessage = await spells.find(
-      (spell) => spell.spellName == dataWin.spellWinner
+      (spell) => spell.spellName.toLowerCase() == dataWin.spellWinner.toLowerCase()
     );
     if (dataWin.nameLooser == '') {
       dataWin.nameLooser = 'une créature';
@@ -449,7 +449,18 @@ export async function checkError(message, duelStatus, status, selectMenuData_id,
       const idOpponentDuel = duelDescription.substring(start, end);
 
       if (idOpponent === idOpponentDuel || duelDescription == 'une créature attaque, défendez Poudlard') {
-        return true;
+        if (duelDescription == 'une créature attaque, défendez Poudlard') {
+          //recherche de Mangemort         
+          if (message.member._roles.find((memberRole) => memberRole == '1073201979062497300')) {
+            message.author.send("Vous souhaitez vraiment défendre Poudlard ? ce n'est pas digne d'un mangemort")
+            return false;
+          } else {
+            return true;
+          }
+          
+        } else {
+          return true;
+        }
       } else {
         await message.author.send("Vous n'êtes pas l'adversaire attendu du duel en cours.")
         return false;

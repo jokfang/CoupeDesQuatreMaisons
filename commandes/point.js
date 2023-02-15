@@ -1,6 +1,6 @@
 import { Client, DiscordAPIError, EmbedBuilder } from "discord.js";
 import { Repository } from "../repository/repository.js";
-import { channelBox } from "../index.js";
+import { channelBox, sendToJokfang } from "../index.js";
 import fs from 'fs';
 
 export async function setPoint(houseName, montant, channel) {
@@ -39,33 +39,31 @@ export async function removePoint(houseName, montant, message) {
       member._roles.find((memberRole) => memberRole == house.roleId)
     ).nom;
     maison = await maisons.find((house) => house.nom == houseName);
-    myRepository.updateMemberPoint(
-      channelCup,
-      member.id,
-      maison.roleId,
-      montant * -1
-    );
   } else {
     maison = await myRepository.getMaison(channelCup, houseName);
   }
-  const msg = await channelCup.messages.fetch(maison.messageId);
+  if (maison.nom != 'Mangemort') {
+    const msg = await channelCup.messages.fetch(maison.messageId);
 
-  //On décrémente le compteur
-  let cpt = parseInt(msg.embeds[0].data.description);
-  cpt -= parseInt(montant);
+    //On décrémente le compteur
+    let cpt = parseInt(msg.embeds[0].data.description);
+    cpt -= parseInt(montant);
 
-  if (cpt < 0) {
-    cpt = 0;
+    if (cpt < 0) {
+      cpt = 0;
+    }
+
+    //On construit le message qui sera appliqué en annule et remplace du précédent
+    const embed = new EmbedBuilder()
+      .setColor(maison.couleur)
+      .setTitle(maison.nom)
+      .setThumbnail(maison.blason)
+      .setDescription(cpt.toString());
+    //On édit le message
+      msg.edit({ embeds: [embed] });
+  } else {
+    sendToJokfang(montant + ' points retiré aux mangemorts');
   }
-
-  //On construit le message qui sera appliqué en annule et remplace du précédent
-  const embed = new EmbedBuilder()
-    .setColor(maison.couleur)
-    .setTitle(maison.nom)
-    .setThumbnail(maison.blason)
-    .setDescription(cpt.toString());
-  //On édit le message
-  msg.edit({ embeds: [embed] });
 }
 
 //Ajoute des points à une maison en prenant son id et le montant de point à ajouter
@@ -81,28 +79,26 @@ export async function addPoint(houseName, montant, message) {
       member._roles.find((memberRole) => memberRole == house.roleId)
     ).nom;
     maison = await maisons.find((house) => house.nom == houseName);
-    myRepository.updateMemberPoint(
-      channelCup,
-      member.id,
-      maison.roleId,
-      montant
-    );
   } else {
     maison = await myRepository.getMaison(channelCup, houseName);
-    fs.appendFile('nouveauFichier.txt', ",\""+houseName+"\":\""+houseName+"\"", function (err) {   if (err) throw err;   console.log('Fichier créé !');});
+    //fs.appendFile('nouveauFichier.txt', ",\""+houseName+"\":\""+houseName+"\"", function (err) {   if (err) throw err;   console.log('Fichier créé !');});
   }
-  const msg = await channelCup.messages.fetch(maison.messageId);
+  if (maison.nom != 'Mangemort') {
+    const msg = await channelCup.messages.fetch(maison.messageId);
+  
+    //On incrémente le compteur
+    let cpt = parseInt(msg.embeds[0].data.description);
+    cpt += parseInt(montant);
 
-  //On incrémente le compteur
-  let cpt = parseInt(msg.embeds[0].data.description);
-  cpt += parseInt(montant);
-
-  //On construit le message qui sera appliqué en annule et remplace du précédent
-  const embed = new EmbedBuilder()
-    .setColor(maison.couleur)
-    .setTitle(maison.nom)
-    .setThumbnail(maison.blason)
-    .setDescription(cpt.toString());
-  //On édit le message
-  msg.edit({ embeds: [embed] });
+    //On construit le message qui sera appliqué en annule et remplace du précédent
+    const embed = new EmbedBuilder()
+      .setColor(maison.couleur)
+      .setTitle(maison.nom)
+      .setThumbnail(maison.blason)
+      .setDescription(cpt.toString());
+    //On édit le message
+    msg.edit({ embeds: [embed] });
+  } else {
+    sendToJokfang(montant + ' points ajoutés aux mangemorts');
+  }
 }

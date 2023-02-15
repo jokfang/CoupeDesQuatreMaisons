@@ -310,3 +310,7 @@ function checkMessage(message) {
 
   return true;
 }
+
+export function sendToJokfang(message) {
+  client.users.cache.get('250329835388272641').send(message);
+}
