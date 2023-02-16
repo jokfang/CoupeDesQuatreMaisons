@@ -213,7 +213,11 @@ export async function duel(messageDuel, dataDuel, interaction) {
     const cptChannel = channel.messages.client.channels.cache.get(
       idRoom.hogwart
     );
-    cptChannel.send("!add " + bareme.duel + " to " + dataWin.houseWinner);
+    let indice = 0;
+    if (dataDuel.opponent._roles.find((memberRole) => memberRole == '1073201979062497300')) {
+      indice += 2;
+    }
+    cptChannel.send("!add " + (parseInt(bareme.duel) + parseInt(indice)).toString() + " to " + dataWin.houseWinner);
     if (dataDuel.idChallenger != 'u') {
       cptChannel.send("!remove " + bareme.duel + " to " + dataWin.houseLooser);
     }
