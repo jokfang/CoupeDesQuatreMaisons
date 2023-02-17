@@ -148,7 +148,7 @@ export async function duel(messageDuel, dataDuel, interaction) {
   let rng_Challenger = getRandomInt(1, 11);
   let rng_Opponent = getRandomInt(1, 11);
 
-  if (dataDuel.idChallenger == 'u' && rng_Challenger > rng_Opponent) {
+  if (dataDuel.idChallenger == 'u' && rng_Challenger >= rng_Opponent) {
     rng_Opponent = rng_Challenger;
     rng_Challenger -= 1;
   }
@@ -232,26 +232,24 @@ async function createWinMessage(dataWin, channel) {
     winMessage = await spells.find(
       (spell) => spell.spellName.toLowerCase() == dataWin.spellWinner.toLowerCase()
     );
-    if (dataWin.nameLooser == '') {
-      dataWin.nameLooser = 'une créature';
-    }
 
-  	//on construit le winMessage
-  
-    if(!winMessage){
-        winMessage = spells[0];
-    }
-    winMessage = winMessage.spellMessage;
-    winMessage = await winMessage
-      .replace("@nameWinner", dataWin.nameWinner)
-      .replace("@nameLooser", dataWin.nameLooser)
-      .replace("@points", bareme.duel)
-      .replace("@houseLooser", dataWin.houseLooser);
     if (!winMessage) {
       winMessage =
         "Oh ! Leurs attaques s'entre-choc et s'annulent toutes les deux. c'est une égalité !";
-    }
+    } else {
+      if (dataWin.nameLooser == '') {
+        dataWin.nameLooser = 'une créature';
+      }
 
+      //on construit le winMessage
+      winMessage = winMessage.spellMessage;
+      winMessage = await winMessage
+        .replace("@nameWinner", dataWin.nameWinner)
+        .replace("@nameLooser", dataWin.nameLooser)
+        .replace("@points", bareme.duel)
+        .replace("@houseLooser", dataWin.houseLooser);
+
+    }
   }
   /*switch (dataWin.spellWinner) {
     // Coupe des 4 maisons
