@@ -4,6 +4,8 @@ export function getRandomInt(min, max) {
   let result = Math.floor(Math.random() * (max - min)) + min;
   if (result > 10) {
     result = 10;
+  } else if (result < 1) {
+    reulst = 0;
   }
   return result;
 }
