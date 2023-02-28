@@ -145,8 +145,8 @@ export async function duelingPreparation(interaction, dataSelectMenu, duelStatus
 
 export async function duel(messageDuel, dataDuel, interaction) {
   const channel = messageDuel.channel;
-  let rng_Challenger = getRandomInt(1, 11);
-  let rng_Opponent = getRandomInt(1, 11);
+  let rng_Challenger = getRandomInt(1, 10+Number(dataDuel.ratioChallenger));
+  let rng_Opponent = getRandomInt(1, 10+Number(dataDuel.ratioOpponent));
 
   if (dataDuel.idChallenger == 'u' && rng_Challenger >= rng_Opponent) {
     rng_Opponent = rng_Challenger;

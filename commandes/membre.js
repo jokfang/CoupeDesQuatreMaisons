@@ -60,12 +60,14 @@ export async function houseMembreDuel(dataDuel) {
       if (await dataDuel.challenger._roles.find((memberRole) => memberRole == maison.roleId)) {
         dataDuel.houseChallenger = await maison.nom;
         dataDuel.idHouseChallenger = await maison.roleId;
+        dataDuel.ratioChallenger = await maison.ratio
       }
     }
     // check house Opponnent
     if (await dataDuel.opponent._roles.find((memberRole) => memberRole == maison.roleId)) {
       dataDuel.houseOpponent = await maison.nom;
       dataDuel.idHouseOpponent = await maison.roleId;
+      dataDuel.ratioOpponent = await maison.ratio
     }
   }
 

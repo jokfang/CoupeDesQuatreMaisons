@@ -42,7 +42,7 @@ export async function removePoint(houseName, montant, message) {
   } else {
     maison = await myRepository.getMaison(channelCup, houseName);
   }
-  if (maison.nom != 'Mangemort') {
+  //if (maison.nom != 'Mangemort') {
     const msg = await channelCup.messages.fetch(maison.messageId);
 
     //On décrémente le compteur
@@ -61,9 +61,9 @@ export async function removePoint(houseName, montant, message) {
       .setDescription(cpt.toString());
     //On édit le message
       msg.edit({ embeds: [embed] });
-  } else {
+  /*} else {
     sendToJokfang(montant + ' points retiré aux mangemorts');
-  }
+  }*/
 }
 
 //Ajoute des points à une maison en prenant son id et le montant de point à ajouter
@@ -83,7 +83,7 @@ export async function addPoint(houseName, montant, message) {
     maison = await myRepository.getMaison(channelCup, houseName);
     //fs.appendFile('nouveauFichier.txt', ",\""+houseName+"\":\""+houseName+"\"", function (err) {   if (err) throw err;   console.log('Fichier créé !');});
   }
-  if (maison.nom != 'Mangemort') {
+  //if (maison.nom != 'Mangemort') {
     const msg = await channelCup.messages.fetch(maison.messageId);
   
     //On incrémente le compteur
@@ -98,7 +98,7 @@ export async function addPoint(houseName, montant, message) {
       .setDescription(cpt.toString());
     //On édit le message
     msg.edit({ embeds: [embed] });
-  } else {
+  /*} else {
     sendToJokfang(montant + ' points ajoutés aux mangemorts');
-  }
+  }*/
 }
