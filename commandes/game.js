@@ -6,53 +6,12 @@ import { houseMembreDuel } from "../commandes/membre.js";
 import * as dataGames from "../librairy/game.cjs";
 import { Repository } from "../repository/repository.js";
 import { SpellRepository } from "../repository/spellRepository.js";
+import { duelDescription } from "../type/duelParam.class.js";
+import { ButtonStyle } from "discord.js";
 
 export async function createDataDuel(message, dataSelectMenu, duelStatus) {
-  let dataDuelInit = {
-    message: message,
-    idGuild: message.guildId,
-    idChannel: message.channelId,
-    channel: message.channel,
-    idChallenger: "",
-    challenger: "",
-    houseChallenger: "",
-    idHouseChallenger: "",
-    spellChallenger: "",
-    idOpponent: "",
-    opponent: "",
-    houseOpponent: "",
-    idHouseOpponent: "",
-    spellOpponent: "",
-  };
-
-  //opponent 
-  dataDuelInit.idOpponent = dataSelectMenu.split("_")[2];
-  dataDuelInit.opponent = await message.guild.members.fetch(dataDuelInit.idOpponent);
-
-  if (duelStatus == "attack") {
-    //challenger
-    dataDuelInit.spellChallenger = dataSelectMenu.split("_")[0];
-    dataDuelInit.idChallenger = dataSelectMenu.split("_")[1];
-    dataDuelInit.challenger = await message.guild.members.fetch(dataDuelInit.idChallenger);
-
-  } else if (duelStatus == "counter") {
-    //opponent 
-    dataDuelInit.spellOpponent = dataSelectMenu.split("_")[0];
-    dataDuelInit.idOpponent = dataSelectMenu.split("_")[2];
-
-    //challenger
-    const duelDescription = message.embeds[0].description;
-    const spellStart = duelDescription.indexOf("utiliser ") + 9;
-    const spellEnd = duelDescription.indexOf(" sur", -1);
-    dataDuelInit.spellChallenger = duelDescription.substring(spellStart, spellEnd);
-
-    const idStart = duelDescription.indexOf("<@") + 2;
-    const idEnd = duelDescription.indexOf(">");
-    dataDuelInit.idChallenger = duelDescription.substring(idStart, idEnd);
-    if (duelDescription != 'une créature attaque, défendez Poudlard') {
-      dataDuelInit.challenger = await message.guild.members.fetch(dataDuelInit.idChallenger);
-    }
-  }
+  let dataDuelInit = Object.create(duelDescription);
+  dataDuelInit.create(message, dataSelectMenu, duelStatus);
 
   const dataDuel = await houseMembreDuel(dataDuelInit);
   return dataDuel;
@@ -129,7 +88,10 @@ export async function showDuel(interaction, dataSelectMenu, duelStatus) {
       .setDescription(duelMessage)
       .setFooter({ text: footerMessage });
 
-    await interaction.message.channel.send({ embeds: [embedShowDuel] });
+    await interaction.message.channel.send({ embeds: [embedShowDuel], components :[new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder()
+        .setCustomId("contreDuel")
+        .setLabel("Marche pas encore")
+        .setStyle(ButtonStyle.Primary))] });
     await interaction.message.delete();
   }
 }
@@ -247,7 +209,7 @@ async function createWinMessage(dataWin, channel) {
         .replace("@nameWinner", dataWin.nameWinner)
         .replace("@nameLooser", dataWin.nameLooser)
         .replace("@points", bareme.duel)
-        .replace("@houseLooser", dataWin.houseLooser);
+        .replace("@houseLooser", dataWin.houseLooser ? "aux " + dataWin.houseLooser : '');
 
     }
   }
@@ -259,46 +221,6 @@ async function createWinMessage(dataWin, channel) {
         "à tuer " +
         dataWin.nameLooser +
         " avec le sort interdit, Avada Kedavra. La maison " +
-        dataWin.houseWinner +
-        " récupère " +
-        points +
-        " points de la maison " +
-        dataWin.houseLooser +
-        ".";
-      break;
-    case "crache_limace":
-      winMessage =
-        "Aie ! " +
-        dataWin.nameLooser +
-        " se met à cracher des limaces à cause du sort de " +
-        dataWin.nameWinner +
-        ". La maison " +
-        dataWin.houseWinner +
-        " récupère " +
-        points +
-        " points de la maison " +
-        dataWin.houseLooser +
-        ".";
-      break;
-    case "expelliarmus":
-      winMessage =
-        dataWin.nameWinner +
-        " réussi à désarmer " +
-        dataWin.nameLooser +
-        " de sa baguette magique. La maison " +
-        dataWin.houseWinner +
-        " récupère " +
-        points +
-        " points de la maison " +
-        dataWin.houseLooser +
-        ".";
-      break;
-    case "petrificus_totalus":
-      winMessage =
-        dataWin.nameLooser +
-        " a été pétrifié par " +
-        dataWin.nameWinner +
-        " et perd le combat. La maison " +
         dataWin.houseWinner +
         " récupère " +
         points +
@@ -319,19 +241,6 @@ async function createWinMessage(dataWin, channel) {
         dataWin.houseLooser +
         ".";
       break;
-    case "expelliarmus":
-      winMessage =
-        dataWin.nameWinner +
-        " utilise Expelliarmus et le force " +
-        dataWin.nameLooser +
-        " à annoncer sa défaite. La maison " +
-        dataWin.houseWinner +
-        " récupère " +
-        points +
-        " points de la maison " +
-        dataWin.houseLooser +
-        ".";
-      break;
     case "imobilis":
       winMessage =
         dataWin.nameLooser +
@@ -340,19 +249,6 @@ async function createWinMessage(dataWin, channel) {
         " et perd le combat. La maison " +
         dataWin.houseWinner +
         " récupère" +
-        points +
-        " points de la maison " +
-        dataWin.houseLooser +
-        ".";
-      break;
-    case "silencio":
-      winMessage =
-        dataWin.nameLooser +
-        " a perdu le droit de parler par " +
-        dataWin.nameWinner +
-        " et perd le combat. La maison " +
-        dataWin.houseWinner +
-        " récupère " +
         points +
         " points de la maison " +
         dataWin.houseLooser +
@@ -373,24 +269,6 @@ async function createWinMessage(dataWin, channel) {
         dataWin.houseLooser +
         ".";
       break;
-    case "serpentasortia":
-      winMessage =
-        dataWin.nameWinner +
-        " utilise " +
-        dataWin.spellWinner +
-        " créant un serpent au pied de" +
-        dataWin.nameLooser +
-        ", et fuit de peur. La maison " +
-        dataWin.houseWinner +
-        " récupère " +
-        points +
-        " points de la maison " +
-        dataWin.houseLooser +
-        ".";
-      break;
-    default:
-      winMessage =
-        "Oh ! Leurs attaques s'entre-choc et s'annulent toutes les deux. c'est une égalité !";
   }*/
 
   return winMessage;
