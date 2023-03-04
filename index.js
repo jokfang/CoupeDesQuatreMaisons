@@ -269,6 +269,16 @@ client.on("interactionCreate", async (interaction) => {
         default:
       }
     }
+    switch (interaction.customId.split("_")[0]) {
+      case "contreDuel":
+        const duelStatus = "counter";
+        interaction.message.author = interaction.member;
+        if (await checkError(interaction.message, duelStatus)) {
+          const houseOpponent = await houseMembre(interaction.message.member);
+          createSelectMenuSpell(interaction.message, houseOpponent.id, duelStatus);
+        }
+        break;
+    }
   }
   else if (interaction.isSelectMenu()) {
     if (interaction.customId.split("_")[1] === "spell") {

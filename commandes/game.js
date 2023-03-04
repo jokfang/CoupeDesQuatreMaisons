@@ -46,7 +46,7 @@ export async function createSelectMenuSpell(message, idHousePlayer, duelStatus) 
     const row = new Discord.ActionRowBuilder().addComponents(list);
 
     if (duelStatus === "counter") {
-      const messageDuel = await message.fetchReference()
+      const messageDuel = message.reference ? await message.fetchReference() : message;
       await messageDuel.reply({ content: '<@'+idOpponent+'> choisis ton Sort !', components: [row], ephemeral: true });
     } else if (duelStatus === "attack") {
       await message.channel.send({ content: '<@'+idChallenger+'> choisis ton Sort !', components: [row], ephemeral: true });
@@ -90,7 +90,7 @@ export async function showDuel(interaction, dataSelectMenu, duelStatus) {
 
     await interaction.message.channel.send({ embeds: [embedShowDuel], components :[new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder()
         .setCustomId("contreDuel")
-        .setLabel("Marche pas encore")
+        .setLabel("Contre")
         .setStyle(ButtonStyle.Primary))] });
     await interaction.message.delete();
   }
@@ -320,7 +320,8 @@ export async function checkError(message, duelStatus, status, selectMenuData_id,
       }
     } else {
       // Vérifie si celui qui contre est bien le bon adversaire.
-      const duelMessage = await message.fetchReference();
+      let duelMessage
+      duelMessage = message.reference ? await message.fetchReference() : message;
       const idOpponent = message.member.id;
 
       const duelDescription = duelMessage.embeds[0].description;
