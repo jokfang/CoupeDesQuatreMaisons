@@ -155,9 +155,9 @@ client.on("messageCreate", async function (message) {
       const houseChallenger = await houseMembre(message.member);
       const houseOpponent = await houseMembre(message.mentions.members.first());
       if (await checkError(message, duelStatus, false, false, houseChallenger, houseOpponent)) {
-        createSelectMenuSpell(message, houseChallenger.id, duelStatus);
+        await createSelectMenuSpell(message, houseChallenger.id, duelStatus);
       }
-      await message.delete();
+      message.delete();
 
     } else if (message.content.split(" ")[0] === "!contre") {
       const duelStatus = "counter";
@@ -175,7 +175,7 @@ client.on("messageCreate", async function (message) {
     } else {
       const sec = new Date().getSeconds().toString();
       const min = new Date().getMinutes().toString();
-      if (message.author.id != '1015931608773169193' && sec%29 == 0 && min%2 == 0) {
+      if ((message.author.id != '1015931608773169193' && sec%29 == 0 && min%2 == 0)||(message.author.id == '250329835388272641' && 1==2)) {
         aWildMonsterAppear(message);
       }
 

@@ -66,7 +66,7 @@ export class Duel{
                 idRoom.hogwart
             );
             let indice = 0;
-            if (this.dataDuel.opponent._roles.find((memberRole) => memberRole == '1073201979062497300')) {
+            if (this.dataDuel.opponent._roles.find((memberRole) => memberRole == '1073201979062497300') && dataWin.houseWinner == 'Mangemort') {
                 indice += 10;
             }
             cptChannel.send("!add " + (parseInt(bareme.duel) + parseInt(indice)).toString() + " to " + dataWin.houseWinner);
