@@ -9,13 +9,14 @@ export class SpellSelect{
         this.spellList = null;
         this.idChallenger = null;
         this.idOpponent = null;
+        this.channel = this.interraction.channel 
     }
 
-    sendAttackSelect() {
+    async sendAttackSelect() {
         this.idChallenger = this.interraction.member.id;
         this.idOpponent = this.interraction.mentions.members.first().id;
-        this.spellList = this.setSpellList(this.spellRepository);
-        this.sendSpellSelect(idChallenger);
+        this.spellList = await this.setSpellList(this.spellRepository);
+        this.sendSpellSelect(this.idChallenger);
     }
 
     async sendCounterSelect() {
@@ -25,7 +26,7 @@ export class SpellSelect{
     }
 
     async setSpellList(spellRepository) {
-        const spells = await this.spellRepository.getSpells(this.interraction.message.channel);;
+        const spells = await this.spellRepository.getSpells(this.channel);;
         if (spells) {
             const list = new SelectMenuBuilder()
                 .setCustomId('selectMenu_spell_' + this.duelParam.duelStatus)

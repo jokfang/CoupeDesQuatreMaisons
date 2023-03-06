@@ -1,14 +1,11 @@
 import * as Discord from "discord.js";
 import { idRoom, bareme } from "../librairy/cupInfo.js";
 import { getRandomInt } from "../commandes/items.js";
-import { addPoint, removePoint } from "../commandes/point.js";
 import { houseMembreDuel } from "../commandes/membre.js";
-import * as dataGames from "../librairy/game.cjs";
-import { Repository } from "../repository/repository.js";
 import { SpellRepository } from "../repository/spellRepository.js";
 import { duelDescription } from "../type/duelParam.class.js";
-import { ButtonStyle } from "discord.js";
 import { SpellSelect } from "../class/spellSelect.js";
+import { WaitingDuelMessage } from "../class/waitingDuelMessage.js";
 
 export async function createDataDuel(message, dataSelectMenu, duelStatus) {
   let dataDuelInit = await Object.create(duelDescription);
@@ -19,87 +16,18 @@ export async function createDataDuel(message, dataSelectMenu, duelStatus) {
 }
 
 export async function createSelectMenuSpell(message, idHousePlayer, duelStatus) {
-  if (message.content) { 
-    const mySpellRepository = new SpellRepository();
-    const spells = await mySpellRepository.getSpellsOfHouse(message.channel, idHousePlayer);
-    let idChallenger;
-    let idOpponent;
-
-    if (duelStatus == "attack") {
-      idChallenger = message.member.id;
-      idOpponent = message.mentions.members.first().id;
-    } else if (duelStatus == "counter") {
-      idOpponent = message.member.id;
-      idChallenger = "null";
-    }
-    if (spells) {
-      const list = new Discord.SelectMenuBuilder()
-        .setCustomId('selectMenu_spell_' + duelStatus)
-        .setPlaceholder('Sort non sélectionné')
-      for (let i = 0; i < spells.length; i++) {
-        list.addOptions(
-          {
-            label: spells[i].spellName.charAt(0).toUpperCase() + spells[i].spellName.slice(1),
-            description: spells[i].spellDescription,
-            value: spells[i].spellName + '_' + idChallenger + '_' + idOpponent
-          }
-        )
-      }
-      const row = new Discord.ActionRowBuilder().addComponents(list);
-
-      if (duelStatus === "counter") {
-        const messageDuel = message.reference ? await message.fetchReference() : message;
-        await messageDuel.reply({ content: '<@' + idOpponent + '> choisis ton Sort !', components: [row], ephemeral: true });
-      } else if (duelStatus === "attack") {
-        await message.channel.send({ content: '<@' + idChallenger + '> choisis ton Sort !', components: [row], ephemeral: true });
-      }
-    }
-    } else {
-      const spellSelect = new SpellSelect(message, { duelStatus: duelStatus });
+  const spellSelect = new SpellSelect(message, { duelStatus: duelStatus });
+  if (duelStatus == 'attack') { 
+      return spellSelect.sendAttackSelect();  
+  } else if (duelStatus == 'counter') {
       return spellSelect.sendCounterSelect();
     }
 }
 
 export async function showDuel(interaction, dataSelectMenu, duelStatus) {
   const dataDuel = await createDataDuel(interaction, dataSelectMenu, duelStatus);
-
-  if (!dataDuel) {
-    return false;
-  } else {
-    const embedTitle = "Duel Lancé !";
-    /*let houseDescription;
-    if (cupActive == listCupActive[0]) {
-      houseDescription = " de la maison ";
-    } else if (cupActive == listCupActive[1]) {*/
-    const houseDescription = " de la maison ";
-
-    const duelMessage =
-      dataDuel.challenger.toString() +
-      houseDescription +
-      dataDuel.houseChallenger +
-      " tente d'utiliser " +
-      dataDuel.spellChallenger.toLowerCase() +
-      " sur " +
-      dataDuel.opponent.toString() +
-      houseDescription +
-      dataDuel.houseOpponent +
-      ".";
-    const footerMessage =
-      "Pour répondre à cette attaque, répondez à ce message avec \"!contre\".";
-
-    //Créer le message et l'envoyer*
-    const embedShowDuel = new Discord.EmbedBuilder()
-      .setColor(0x00ffff)
-      .setTitle(embedTitle)
-      .setDescription(duelMessage)
-      .setFooter({ text: footerMessage });
-
-    await interaction.message.channel.send({ embeds: [embedShowDuel], components :[new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder()
-        .setCustomId("contreDuel")
-        .setLabel("Contre")
-        .setStyle(ButtonStyle.Primary))] });
-    await interaction.message.delete();
-  }
+  const waitingDuelMessage = new WaitingDuelMessage(dataDuel);
+  waitingDuelMessage.sendWaitingDuelMessage(interaction);
 }
 
 export async function duelingPreparation(interaction, dataSelectMenu, duelStatus) {
