@@ -272,10 +272,9 @@ client.on("interactionCreate", async (interaction) => {
     switch (interaction.customId.split("_")[0]) {
       case "contreDuel":
         const duelStatus = "counter";
-        interaction.message.author = interaction.member;
-        if (await checkError(interaction.message, duelStatus)) {
+        if (await checkError(interaction, duelStatus)) {
           const houseOpponent = await houseMembre(interaction.message.member);
-          createSelectMenuSpell(interaction.message, houseOpponent.id, duelStatus);
+          createSelectMenuSpell(interaction, houseOpponent.id, duelStatus);
         }
         break;
     }
