@@ -10,8 +10,8 @@ import { duelDescription } from "../type/duelParam.class.js";
 import { ButtonStyle } from "discord.js";
 
 export async function createDataDuel(message, dataSelectMenu, duelStatus) {
-  let dataDuelInit = Object.create(duelDescription);
-  dataDuelInit.create(message, dataSelectMenu, duelStatus);
+  let dataDuelInit = await Object.create(duelDescription);
+  await dataDuelInit.create(message, dataSelectMenu, duelStatus);
 
   const dataDuel = await houseMembreDuel(dataDuelInit);
   return dataDuel;
