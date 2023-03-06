@@ -159,19 +159,6 @@ client.on("messageCreate", async function (message) {
       }
       message.delete();
 
-    } else if (message.content.split(" ")[0] === "!contre") {
-      const duelStatus = "counter";
-
-      if (message.reference) {
-        if (await checkError(message, duelStatus)) {
-          const houseOpponent = await houseMembre(message.member);
-          createSelectMenuSpell(message, houseOpponent.id, duelStatus);
-        }
-      } else {
-        await message.author.send("Vous n'avez pas répondu au message de duel du bot.")
-      }
-      message.delete();
-
     } else {
       const sec = new Date().getSeconds().toString();
       const min = new Date().getMinutes().toString();

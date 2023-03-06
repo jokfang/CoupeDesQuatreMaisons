@@ -128,15 +128,12 @@ export async function aWildMonsterAppear(message) {
 
     const duelMessage =
       "une créature attaque, défendez Poudlard";
-    const footerMessage =
-    "Pour répondre à cette attaque, répondez à ce message avec \"!contre\".";
   
     //Créer le message et l'envoyer*
     const embedShowDuel = new Discord.EmbedBuilder()
       .setColor(0x00ffff)
       .setTitle(embedTitle)
       .setDescription(duelMessage)
-      .setFooter({ text: footerMessage })
       .setThumbnail('https://bookstr.com/wp-content/uploads/2019/07/Scroutt_2.png');
 
   message.channel.messages.client.channels.cache.get('1064843417663844363').send({ embeds: [embedShowDuel], components:[new ActionRowBuilder().addComponents(new ButtonBuilder()
