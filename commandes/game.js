@@ -8,6 +8,7 @@ import { Repository } from "../repository/repository.js";
 import { SpellRepository } from "../repository/spellRepository.js";
 import { duelDescription } from "../type/duelParam.class.js";
 import { ButtonStyle } from "discord.js";
+import { SpellSelect } from "../class/spellSelect.js";
 
 export async function createDataDuel(message, dataSelectMenu, duelStatus) {
   let dataDuelInit = Object.create(duelDescription);
@@ -18,40 +19,45 @@ export async function createDataDuel(message, dataSelectMenu, duelStatus) {
 }
 
 export async function createSelectMenuSpell(message, idHousePlayer, duelStatus) {
-  const mySpellRepository = new SpellRepository();
-  const spells = await mySpellRepository.getSpellsOfHouse(message.channel, idHousePlayer);
-  let idChallenger;
-  let idOpponent;
+  if (message.content) { 
+    const mySpellRepository = new SpellRepository();
+    const spells = await mySpellRepository.getSpellsOfHouse(message.channel, idHousePlayer);
+    let idChallenger;
+    let idOpponent;
 
-  if (duelStatus == "attack") {
-    idChallenger = message.member.id;
-    idOpponent = message.mentions.members.first().id;
-  } else if (duelStatus == "counter") {
-    idOpponent = message.member.id;
-    idChallenger = "null";
-  }
-  if (spells) {
-    const list = new Discord.SelectMenuBuilder()
-    .setCustomId('selectMenu_spell_' + duelStatus)
-    .setPlaceholder('Sort non sélectionné')
-    for (let i = 0; i < spells.length;i++){
-      list.addOptions(
-        {
-          label: spells[i].spellName.charAt(0).toUpperCase() + spells[i].spellName.slice(1),
-          description: spells[i].spellDescription,
-          value: spells[i].spellName + '_' + idChallenger + '_' + idOpponent
-        }
-      )
+    if (duelStatus == "attack") {
+      idChallenger = message.member.id;
+      idOpponent = message.mentions.members.first().id;
+    } else if (duelStatus == "counter") {
+      idOpponent = message.member.id;
+      idChallenger = "null";
     }
-    const row = new Discord.ActionRowBuilder().addComponents(list);
+    if (spells) {
+      const list = new Discord.SelectMenuBuilder()
+        .setCustomId('selectMenu_spell_' + duelStatus)
+        .setPlaceholder('Sort non sélectionné')
+      for (let i = 0; i < spells.length; i++) {
+        list.addOptions(
+          {
+            label: spells[i].spellName.charAt(0).toUpperCase() + spells[i].spellName.slice(1),
+            description: spells[i].spellDescription,
+            value: spells[i].spellName + '_' + idChallenger + '_' + idOpponent
+          }
+        )
+      }
+      const row = new Discord.ActionRowBuilder().addComponents(list);
 
-    if (duelStatus === "counter") {
-      const messageDuel = message.reference ? await message.fetchReference() : message;
-      await messageDuel.reply({ content: '<@'+idOpponent+'> choisis ton Sort !', components: [row], ephemeral: true });
-    } else if (duelStatus === "attack") {
-      await message.channel.send({ content: '<@'+idChallenger+'> choisis ton Sort !', components: [row], ephemeral: true });
+      if (duelStatus === "counter") {
+        const messageDuel = message.reference ? await message.fetchReference() : message;
+        await messageDuel.reply({ content: '<@' + idOpponent + '> choisis ton Sort !', components: [row], ephemeral: true });
+      } else if (duelStatus === "attack") {
+        await message.channel.send({ content: '<@' + idChallenger + '> choisis ton Sort !', components: [row], ephemeral: true });
+      }
     }
-  }
+    } else {
+      const spellSelect = new SpellSelect(message, { duelStatus: duelStatus });
+      return spellSelect.sendCounterSelect();
+    }
 }
 
 export async function showDuel(interaction, dataSelectMenu, duelStatus) {
@@ -277,6 +283,10 @@ async function createWinMessage(dataWin, channel) {
 // Function qui vérifie tout les erreurs possibles.
 //Attention le paramètre message, peu être aussi un messageInteraction.
 export async function checkError(message, duelStatus, status, selectMenuData_id, houseChallenger, houseOpponent) {
+  if (!message.content) {
+    message.message.author = message.member;
+    message = message.message;
+  }
   if (duelStatus === "attack") {
     // Vérifie si c'est bien le challenger qui choisis le sort.
     if (status === "spell") {
