@@ -47,7 +47,7 @@ export class SpellSelect{
 
     sendSpellSelect(id) {
       const row = new ActionRowBuilder().addComponents(this.spellList);
-      this.interraction.reply({ content: '<@' + id + '> choisis ton Sort !', components: [row], ephemeral: true });
+      this.interraction.reply({ content: '<@' + id + '> choisis ton Sort !', components: [row], ephemeral: false });
     }
         
 }
