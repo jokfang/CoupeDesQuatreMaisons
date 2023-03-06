@@ -1,11 +1,9 @@
 import * as Discord from "discord.js";
-import { idRoom, bareme } from "../librairy/cupInfo.js";
-import { getRandomInt } from "../commandes/items.js";
 import { houseMembreDuel } from "../commandes/membre.js";
-import { SpellRepository } from "../repository/spellRepository.js";
 import { duelDescription } from "../type/duelParam.class.js";
 import { SpellSelect } from "../class/spellSelect.js";
 import { WaitingDuelMessage } from "../class/waitingDuelMessage.js";
+import { Duel } from "../class/duel.js";
 
 export async function createDataDuel(message, dataSelectMenu, duelStatus) {
   let dataDuelInit = await Object.create(duelDescription);
@@ -40,172 +38,8 @@ export async function duelingPreparation(interaction, dataSelectMenu, duelStatus
 }
 
 export async function duel(messageDuel, dataDuel, interaction) {
-  const channel = messageDuel.channel;
-  let rng_Challenger = getRandomInt(1, 10+Number(dataDuel.ratioChallenger));
-  let rng_Opponent = getRandomInt(1, 10+Number(dataDuel.ratioOpponent));
-
-  if (dataDuel.idChallenger == 'u' && rng_Challenger >= rng_Opponent) {
-    rng_Opponent = rng_Challenger;
-    rng_Challenger -= 1;
-  }
-
-  let dataWin = {
-    nameWinner: "",
-    houseWinner: "",
-    spellWinner: "",
-    nameLooser: "",
-    houseLooser: "",
-  };
-
-  let duelNull = false;
-
-  if (rng_Challenger == rng_Opponent) {
-    duelNull = true;
-  } else if (rng_Challenger > rng_Opponent) {
-    dataWin.nameWinner = dataDuel.challenger;
-    dataWin.nameLooser = dataDuel.opponent;
-    dataWin.houseWinner = dataDuel.houseChallenger;
-    dataWin.houseLooser = dataDuel.houseOpponent;
-    dataWin.spellWinner = dataDuel.spellChallenger;
-  } else {
-    dataWin.nameWinner = dataDuel.opponent;
-    dataWin.nameLooser = dataDuel.challenger;
-    dataWin.houseWinner = dataDuel.houseOpponent;
-    dataWin.houseLooser = dataDuel.houseChallenger;
-    dataWin.spellWinner = dataDuel.spellOpponent;
-  }
-
-  // Création du message du combat
-  const winMessage = await createWinMessage(dataWin, channel);
-  let challengerResult = '';
-  if (dataDuel.idChallenger == 'u') {
-    challengerResult = "Attaque" + " (" + rng_Challenger + ")";
-  } else {
-    challengerResult = dataDuel.spellChallenger + " (" + rng_Challenger + ")";
-  }
-  const opponentResult = dataDuel.spellOpponent + " (" + rng_Opponent + ")";
-  let challengerName = '';
-  if (dataDuel.idChallenger == 'u') {
-    challengerName = 'une créature';
-  }
-  else { challengerName = dataDuel.challenger.displayName; }
-
-  const opponentName = dataDuel.opponent.displayName;
-
-  const embed = new Discord.EmbedBuilder()
-    .setColor(0x00ffff)
-    .setTitle("Duel Terminé !")
-    .setDescription(winMessage)
-    .addFields(
-      { name: challengerName, value: challengerResult, inline: true },
-      { name: "Vs", value: "\u200B", inline: true },
-      { name: opponentName, value: opponentResult, inline: true }
-    );
-  await channel.send({ embeds: [embed] });
-  await interaction.message.delete();
-  await messageDuel.delete();
-
-  if (!duelNull) {
-    const cptChannel = channel.messages.client.channels.cache.get(
-      idRoom.hogwart
-    );
-    let indice = 0;
-    if (dataDuel.opponent._roles.find((memberRole) => memberRole == '1073201979062497300')) {
-      indice += 10;
-    }
-    cptChannel.send("!add " + (parseInt(bareme.duel) + parseInt(indice)).toString() + " to " + dataWin.houseWinner);
-    if (dataDuel.idChallenger != 'u') {
-      cptChannel.send("!remove " + bareme.duel + " to " + dataWin.houseLooser);
-    }
-  }
-}
-
-async function createWinMessage(dataWin, channel) {
-  let winMessage;
-  const mySpellRepository = new SpellRepository();
-  const spells = await mySpellRepository.getSpells(channel);
-  if (spells) {
-    winMessage = await spells.find(
-      (spell) => spell.spellName.toLowerCase() == dataWin.spellWinner.toLowerCase()
-    );
-
-    if (!winMessage) {
-      winMessage =
-        "Oh ! Leurs attaques s'entre-choc et s'annulent toutes les deux. c'est une égalité !";
-    } else {
-      if (dataWin.nameLooser == '') {
-        dataWin.nameLooser = 'une créature';
-      }
-
-      //on construit le winMessage
-      winMessage = winMessage.spellMessage;
-      winMessage = await winMessage
-        .replace("@nameWinner", dataWin.nameWinner)
-        .replace("@nameLooser", dataWin.nameLooser)
-        .replace("@points", bareme.duel)
-        .replace("@houseLooser", dataWin.houseLooser ? "aux " + dataWin.houseLooser : '');
-
-    }
-  }
-  /*switch (dataWin.spellWinner) {
-    // Coupe des 4 maisons
-    case "avada_kedavra":
-      winMessage =
-        dataWin.nameWinner +
-        "à tuer " +
-        dataWin.nameLooser +
-        " avec le sort interdit, Avada Kedavra. La maison " +
-        dataWin.houseWinner +
-        " récupère " +
-        points +
-        " points de la maison " +
-        dataWin.houseLooser +
-        ".";
-      break;
-    case "impédimenta":
-      winMessage =
-        dataWin.nameWinner +
-        " à fait tomber " +
-        dataWin.nameLooser +
-        ", il remporte le combat. La maison " +
-        dataWin.houseWinner +
-        " récupère " +
-        points +
-        " points de la maison " +
-        dataWin.houseLooser +
-        ".";
-      break;
-    case "imobilis":
-      winMessage =
-        dataWin.nameLooser +
-        " a été immobilisé par " +
-        dataWin.nameWinner +
-        " et perd le combat. La maison " +
-        dataWin.houseWinner +
-        " récupère" +
-        points +
-        " points de la maison " +
-        dataWin.houseLooser +
-        ".";
-      break;
-    case "stupéfix":
-      winMessage =
-        dataWin.nameWinner +
-        " utilise " +
-        dataWin.spellWinner +
-        " sur " +
-        dataWin.nameLooser +
-        " est réussi. La maison " +
-        dataWin.houseWinner +
-        " récupère " +
-        points +
-        " points de la maison " +
-        dataWin.houseLooser +
-        ".";
-      break;
-  }*/
-
-  return winMessage;
+  const duel = new Duel(dataDuel, messageDuel);
+  duel.resolveDuel(interaction);
 }
 
 // Function qui vérifie tout les erreurs possibles.
