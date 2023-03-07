@@ -13,13 +13,9 @@ export class Duel{
     }
 
     letsRoll() {
-        this.rng_Challenger = getRandomInt(1, 10+Number(this.dataDuel.ratioChallenger));
-        this.rng_Opponent = getRandomInt(1, 10+Number(this.dataDuel.ratioOpponent));
-        
-        if (this.dataDuel.idChallenger == 'u' && this.rng_Challenger >= this.rng_Opponent) {
-            this.rng_Opponent = this.rng_Challenger;
-            this.rng_Challenger -= 1;
-        }
+        //Si pas de ratio (PVE) alors 0
+        this.rng_Challenger = getRandomInt(1, 10+Number(this.dataDuel.ratioChallenger)) || 0;
+        this.rng_Opponent = getRandomInt(1, 10+Number(this.dataDuel.ratioOpponent)) || 0;
     }
 
     setDataWin() {
@@ -70,7 +66,7 @@ export class Duel{
                 indice += 10;
             }
             cptChannel.send("!add " + (parseInt(bareme.duel) + parseInt(indice)).toString() + " to " + dataWin.houseWinner);
-            if (this.dataDuel.idChallenger != 'u') {
+            if (this.dataDuel.battleType != 'PVE') {
                 cptChannel.send("!remove " + bareme.duel + " to " + dataWin.houseLooser);
             }
         }
@@ -105,9 +101,9 @@ export class Duel{
 
         let challengerResult = '';
         let challengerName = '';
-        if (this.dataDuel.idChallenger == 'u') {
+        if (this.dataDuel.battleType == 'PVE') {
             challengerResult = "Attaque" + " (" + this.rng_Challenger + ")";
-            challengerName = 'une créature';
+            challengerName = 'Créature';
         } else {
             challengerResult = this.dataDuel.spellChallenger + " (" + this.rng_Challenger + ")";
             challengerName = this.dataDuel.challenger.displayName;

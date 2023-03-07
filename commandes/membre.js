@@ -56,7 +56,7 @@ export async function houseMembreDuel(dataDuel) {
 
   for (let maison of maisons) {
     // check house Challenger
-    if (dataDuel.idChallenger != 'u') {
+    if (dataDuel.battleType != 'PVE') {
       if (await dataDuel.challenger._roles.find((memberRole) => memberRole == maison.roleId)) {
         dataDuel.houseChallenger = await maison.nom;
         dataDuel.idHouseChallenger = await maison.roleId;
@@ -84,7 +84,7 @@ export async function houseMembreDuel(dataDuel) {
         cptChannel.send("!add " + bareme.duel + " to " + maison.nom);
       }
     }
-  } else if ((dataDuel.houseChallenger.length === 0 || dataDuel.houseOpponent.length === 0) && dataDuel.idChallenger != 'u') {
+  } else if ((dataDuel.houseChallenger.length === 0 || dataDuel.houseOpponent.length === 0) && dataDuel.battleType != 'PVE') {
     error_noHouse(dataDuel);
   } else {
     return dataDuel;

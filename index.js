@@ -162,7 +162,7 @@ client.on("messageCreate", async function (message) {
     } else {
       const sec = new Date().getSeconds().toString();
       const min = new Date().getMinutes().toString();
-      if ((message.author.id != '1015931608773169193' && sec%29 == 0 && min%2 == 0)||(message.author.id == '250329835388272641' && 1==2)) {
+      if ((message.author.id != '1015931608773169193' && sec%29 == 0 && min%2 == 0)||(message.author.id == '250329835388272641' && message.content=='!mobSpawn')) {
         aWildMonsterAppear(message);
       }
 

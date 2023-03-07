@@ -13,6 +13,7 @@ export const duelDescription = {
     houseOpponent: "",
     idHouseOpponent: "",
     spellOpponent: "",
+    battleType: "PVP",
 
     async create(message, dataSelectMenu, duelStatus){
         this.message = message;
@@ -33,7 +34,6 @@ export const duelDescription = {
         } else if (duelStatus == "counter") {
             //opponent 
             this.spellOpponent = dataSelectMenu.split("_")[0];
-            this.idOpponent = dataSelectMenu.split("_")[2];
 
             //challenger
             const duelDescription = message.embeds[0].description;
@@ -44,8 +44,10 @@ export const duelDescription = {
             const idStart = duelDescription.indexOf("<@") + 2;
             const idEnd = duelDescription.indexOf(">");
             this.idChallenger = duelDescription.substring(idStart, idEnd);
-            if (duelDescription != 'une créature attaque, défendez Poudlard') {
-            this.challenger = await message.guild.members.fetch(this.idChallenger);
+            if (idEnd < 0) {
+              this.battleType = 'PVE';
+            } else {              
+                this.challenger = await message.guild.members.fetch(this.idChallenger);
             }
         }
     }
