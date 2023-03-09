@@ -1,4 +1,4 @@
-import { Client, EmbedBuilder, GatewayIntentBits } from "discord.js";
+import { Client, GatewayIntentBits } from "discord.js";
 import { Repository } from "./repository/repository.js";
 import * as data from "./data/info.cjs";
 // commandes
@@ -7,8 +7,8 @@ import { newHouseCup, addHouse, deleteHouse } from "./commandes/maison.js";
 import { addMembre, removeMembre, houseMembre } from "./commandes/membre.js";
 import { setPoint, addPoint, removePoint } from "./commandes/point.js";
 import { setColor, setNom, setBlason } from "./commandes/setMaison.js";
-import { getButtonInterface, getButtonInterface_PointByHouse, getButtonInterface_house, getButtonInterface_PointByMember } from "./commandes/interface.js";
-import { createSelectMenuSpell, showDuel, checkError, duelingPreparation, aWildMonsterAppear } from "./commandes/game.js";
+import { getButtonInterface, getButtonInterface_PointByHouse, getButtonInterface_house } from "./commandes/interface.js";
+import { createSelectMenuSpell, showDuel, checkError, duelingPreparation, aWildMonsterAppear, counterMonstre } from "./commandes/game.js";
 //Librairy
 import { bareme, bareme_multiple, getChannelBox, idRoom, roles } from "./librairy/cupInfo.js";
 // Outils
@@ -264,6 +264,11 @@ client.on("interactionCreate", async (interaction) => {
           createSelectMenuSpell(interaction, houseOpponent.id, duelStatus);
         }
         break;
+      case "contreMonster":
+        const houseOpponent = await houseMembre(interaction.message.member);
+        counterMonstre(interaction);
+        interaction.deferUpdate();
+      break;
     }
   }
   else if (interaction.isSelectMenu()) {
