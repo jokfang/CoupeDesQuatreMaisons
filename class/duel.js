@@ -1,7 +1,7 @@
 import { getRandomInt } from "../commandes/items.js";
 import { SpellRepository } from "../repository/spellRepository.js";
 import { EmbedBuilder } from "discord.js";
-import { idRoom, bareme } from "../librairy/cupInfo.js";
+import { bareme, currentCup } from "../librairy/cupInfo.js";
 export class Duel{
     constructor(dataDuel,messageDuel) {
         this.dataDuel = dataDuel;
@@ -59,7 +59,7 @@ export class Duel{
 
         if (!this.duelNull) {
             const cptChannel = this.channel.messages.client.channels.cache.get(
-                idRoom.hogwart
+                currentCup
             );
             let indice = 0;
             if (this.dataDuel.opponent._roles.find((memberRole) => memberRole == '1073201979062497300') && dataWin.houseWinner == 'Mangemort') {

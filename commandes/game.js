@@ -5,7 +5,8 @@ import { SpellSelect } from "../class/spellSelect.js";
 import { WaitingDuelMessage } from "../class/waitingDuelMessage.js";
 import { Duel } from "../class/duel.js";
 import { ActionRowBuilder, ButtonStyle, ButtonBuilder, EmbedBuilder } from "discord.js";
-import { idRoom, bareme } from "../librairy/cupInfo.js";
+import { bareme, currentCup } from "../librairy/cupInfo.js";
+import { Repository } from "../repository/repository.js";
 
 export async function createDataDuel(message, dataSelectMenu, duelStatus) {
   let dataDuelInit = await Object.create(duelDescription);
@@ -121,50 +122,5 @@ export async function checkError(message, duelStatus, status, selectMenuData_id,
         return false;
       }
     }
-  }
-}
-
-export async function aWildMonsterAppear(message) {
-    const embedTitle = "Une créature apparait !";
-
-    const duelMessage =
-      "une créature attaque, défendez Poudlard";
-  
-    //Créer le message et l'envoyer*
-    const embedShowDuel = new Discord.EmbedBuilder()
-      .setColor(0x00ffff)
-      .setTitle(embedTitle)
-      .setDescription(duelMessage)
-      .setThumbnail('https://bookstr.com/wp-content/uploads/2019/07/Scroutt_2.png');
-
-    await message.channel.messages.client.channels.cache.get('1064843417663844363').send({ embeds: [embedShowDuel], components:[new ActionRowBuilder().addComponents(new ButtonBuilder()
-        .setCustomId("contreMonster")
-        .setLabel("Contre")
-      .setStyle(ButtonStyle.Primary))]
-    }).then(msg => setTimeout(() => msg.delete(), 600000));
-}
-
-export async function counterMonstre(interraction) {
-  const embed = interraction.message.embeds[0];
-  const embedsEdited = new EmbedBuilder()
-    .setColor(embed.color)
-    .setTitle(embed.title)
-    .setDescription(embed.description)
-    .setThumbnail(embed.thumbnail.url);
-  let edited = false;
-  if (embed.fields.length && !embed.fields[0]?.value.includes('<@' + interraction.member + '>')) {
-    embedsEdited.addFields({ name: 'Attaquant', value: embed.fields[0].value + ', <@' + interraction.member + '>', inline: true });
-    edited = true;
-  }
-  else if(!embed.fields.length){   
-    embedsEdited.addFields({ name: 'Attaquant', value: '<@' + interraction.member + '>', inline: true });
-    interraction.message.edit({ embeds: [embedsEdited] });
-    edited = true;
-  }
-
-  if (edited) {
-    interraction.message.edit({ embeds: [embedsEdited] });
-    const cptChannel = interraction.message.client.channels.cache.get(idRoom.hogwart);
-    cptChannel.send("!add " + (bareme.duel/2).toString() + " to <@" + interraction.member + '>');
   }
 }

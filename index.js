@@ -8,13 +8,13 @@ import { addMembre, removeMembre, houseMembre } from "./commandes/membre.js";
 import { setPoint, addPoint, removePoint } from "./commandes/point.js";
 import { setColor, setNom, setBlason } from "./commandes/setMaison.js";
 import { getButtonInterface, getButtonInterface_PointByHouse, getButtonInterface_house } from "./commandes/interface.js";
-import { createSelectMenuSpell, showDuel, checkError, duelingPreparation, aWildMonsterAppear, counterMonstre } from "./commandes/game.js";
+import { createSelectMenuSpell, showDuel, checkError, duelingPreparation } from "./commandes/game.js";
 //Librairy
-import { bareme, bareme_multiple, getChannelBox, idRoom, roles } from "./librairy/cupInfo.js";
+import { bareme, bareme_multiple, roles } from "./librairy/cupInfo.js";
 // Outils
 import * as timers from "node:timers/promises";
+import { Monster } from "./class/monster.js";
 const wait = timers.setTimeout;
-export let channelBox = getChannelBox();
 
 //Droit attribué au bot
 const client = new Client({
@@ -33,9 +33,6 @@ const token = data.default.token;
 //Connexion du bot
 client.once("ready", () => {
   console.log("Félicitations, votre bot est ok !");
-
-  // Récpèrer les Channel avec leur ID
-  channelBox.hogwart = client.channels.cache.get(idRoom.hogwart);
 });
 client.login(token);
 
@@ -162,8 +159,8 @@ client.on("messageCreate", async function (message) {
     } else {
       const sec = new Date().getSeconds().toString();
       const min = new Date().getMinutes().toString();
-      if ((message.author.id != '1015931608773169193' && sec%29 == 0 && min%2 == 0)||(message.author.id == '250329835388272641' && message.content=='!mobSpawn')) {
-        aWildMonsterAppear(message);
+      if ((message.author.id != '1015931608773169193' && sec%29 == 0 && min%2 == 0)||(message.author.id == '250329835388272641' && message.content=='!mobSpawns')) {
+        new Monster(message).aWildMonsterAppear();
       }
 
       if (message.content.toLowerCase().includes("moldu")) {
@@ -264,9 +261,9 @@ client.on("interactionCreate", async (interaction) => {
           createSelectMenuSpell(interaction, houseOpponent.id, duelStatus);
         }
         break;
-      case "contreMonster":
+      case "contreMonsters":
         const houseOpponent = await houseMembre(interaction.message.member);
-        counterMonstre(interaction);
+        new Monster(interaction).counterMonstre();
         interaction.deferUpdate();
       break;
     }

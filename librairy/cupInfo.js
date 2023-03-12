@@ -1,14 +1,10 @@
-export function getChannelBox(client) {
-  const channelBoxInit = {
-    ohana: ""
-  };
-  return channelBoxInit;
-}
-
 export const idRoom = {
   ohana: "1021509224343281764",
-  hogwart: "1064833759293210684"
+  hogwart: "1064833759293210684",
+  hyrule: "1083394176655310948"
 };
+
+export const currentCup = idRoom.hyrule;
 
 export const roles = {
   //ID des Roles
