@@ -103,15 +103,9 @@ export async function checkError(message, duelStatus, status, selectMenuData_id,
       const end = duelDescription.lastIndexOf("> ");
       const idOpponentDuel = duelDescription.substring(start, end);
 
-      if (idOpponent === idOpponentDuel || duelDescription == 'une créature attaque, défendez Poudlard') {
-        if (duelDescription == 'une créature attaque, défendez Poudlard') {
-          //recherche de Mangemort         
-          if (message.member._roles.find((memberRole) => memberRole == '1073201979062497300')) {
-            message.author.send("Vous souhaitez vraiment défendre Poudlard ? ce n'est pas digne d'un mangemort")
-            return false;
-          } else {
+      if (idOpponent === idOpponentDuel || duelDescription == 'Une créature apparait, capturez là') {
+        if (duelDescription == 'Une créature apparait, capturez là') {
             return true;
-          }
           
         } else {
           return true;
@@ -128,18 +122,18 @@ export async function aWildMonsterAppear(message) {
     const embedTitle = "Une créature apparait !";
 
     const duelMessage =
-      "une créature attaque, défendez Poudlard";
+      "Une créature apparait, capturez là";
   
     //Créer le message et l'envoyer*
     const embedShowDuel = new Discord.EmbedBuilder()
       .setColor(0x00ffff)
       .setTitle(embedTitle)
       .setDescription(duelMessage)
-      .setThumbnail('https://bookstr.com/wp-content/uploads/2019/07/Scroutt_2.png');
+      .setThumbnail('https://media.tenor.com/hFI8kPSHEk8AAAAM/niffler-fantastic.gif');
 
     await message.channel.messages.client.channels.cache.get('1064843417663844363').send({ embeds: [embedShowDuel], components:[new ActionRowBuilder().addComponents(new ButtonBuilder()
         .setCustomId("contreMonster")
-        .setLabel("Contre")
+        .setLabel("Capture")
       .setStyle(ButtonStyle.Primary))]
     }).then(msg => setTimeout(() => msg.delete(), 600000));
 }
@@ -153,11 +147,11 @@ export async function counterMonstre(interraction) {
     .setThumbnail(embed.thumbnail.url);
   let edited = false;
   if (embed.fields.length && !embed.fields[0]?.value.includes('<@' + interraction.member + '>')) {
-    embedsEdited.addFields({ name: 'Attaquant', value: embed.fields[0].value + ', <@' + interraction.member + '>', inline: true });
+    embedsEdited.addFields({ name: 'Captures', value: embed.fields[0].value + ', <@' + interraction.member + '>', inline: true });
     edited = true;
   }
   else if(!embed.fields.length){   
-    embedsEdited.addFields({ name: 'Attaquant', value: '<@' + interraction.member + '>', inline: true });
+    embedsEdited.addFields({ name: 'Capture', value: '<@' + interraction.member + '>', inline: true });
     interraction.message.edit({ embeds: [embedsEdited] });
     edited = true;
   }
