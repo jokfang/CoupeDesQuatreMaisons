@@ -1,6 +1,6 @@
 import { Repository } from "../repository/repository.js";
 import * as Discord from "discord.js";
-import { channelBox } from "../index.mjs";
+import { channelBox } from "../index.js";
 import { bareme, bareme_multiple } from "../librairy/cupInfo.js";
 import { ButtonStyle } from "discord.js";
 

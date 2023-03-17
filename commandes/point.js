@@ -1,6 +1,6 @@
 import { Client, DiscordAPIError, EmbedBuilder } from "discord.js";
 import { Repository } from "../repository/repository.js";
-import { channelBox, sendToJokfang } from "../index.mjs";
+import { channelBox, sendToJokfang } from "../index.js";
 import fs from 'fs';
 
 export async function setPoint(houseName, montant, channel) {

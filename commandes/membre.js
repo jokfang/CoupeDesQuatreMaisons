@@ -1,5 +1,5 @@
 import { Repository } from "../repository/repository.js";
-import { channelBox } from "../index.mjs";
+import { channelBox } from "../index.js";
 import { bareme, idRoom } from "../librairy/cupInfo.js";
 
 export async function addMembre(houseName, message) {
