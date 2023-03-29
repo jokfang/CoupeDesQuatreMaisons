@@ -1,9 +1,8 @@
-import { Client, GatewayIntentBits } from "discord.js";
+import { Client, GatewayIntentBits, Events } from "discord.js";
 import { Repository } from "./repository/repository.js";
 import * as data from "./data/info.cjs";
 // commandes
 import { help } from "./commandes/help.js";
-import { newHouseCup, addHouse, deleteHouse } from "./commandes/maison.js";
 import { addMembre, removeMembre, houseMembre } from "./commandes/membre.js";
 import { setPoint, addPoint, removePoint } from "./commandes/point.js";
 import { setColor, setNom, setBlason } from "./commandes/setMaison.js";
@@ -43,38 +42,6 @@ client.login(token);
 const myRepository = new Repository();
 
 //Lorsqu'on reçoit un message:
-
-exports.handler = async (event) => {
-  // Checking signature (requirement 1.)
-  // Your public key can be found on your application in the Developer Portal
-  const PUBLIC_KEY = process.env.PUBLIC_KEY;
-  const signature = event.headers['x-signature-ed25519']
-  const timestamp = event.headers['x-signature-timestamp'];
-  const strBody = event.body; // should be string, for successful sign
-
-  const isVerified = nacl.sign.detached.verify(
-    Buffer.from(timestamp + strBody),
-    Buffer.from(signature, 'hex'),
-    Buffer.from(PUBLIC_KEY, 'hex')
-  );
-  
- if (!isVerified) {
-    return {
-      statusCode: 401,
-      body: JSON.stringify('invalid request signature'),
-    };
-  }
-
-
-  // Replying to ping (requirement 2.)
-  const body = JSON.parse(strBody)
-  if (body.type == 1) {
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ "type": 1 }),
-    }
-  }
-};
 client.on("messageCreate", async function (message) {
   try {
     console.log(message.content);
@@ -148,32 +115,6 @@ client.on("messageCreate", async function (message) {
         newHouseCup(message.channel);
       }
       message.delete();
-    } else if (message.content.split(" ")[0] === "!addHouse" && isOK) {
-      //Si les points sont renseigné on envois les points, sinon on créé les messages avec 0 points
-      if (message.content.split(" ").length == "1") {
-        addHouse(message.channel);
-      } else if (message.content.split(" ").length == "2") {
-        addHouse(message.channel, message.content.split(" ")[1]);
-      } else if (message.content.split(" ").length == "3") {
-        addHouse(
-          message.channel,
-          message.content.split(" ")[1],
-          "",
-          message.content.split(" ")[2]
-        );
-      } else if (message.content.split(" ").length == "4") {
-        addHouse(
-          message.channel,
-          message.content.split(" ")[1],
-          message.content.split(" ")[3],
-          message.content.split(" ")[2]
-        );
-      }
-      message.delete();
-    } else if (message.content.split(" ")[0] === "!removeHouse" && isOK) {
-      //Supprime une maison en utilisant son nom
-      deleteHouse(message, message.content.split(" ")[1]);
-      message.delete();
     } else if (message.content.split(" ")[0] === "!bouton" && isOK) {
       // Ouvre l'interface des boutons
       getButtonInterface(message);
@@ -216,9 +157,8 @@ client.on("messageCreate", async function (message) {
 });
 
 //Lorsqu'on reçoit une interaction (Bouton, Select menu,...)
-client.on("interactionCreate", async (interaction) => {
+client.on(Events.InteractionCreate, async (interaction) => {
   //Droit Modération
-
   const moderationRoleByInteraction =
     interaction.message.member._roles.find(
       (memberRole) => memberRole == roles.administrateur

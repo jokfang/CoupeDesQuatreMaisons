@@ -44,14 +44,7 @@ export function help(message) {
       name: "!newHouseCup",
       value:
         "Lance une nouvelle coupe des quatres maisons. \n" +
-        "Si il n'y en avait pas eu avant elle créé 4 maisons avec des valeurs par défaut, sinon elle recréé les maisons qui avait été créé sur ce channel",
-    },
-    {
-      name: "!addHouse",
-      value:
-        "Ajoute une nouvelle maison avec des valeurs par défaut. \n" +
-        "!addHouse Nom Couleur URL (attributs optionnels, on peut faire un !addHouse Nom ou un !addHouse Nom Couleur) ajoute une maison avec un Nom, une Couleur(voir !setCouleur pour le fonctionnement) et un blason correspondant à URL\n" +
-        "il est conseillé de modifier le nom de celle ci tout de suite après, cela créé également un role avec le même nom qu'il faudra personnaliser via la modération du discord",
+        "cette commande créé/recréé les maisons qui avait été initié sur ce channel",
     },
     {
       name: "!removeHouse",
