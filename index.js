@@ -243,7 +243,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
       break;
     }
   }
-  else if (interaction.isSelectMenu()) {
+  else if (interaction.isStringSelectMenu()) {
     if (interaction.customId.split("_")[1] === "spell") {
       const dataSelectMenu = interaction.values[0];
       const duelStatus = interaction.customId.split("_")[2];
