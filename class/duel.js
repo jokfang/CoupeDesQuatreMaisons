@@ -1,6 +1,6 @@
 import { getRandomInt } from "../commandes/items.js";
 import { SpellRepository } from "../repository/spellRepository.js";
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, Colors } from "discord.js";
 import { idRoom, bareme } from "../librairy/cupInfo.js";
 export class Duel{
     constructor(dataDuel,messageDuel) {
@@ -115,7 +115,7 @@ export class Duel{
         const opponentName = this.dataDuel.opponent.displayName;
 
         return new EmbedBuilder()
-            .setColor(0x00ffff)
+            .setColor(Colors.Blue)
             .setTitle("Duel Terminé !")
             .setDescription(winMessage)
             .addFields(

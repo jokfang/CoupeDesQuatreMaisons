@@ -1,5 +1,5 @@
 import { SpellRepository } from "../repository/spellRepository.js";
-import { ActionRowBuilder, SelectMenuBuilder } from "discord.js";
+import { ActionRowBuilder, StringSelectMenuBuilder } from "discord.js";
 
 export class SpellSelect{
     constructor(interractionReceived, duelParameter) {
@@ -28,7 +28,7 @@ export class SpellSelect{
     async setSpellList(spellRepository) {
         const spells = await this.spellRepository.getSpells(this.channel);;
         if (spells) {
-            const list = new SelectMenuBuilder()
+            const list = new StringSelectMenuBuilder()
                 .setCustomId('selectMenu_spell_' + this.duelParam.duelStatus)
                 .setPlaceholder('Sort non sélectionné')
             for (let i = 0; i < spells.length; i++) {
