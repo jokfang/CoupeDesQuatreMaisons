@@ -126,7 +126,7 @@ export async function aWildMonsterAppear(message) {
   
     //Créer le message et l'envoyer*
     const embedShowDuel = new Discord.EmbedBuilder()
-      .setColor(Dicord.Colors.Blue)
+      .setColor(Discord.Colors.Blue)
       .setTitle(embedTitle)
       .setDescription(duelMessage)
       .setThumbnail('https://media.tenor.com/hFI8kPSHEk8AAAAM/niffler-fantastic.gif');
