@@ -1,5 +1,6 @@
 import mysql from "mysql2";
 import * as houses from "../data/info.cjs";
+import { Monster } from "../librairy/Monster.js";
 
 export class Repository {
   constructor() {}
@@ -229,25 +230,6 @@ export class Repository {
   }
 
   async getMonster() {
-    const con = mysql.createConnection({
-      host: houses.default.host,
-      user: houses.default.user,
-      password: houses.default.password,
-      port: houses.default.port,
-      database: houses.default.database,
-    });
-    con.connect(function (err) {
-      if (err) {
-        if (err.message.code === "ETIMEDOUT") {
-          console.log("TimeOut de la BDD");
-        }
-      }
-      //console.log("Connected to MySQLDB");
-    });
-    const query = "select * from Monster ORDER BY RAND() LIMIT 1";
-    const retour = await con.promise().query(query);
-    con.end();
-
-    return retour[0][0];
+    return Monster;
   }
 }
