@@ -40,18 +40,18 @@ export const spells = [
         roleId: '',
         spellName: 'Silencio',
         spellMessage: '@nameWinner a réduit @nameLooser au silence. Sa maison prend @points points @houseLooser'
-    }
-];
-
-/*
-,
+    },
     {
         serverId: '934877620707950652',
         channelId: '1064843417663844363',
         roleId: '',
         spellName: 'Serpensortia',
         spellMessage: '@nameWinner fait jaillir un serpent au pied de @nameLooser qui prends peur et s\'enfuit. Sa maison prend @points points @houseLooser'
-    },
+    }
+];
+
+/*
+,
     {
         serverId: '934877620707950652',
         channelId: '1064843417663844363',
