@@ -62,9 +62,6 @@ export class Duel{
                 currentCup
             );
             let indice = 0;
-            if (this.dataDuel.opponent._roles.find((memberRole) => memberRole == '1073201979062497300') && dataWin.houseWinner == 'Mangemort') {
-                indice += 10;
-            }
             if (dataWin.houseWinner) {
                 cptChannel.send("!add " + (parseInt(bareme.duel) + parseInt(indice)).toString() + " to " + dataWin.houseWinner);
                 if (this.dataDuel.battleType != 'PVE') {

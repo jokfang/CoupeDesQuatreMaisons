@@ -120,7 +120,7 @@ client.on("messageCreate", async function (message) {
       //Si les points sont renseigné on envois les points, sinon on créé les messages avec 0 points
       help(message);
       message.delete();
-    } else if (message.content.split(" ")[0] === "!dual") {
+    } else if (message.content.split(" ")[0] === "!duel") {
       const duelStatus = "attack";
       const houseChallenger = await houseMembre(message.member);
       const houseOpponent = await houseMembre(message.mentions.members.first());
@@ -134,15 +134,6 @@ client.on("messageCreate", async function (message) {
       const min = new Date().getMinutes().toString();
       if ((message.author.id != '1015931608773169193' && sec%29 == 0 && min%2 == 0)||(message.author.id == '250329835388272641' && message.content=='!mobSpawns')) {
         new Monster(message).aWildMonsterAppear();
-      }
-
-      if (message.content.toLowerCase().includes("moldu")) {
-        message.author.send("Uv bt wjtjcmfnfou vo bwjt usbodif tvs dfuuf rvftujpo, d'ftu cjfo. Tj df nfttbhf u'ft qbswfov, d'ftu tbot epvuf qbsdfrvf uv bt ef cpooft ejtqptjujpo qpvs tbvwfs Qpvembse. Kf o'bj qbt qv gbjsf gmbodifs mft bvusft gpoebufvst nbjt jm ftu jnqpsubou rvf dfmb dibohf. Uv bt gsbodij mb qsfnjfsf fubqf fo usbevjtbou df nfttbhf, kf u'jowjuf b dpoubdufs vo npep bwfd mf nfttbhf 'Hmpjsf bvy tbjouft Mbncbt' jm tbvsb qfvu fusf rvpj gbjsf ef upj.");
-      }
-
-      if (message.content == '!Senounou') {
-        client.users.cache.get('250329835388272641').send(message.author.username + ' à utilisé le sort interdit !');
-        message.delete();
       }
     }
   } catch (error) {

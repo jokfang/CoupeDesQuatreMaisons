@@ -41,7 +41,6 @@ export async function removePoint(houseName, montant, message) {
   } else {
     maison = await myRepository.getMaison(channelCup, houseName);
   }
-  //if (maison.nom != 'Mangemort') {
     const msg = await channelCup.messages.fetch(maison.messageId);
 
     //On décrémente le compteur
@@ -60,9 +59,6 @@ export async function removePoint(houseName, montant, message) {
       .setDescription(cpt.toString());
     //On édit le message
       msg.edit({ embeds: [embed] });
-  /*} else {
-    sendToJokfang(montant + ' points retiré aux mangemorts');
-  }*/
 }
 
 //Ajoute des points à une maison en prenant son id et le montant de point à ajouter
