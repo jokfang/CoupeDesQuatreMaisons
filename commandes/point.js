@@ -1,12 +1,11 @@
-import { Client, DiscordAPIError, EmbedBuilder } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { Repository } from "../repository/repository.js";
-import { channelBox, sendToJokfang } from "../index.js";
-import fs from 'fs';
+import { currentCup } from "../librairy/cupInfo.js";
 
 export async function setPoint(houseName, montant, channel) {
   const myRepository = new Repository();
 
-  const channelCup = channelBox.hogwart;
+  const channelCup = currentCup;
   const maison = await myRepository.getMaison(channelCup, houseName);
   const msg = await channelCup.messages.fetch(maison.messageId);
 
@@ -31,7 +30,7 @@ export async function removePoint(houseName, montant, message) {
   let maison;
   const myRepository = new Repository();
 
-  const channelCup = channelBox.hogwart;
+  const channelCup = currentCup;
   if (houseName.substring(0, 2) == "<@") {
     const maisons = await myRepository.getMaisons(channelCup);
     let member = message.mentions.members.first();
@@ -71,7 +70,7 @@ export async function addPoint(houseName, montant, message) {
   let maison;
   const myRepository = new Repository();
 
-  const channelCup = channelBox.hogwart;
+  const channelCup = currentCup;
   if (houseName.substring(0, 2) == "<@") {
     const maisons = await myRepository.getMaisons(channelCup);
     let member = message.mentions.members.first();

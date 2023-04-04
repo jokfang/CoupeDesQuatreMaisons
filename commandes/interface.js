@@ -1,7 +1,6 @@
 import { Repository } from "../repository/repository.js";
 import * as Discord from "discord.js";
-import { channelBox } from "../index.js";
-import { bareme, bareme_multiple } from "../librairy/cupInfo.js";
+import { bareme, bareme_multiple, currentCup } from "../librairy/cupInfo.js";
 import { ButtonStyle } from "discord.js";
 
 // Obtient un menu de bouton.
@@ -36,7 +35,7 @@ export function getButtonInterface(message) {
 
 export async function getButtonInterface_PointByHouse(interaction) {
   const myRepository = new Repository();
-  const channelCup = channelBox.hogwart;
+  const channelCup = currentCup;
   const maisons = await myRepository.getMaisons(channelCup);
 
   // Création des boutons pour les quatre premières maisons
@@ -80,7 +79,7 @@ export async function getButtonInterface_PointByHouse(interaction) {
 
 export async function getButtonInterface_house(interaction, house) {
   const myRepository = new Repository();
-  const channelCup = channelBox.hogwart;
+  const channelCup = currentCup;
   const maisons = await myRepository.getMaisons(channelCup);
 
   let rowBits = new Discord.ActionRowBuilder().addComponents(
@@ -157,7 +156,7 @@ export async function getButtonInterface_house(interaction, house) {
 
 export async function getButtonInterface_PointByMember(interaction) {
   const myRepository = new Repository();
-  const channelCup = channelBox.hogwart;
+  const channelCup = currentCup;
   const maisons = await myRepository.getMaisons(channelCup);
 
   const rowMember = new Discord.ActionRowBuilder();
