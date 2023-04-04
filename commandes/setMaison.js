@@ -8,7 +8,7 @@ export async function setBlason(houseName, image, channel) {
 
   let cpt = parseInt(msg.embeds[0].data.description);
   maison.blason = image;
-  await myRepository.updateHouse(channel, maison.messageId, maison);
+  //await myRepository.updateHouse(channel, maison.messageId, maison);
 
   if (cpt < 0) {
     cpt = 0;
@@ -32,7 +32,7 @@ export async function setNom(houseName, nom, channel) {
   let cpt = parseInt(msg.embeds[0].data.description);
 
   maison.nom = nom;
-  await myRepository.updateHouse(channel, maison.messageId, maison);
+  //await myRepository.updateHouse(channel, maison.messageId, maison);
 
   if (cpt < 0) {
     cpt = 0;
@@ -56,7 +56,7 @@ export async function setColor(houseName, couleur, channel) {
   let cpt = parseInt(msg.embeds[0].data.description);
 
   maison.couleur = couleur;
-  await myRepository.updateHouse(channel, maison.messageId, maison);
+  //await myRepository.updateHouse(channel, maison.messageId, maison);
 
   //On construit le message qui sera appliqué en annule et remplace du précédent
   const embed = new EmbedBuilder()

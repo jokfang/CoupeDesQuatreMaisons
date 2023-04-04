@@ -104,15 +104,9 @@ export async function checkError(message, duelStatus, status, selectMenuData_id,
       const end = duelDescription.lastIndexOf("> ");
       const idOpponentDuel = duelDescription.substring(start, end);
 
-      if (idOpponent === idOpponentDuel || duelDescription == 'une créature attaque, défendez Poudlard') {
-        if (duelDescription == 'une créature attaque, défendez Poudlard') {
-          //recherche de Mangemort         
-          if (message.member._roles.find((memberRole) => memberRole == '1073201979062497300')) {
-            message.author.send("Vous souhaitez vraiment défendre Poudlard ? ce n'est pas digne d'un mangemort")
-            return false;
-          } else {
+      if (idOpponent === idOpponentDuel || duelDescription == 'Une créature apparait, capturez là') {
+        if (duelDescription == 'Une créature apparait, capturez là') {
             return true;
-          }
           
         } else {
           return true;
@@ -123,4 +117,5 @@ export async function checkError(message, duelStatus, status, selectMenuData_id,
       }
     }
   }
+
 }

@@ -14,7 +14,6 @@ export async function addMembre(houseName, message) {
     )
   ) {
     member.roles.add(role);
-    myRepository.addMember(channelCup, member.id, role.id);
   }
 }
 
@@ -25,7 +24,6 @@ export async function removeMembre(houseName, message) {
 
   const channelCup = currentCup;
   member.roles.remove(role);
-  myRepository.deleteMember(channelCup, member.id, role.id);
 }
 
 export async function houseMembre(member) {

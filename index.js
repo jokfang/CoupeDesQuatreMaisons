@@ -1,9 +1,8 @@
-import { Client, GatewayIntentBits } from "discord.js";
+import { Client, GatewayIntentBits, Events } from "discord.js";
 import { Repository } from "./repository/repository.js";
 import * as data from "./data/info.cjs";
 // commandes
 import { help } from "./commandes/help.js";
-import { newHouseCup, addHouse, deleteHouse } from "./commandes/maison.js";
 import { addMembre, removeMembre, houseMembre } from "./commandes/membre.js";
 import { setPoint, addPoint, removePoint } from "./commandes/point.js";
 import { setColor, setNom, setBlason } from "./commandes/setMaison.js";
@@ -113,32 +112,6 @@ client.on("messageCreate", async function (message) {
         newHouseCup(message.channel);
       }
       message.delete();
-    } else if (message.content.split(" ")[0] === "!addHouse" && isOK) {
-      //Si les points sont renseigné on envois les points, sinon on créé les messages avec 0 points
-      if (message.content.split(" ").length == "1") {
-        addHouse(message.channel);
-      } else if (message.content.split(" ").length == "2") {
-        addHouse(message.channel, message.content.split(" ")[1]);
-      } else if (message.content.split(" ").length == "3") {
-        addHouse(
-          message.channel,
-          message.content.split(" ")[1],
-          "",
-          message.content.split(" ")[2]
-        );
-      } else if (message.content.split(" ").length == "4") {
-        addHouse(
-          message.channel,
-          message.content.split(" ")[1],
-          message.content.split(" ")[3],
-          message.content.split(" ")[2]
-        );
-      }
-      message.delete();
-    } else if (message.content.split(" ")[0] === "!removeHouse" && isOK) {
-      //Supprime une maison en utilisant son nom
-      deleteHouse(message, message.content.split(" ")[1]);
-      message.delete();
     } else if (message.content.split(" ")[0] === "!bouton" && isOK) {
       // Ouvre l'interface des boutons
       getButtonInterface(message);
@@ -181,9 +154,8 @@ client.on("messageCreate", async function (message) {
 });
 
 //Lorsqu'on reçoit une interaction (Bouton, Select menu,...)
-client.on("interactionCreate", async (interaction) => {
+client.on(Events.InteractionCreate, async (interaction) => {
   //Droit Modération
-
   const moderationRoleByInteraction =
     interaction.message.member._roles.find(
       (memberRole) => memberRole == roles.administrateur
@@ -268,7 +240,7 @@ client.on("interactionCreate", async (interaction) => {
       break;
     }
   }
-  else if (interaction.isSelectMenu()) {
+  else if (interaction.isStringSelectMenu()) {
     if (interaction.customId.split("_")[1] === "spell") {
       const dataSelectMenu = interaction.values[0];
       const duelStatus = interaction.customId.split("_")[2];
