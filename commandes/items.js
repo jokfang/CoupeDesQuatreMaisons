@@ -5,7 +5,7 @@ export function getRandomInt(min, max) {
   if (result > 10) {
     result = 10;
   } else if (result < 1) {
-    reulst = 0;
+    result = 0;
   }
   return result;
 }

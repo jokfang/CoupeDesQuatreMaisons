@@ -1,5 +1,7 @@
 import { Repository } from "../repository/repository.js";
-import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
+import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors } from "discord.js";
+import { getRandomInt } from "../commandes/items.js";
+import { currentCup, bareme } from "../librairy/cupInfo.js";
 
 export class Monster {
     constructor(message) {
@@ -12,10 +14,11 @@ export class Monster {
         const duelMessage =
         "Un monstre attaque, défendez vous";
 
-    const monster = await new Repository().getMonster();
+        const monsters = await new Repository().getMonster();
+        const monster = monsters[getRandomInt(0, monsters.length -1 )];
         //Créer le message et l'envoyer*
         const embedShowDuel = new EmbedBuilder()
-        .setColor(0x00ffff)
+        .setColor(Colors.Aqua)
         .setTitle(embedTitle)
         .setDescription(duelMessage)
         .setThumbnail(monster.image)
@@ -29,7 +32,7 @@ export class Monster {
     }
 
     async counterMonstre() {
-        const embed = interraction.message.embeds[0];
+        const embed = this.baseMessage.message.embeds[0];
         const pdv = parseInt(embed.fields[1].value) - 1;
         const embedsEdited = new EmbedBuilder()
             .setColor(embed.color)
@@ -40,26 +43,26 @@ export class Monster {
         
         let edited = false;
         if(embed.fields[0].value == ''){   
-            embedsEdited.addFields({ name: 'Attaquant', value: '<@' + interraction.member + '>', inline: true }, { name: 'Vie', value: pdv + ' ', inline: true });
-            interraction.message.edit({ embeds: [embedsEdited] });
+            embedsEdited.addFields({ name: 'Attaquant', value: '<@' + this.baseMessage.member + '>', inline: true }, { name: 'Vie', value: pdv + ' ', inline: true });
+            this.baseMessage.message.edit({ embeds: [embedsEdited] });
             edited = true;
         }
-        else if (embed.fields.length && !embed.fields[0]?.value.includes('<@' + interraction.member + 'a>')) {
+        else if (embed.fields.length && !embed.fields[0]?.value.includes('<@' + this.baseMessage.member + 'a>')) {
             const pdv = parseInt(embed.fields[1].value) - 1;
-            embedsEdited.addFields({ name: 'Attaquant', value: embed.fields[0].value + ', <@' + interraction.member + '>', inline: true }, { name: 'Vie', value: pdv + ' ', inline: true });
+            embedsEdited.addFields({ name: 'Attaquant', value: embed.fields[0].value + ', <@' + this.baseMessage.member + '>', inline: true }, { name: 'Vie', value: pdv + ' ', inline: true });
             edited = true;
         }
         
 
         if (edited) {
             if (parseInt(embedsEdited.data.fields[1].value) == 0) {
-            interraction.message.delete();
+            this.baseMessage.message.delete();
             }
             else {
-            interraction.message.edit({ embeds: [embedsEdited] });
+            this.baseMessage.message.edit({ embeds: [embedsEdited] });
             }
-            const cptChannel = interraction.message.client.channels.cache.get(currentCup);
-            //cptChannel.send("!add " + (bareme.duel/2).toString() + " to <@" + interraction.member + '>');
+            const cptChannel = this.baseMessage.message.client.channels.cache.get(currentCup);
+            cptChannel.send("!add " + (bareme.duel/2).toString() + " to <@" + this.baseMessage.member + '>');
         }
     }
 }

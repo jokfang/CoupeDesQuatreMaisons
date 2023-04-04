@@ -23,7 +23,7 @@ export class WaitingDuelMessage {
         const embedShowDuel = new EmbedBuilder()
             .setColor(Colors.Blue)
             .setTitle("Duel Lancé !")
-            .setThumbnail("https://static1.millenium.org/articles/6/39/45/26/@/1627043-promo-sorting-at-2x-1d78011609faa33566d21de2d0a11457-article_m-1.png")
+            .setThumbnail("https://cdn.shopify.com/s/files/1/0003/8263/1983/files/Triforce_Shards_1_large.png?v=1578654003")
             .setDescription(this.createDuelMessage());
 
         interaction.message.channel.send({ embeds: [embedShowDuel], components :[this.createDuelButton()] });

@@ -30,7 +30,7 @@ export async function removePoint(houseName, montant, message) {
   let maison;
   const myRepository = new Repository();
 
-  const channelCup = currentCup;
+  const channelCup = message.channel;
   if (houseName.substring(0, 2) == "<@") {
     const maisons = await myRepository.getMaisons(channelCup);
     let member = message.mentions.members.first();
@@ -70,7 +70,7 @@ export async function addPoint(houseName, montant, message) {
   let maison;
   const myRepository = new Repository();
 
-  const channelCup = currentCup;
+  const channelCup = message.channel;
   if (houseName.substring(0, 2) == "<@") {
     const maisons = await myRepository.getMaisons(channelCup);
     let member = message.mentions.members.first();

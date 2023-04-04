@@ -68,5 +68,12 @@ export const spells = [
         roleId: '',
         spellName: 'Flipendo',
         spellMessage: '@nameWinner renverse @nameLooser. Sa maison prend @points points @houseLooser'
+    },
+    {
+        serverId: '934877620707950652',
+        channelId: '1083394634903994419',
+        roleId: '',
+        spellName: 'Tranche',
+        spellMessage: '@nameWinner renverse @nameLooser. Sa maison prend @points points @houseLooser'
     }
 ];

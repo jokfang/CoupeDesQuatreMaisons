@@ -8,6 +8,7 @@ import { setPoint, addPoint, removePoint } from "./commandes/point.js";
 import { setColor, setNom, setBlason } from "./commandes/setMaison.js";
 import { getButtonInterface, getButtonInterface_PointByHouse, getButtonInterface_house } from "./commandes/interface.js";
 import { createSelectMenuSpell, showDuel, checkError, duelingPreparation } from "./commandes/game.js";
+import { newHouseCup } from "./commandes/maison.js";
 //Librairy
 import { bareme, bareme_multiple, roles } from "./librairy/cupInfo.js";
 // Outils
@@ -46,7 +47,6 @@ client.on("messageCreate", async function (message) {
 
     isOK = checkMessage(message);
     if (message.content.split(" ")[0] === "!add" && isOK) {
-      const toto = message.content.split(" ")[1];
       if (!isNaN(message.content.split(" ")[1])) {
         //On ajoute les points en modifiant le message, puis on supprime la commande
         addPoint(
@@ -120,7 +120,7 @@ client.on("messageCreate", async function (message) {
       //Si les points sont renseigné on envois les points, sinon on créé les messages avec 0 points
       help(message);
       message.delete();
-    } else if (message.content.split(" ")[0] === "!duel") {
+    } else if (message.content.split(" ")[0] === "!dual") {
       const duelStatus = "attack";
       const houseChallenger = await houseMembre(message.member);
       const houseOpponent = await houseMembre(message.mentions.members.first());
