@@ -1,5 +1,6 @@
 import mysql from "mysql2";
 import * as houses from "../data/info.cjs";
+import { Monster } from "../librairy/Monster.js";
 import { maisons } from "../librairy/Coupe.js";
 
 export class Repository {
@@ -64,5 +65,9 @@ export class Repository {
         messageId,
       ]);
     con.end();
+  }
+
+  async getMonster() {
+    return Monster;
   }
 }

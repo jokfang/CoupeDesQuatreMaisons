@@ -5,7 +5,8 @@ import { SpellSelect } from "../class/spellSelect.js";
 import { WaitingDuelMessage } from "../class/waitingDuelMessage.js";
 import { Duel } from "../class/duel.js";
 import { ActionRowBuilder, ButtonStyle, ButtonBuilder, EmbedBuilder } from "discord.js";
-import { idRoom, bareme } from "../librairy/cupInfo.js";
+import { bareme, currentCup } from "../librairy/cupInfo.js";
+import { Repository } from "../repository/repository.js";
 
 export async function createDataDuel(message, dataSelectMenu, duelStatus) {
   let dataDuelInit = await Object.create(duelDescription);
@@ -116,49 +117,5 @@ export async function checkError(message, duelStatus, status, selectMenuData_id,
       }
     }
   }
-}
 
-export async function aWildMonsterAppear(message) {
-    const embedTitle = "Une créature apparait !";
-
-    const duelMessage =
-      "Une créature apparait, capturez là";
-  
-    //Créer le message et l'envoyer*
-    const embedShowDuel = new Discord.EmbedBuilder()
-      .setColor(Dicord.Colors.Blue)
-      .setTitle(embedTitle)
-      .setDescription(duelMessage)
-      .setThumbnail('https://media.tenor.com/hFI8kPSHEk8AAAAM/niffler-fantastic.gif');
-
-    await message.channel.messages.client.channels.cache.get('1064843417663844363').send({ embeds: [embedShowDuel], components:[new ActionRowBuilder().addComponents(new ButtonBuilder()
-        .setCustomId("contreMonster")
-        .setLabel("Capture")
-      .setStyle(ButtonStyle.Primary))]
-    }).then(msg => setTimeout(() => msg.delete(), 600000));
-}
-
-export async function counterMonstre(interraction) {
-  const embed = interraction.message.embeds[0];
-  const embedsEdited = new EmbedBuilder()
-    .setColor(embed.color)
-    .setTitle(embed.title)
-    .setDescription(embed.description)
-    .setThumbnail(embed.thumbnail.url);
-  let edited = false;
-  if (embed.fields.length && !embed.fields[0]?.value.includes('<@' + interraction.member + '>')) {
-    embedsEdited.addFields({ name: 'Captures', value: embed.fields[0].value + ', <@' + interraction.member + '>', inline: true });
-    edited = true;
-  }
-  else if(!embed.fields.length){   
-    embedsEdited.addFields({ name: 'Capture', value: '<@' + interraction.member + '>', inline: true });
-    interraction.message.edit({ embeds: [embedsEdited] });
-    edited = true;
-  }
-
-  if (edited) {
-    interraction.message.edit({ embeds: [embedsEdited] });
-    const cptChannel = interraction.message.client.channels.cache.get(idRoom.hogwart);
-    cptChannel.send("!add " + (bareme.duel/2).toString() + " to <@" + interraction.member + '>');
-  }
 }
