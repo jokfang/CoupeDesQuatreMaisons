@@ -4,16 +4,19 @@ import * as data from "./data/info.cjs";
 // commandes
 import { help } from "./commandes/help.js";
 import { addMembre, removeMembre, houseMembre } from "./commandes/membre.js";
-import { setPoint, addPoint, removePoint } from "./commandes/point.js";
+import { setPoint, addPoint, removePoint, addSilentPoint } from "./commandes/point.js";
 import { setColor, setNom, setBlason } from "./commandes/setMaison.js";
 import { getButtonInterface, getButtonInterface_PointByHouse, getButtonInterface_house } from "./commandes/interface.js";
 import { createSelectMenuSpell, showDuel, checkError, duelingPreparation } from "./commandes/game.js";
 import { newHouseCup } from "./commandes/maison.js";
+import { encouragement } from "./commandes/message.js";
 //Librairy
 import { bareme, bareme_multiple, roles } from "./librairy/cupInfo.js";
 // Outils
 import * as timers from "node:timers/promises";
 import { Monster } from "./class/monster.js";
+import { specialAction } from "./class/specialAction.js";
+import { useItem } from "./class/useItem.js";
 const wait = timers.setTimeout;
 
 //Droit attribué au bot
@@ -135,6 +138,14 @@ client.on("messageCreate", async function (message) {
       if ((message.author.id != '1015931608773169193' && sec%29 == 0 && min%2 == 0)||(message.author.id == '250329835388272641' && message.content=='!mobSpawns')) {
         new Monster(message).aWildMonsterAppear();
       }
+      if (message.channel.id == '980124242651783198' && message.reply) {
+        addSilentPoint(message.member, 2, message);
+      }
+      else if (['935671117748764733', '937155308642513007', '935673157635964959'].includes(message.channel.id) && message.content.length > 200){
+        addSilentPoint(message.member, 5, message);
+      } else if (encouragement(message.content)) {
+        addSilentPoint(message.member, 1, message);
+      }
     }
   } catch (error) {
     await message.channel.send(
@@ -225,10 +236,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
         }
         break;
       case "contreMonsters":
-        const houseOpponent = await houseMembre(interaction.message.member);
         new Monster(interaction).counterMonstre();
         interaction.deferUpdate();
-      break;
+        break;
+      case "specialAction":
+        new specialAction(interaction).sendPannel();
+        break;
     }
   }
   else if (interaction.isStringSelectMenu()) {
@@ -246,7 +259,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
           duelingPreparation(interaction, dataSelectMenu, duelStatus)
         }
       }
+    } else if (interaction.customId == 'selectAction') {
+      new specialAction(interaction).setAction();
     }
+  } else if (interaction.isModalSubmit()) {
+    new useItem(interaction).useThis();
   }
 });
 

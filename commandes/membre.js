@@ -7,7 +7,7 @@ export async function addMembre(houseName, message) {
   const myRepository = new Repository();
 
   const channelCup = currentCup;
-  const maisons = await myRepository.getMaisons(channelCup);
+  const maisons = await myRepository.getMaisons();
   if (
     !maisons.find((maison) =>
       member._roles.find((memberRole) => memberRole == maison.roleId)
@@ -30,7 +30,7 @@ export async function houseMembre(member) {
   const myRepository = new Repository();
 
   const channelCup = currentCup;
-  const maisons = await myRepository.getMaisons(channelCup);
+  const maisons = await myRepository.getMaisons();
   let houseMember = {
     name: '',
     id: ''
@@ -49,7 +49,7 @@ export async function houseMembreDuel(dataDuel) {
   const myRepository = new Repository();
 
   const channelCup = currentCup;
-  const maisons = await myRepository.getMaisons(channelCup);
+  const maisons = await myRepository.getMaisons();
 
   for (let maison of maisons) {
     // check house Challenger

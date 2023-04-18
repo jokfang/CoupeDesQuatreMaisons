@@ -36,7 +36,7 @@ export function getButtonInterface(message) {
 export async function getButtonInterface_PointByHouse(interaction) {
   const myRepository = new Repository();
   const channelCup = currentCup;
-  const maisons = await myRepository.getMaisons(channelCup);
+  const maisons = await myRepository.getMaisons();
 
   // Création des boutons pour les quatre premières maisons
 
@@ -80,7 +80,7 @@ export async function getButtonInterface_PointByHouse(interaction) {
 export async function getButtonInterface_house(interaction, house) {
   const myRepository = new Repository();
   const channelCup = currentCup;
-  const maisons = await myRepository.getMaisons(channelCup);
+  const maisons = await myRepository.getMaisons();
 
   let rowBits = new Discord.ActionRowBuilder().addComponents(
     new Discord.ButtonBuilder()
@@ -157,7 +157,7 @@ export async function getButtonInterface_house(interaction, house) {
 export async function getButtonInterface_PointByMember(interaction) {
   const myRepository = new Repository();
   const channelCup = currentCup;
-  const maisons = await myRepository.getMaisons(channelCup);
+  const maisons = await myRepository.getMaisons();
 
   const rowMember = new Discord.ActionRowBuilder();
 }

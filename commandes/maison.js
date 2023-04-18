@@ -6,7 +6,7 @@ export async function newHouseCup(channel, points) {
   //Pour chaque maisons on créé un message
   //Un passage en base de données pourrait être intéressant pour stabiliser le bot
   const myRepository = new Repository();
-  const maisons = await myRepository.getMaisons(channel);
+  const maisons = await myRepository.getMaisons();
 
   if (maisons[0]) {
     for (let i = 0; i < maisons.length; i++) {

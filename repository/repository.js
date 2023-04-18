@@ -6,11 +6,11 @@ import { maisons } from "../librairy/Coupe.js";
 export class Repository {
   constructor() {}
   //Ajoute des points à une maison en prenant son id et le montant de point à ajouter
-  async getMaison(channel, house) {
-    return maisons.find(maison => maison.nom == house && maison.channel == channel.id);
+  async getMaison(house) {
+    return maisons.find(maison => maison.nom == house);
   }
 
-  async getMaisons(channel) {
+  async getMaisons() {
     return maisons;
   }
 

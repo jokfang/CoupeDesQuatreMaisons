@@ -3,7 +3,7 @@ import { Repository } from "../repository/repository.js";
 
 export async function setBlason(houseName, image, channel) {
   const myRepository = new Repository();
-  const maison = await myRepository.getMaison(channel, houseName);
+  const maison = await myRepository.getMaison(houseName);
   const msg = await channel.messages.fetch(maison.messageId);
 
   let cpt = parseInt(msg.embeds[0].data.description);
@@ -26,7 +26,7 @@ export async function setBlason(houseName, image, channel) {
 
 export async function setNom(houseName, nom, channel) {
   const myRepository = new Repository();
-  const maison = await myRepository.getMaison(channel, houseName);
+  const maison = await myRepository.getMaison(houseName);
   const msg = await channel.messages.fetch(maison.messageId);
 
   let cpt = parseInt(msg.embeds[0].data.description);
@@ -50,7 +50,7 @@ export async function setNom(houseName, nom, channel) {
 
 export async function setColor(houseName, couleur, channel) {
   const myRepository = new Repository();
-  const maison = await myRepository.getMaison(channel, houseName);
+  const maison = await myRepository.getMaison(houseName);
   const msg = await channel.messages.fetch(maison.messageId);
 
   let cpt = parseInt(msg.embeds[0].data.description);
