@@ -72,7 +72,7 @@ export async function addPoint(houseName, montant, message) {
     let member = message.mentions.members.first();
     houseName = maisons.find((house) =>
       member._roles.find((memberRole) => memberRole == house.roleId)
-    ).nom;
+    )?.nom;
     maison = await maisons.find((house) => house.nom == houseName);
   } else {
     maison = await myRepository.getMaison(houseName);

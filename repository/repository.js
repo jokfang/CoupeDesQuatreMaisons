@@ -2,6 +2,7 @@ import mysql from "mysql2";
 import * as houses from "../data/info.cjs";
 import { Monster } from "../librairy/Monster.js";
 import { maisons } from "../librairy/Coupe.js";
+import { Raids } from "../librairy/raids.js";
 
 export class Repository {
   constructor() {}
@@ -70,4 +71,8 @@ export class Repository {
   async getMonster() {
     return Monster;
   }
+  
+  async getRaidById(list) {
+    return Raids.find(raid => raid.id == list);
+}
 }

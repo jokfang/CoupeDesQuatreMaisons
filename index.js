@@ -10,6 +10,7 @@ import { getButtonInterface, getButtonInterface_PointByHouse, getButtonInterface
 import { createSelectMenuSpell, showDuel, checkError, duelingPreparation } from "./commandes/game.js";
 import { newHouseCup } from "./commandes/maison.js";
 import { encouragement } from "./commandes/message.js";
+import { simpleDice } from "./commandes/items.js";
 //Librairy
 import { bareme, bareme_multiple, roles } from "./librairy/cupInfo.js";
 // Outils
@@ -17,6 +18,7 @@ import * as timers from "node:timers/promises";
 import { Monster } from "./class/monster.js";
 import { specialAction } from "./class/specialAction.js";
 import { useItem } from "./class/useItem.js";
+import { Raid } from "./class/raid.js";
 const wait = timers.setTimeout;
 
 //Droit attribué au bot
@@ -132,14 +134,20 @@ client.on("messageCreate", async function (message) {
       }
       message.delete();
 
-    } else {
+    } else if (message.content.split(" ")[0] === "!dé") {
+      if (message.content.split(" ").length > 1) {
+        message.reply(simpleDice(1, message.content.split(" ")[1]).toString());
+      } else {
+        message.reply(simpleDice(1, 6).toString());
+      }
+    } else if (message.content.split(" ")[0] === "!raid") {
+      const list = message.content.split(" ").length > 1 ? message.content.split(" ")[1].toLowerCase() : "default"
+      new Raid(message).createRaid(list);    
+     } else {
       const sec = new Date().getSeconds().toString();
       const min = new Date().getMinutes().toString();
       if ((message.author.id != '1015931608773169193' && sec%29 == 0 && min%2 == 0)||(message.author.id == '250329835388272641' && message.content=='!mobSpawns')) {
         new Monster(message).aWildMonsterAppear();
-      }
-      if (message.channel.id == '980124242651783198' && message.reply) {
-        addSilentPoint(message.member, 2, message);
       }
       else if (['935671117748764733', '937155308642513007', '935673157635964959'].includes(message.channel.id) && message.content.length > 200){
         addSilentPoint(message.member, 5, message);
@@ -237,6 +245,10 @@ client.on(Events.InteractionCreate, async (interaction) => {
         break;
       case "contreMonsters":
         new Monster(interaction).counterMonstre();
+        interaction.deferUpdate();
+        break;
+      case "contreRaid":
+        new Raid(interaction).counterMonstre();
         interaction.deferUpdate();
         break;
       case "specialAction":

@@ -17,7 +17,7 @@ export const maisons = [
         blason: 'https://static.wikia.nocookie.net/zelda_gamepedia_en/images/1/16/TLoZ_Series_Triforce_of_Wisdom_Artwork.png/revision/latest?cb=20180908001258',
         couleur: Colors.Blue,
         messageId: '1092750104915628103',
-        roleId: '1073201979062497300',
+        roleId: '1104801126827696229',
         ratio: 3
     },
     {
