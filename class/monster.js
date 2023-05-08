@@ -51,7 +51,7 @@ export class Monster {
             this.baseMessage.message.edit({ embeds: [embedsEdited] });
             edited = true;
         }
-        else if (embed.fields.length && !embed.fields[0]?.value.includes('<@' + this.baseMessage.member + 'a>')) {
+        else if (embed.fields.length && !embed.fields[0]?.value.includes('<@' + this.baseMessage.member + '>')) {
             embedsEdited.addFields({ name: 'Attaquant', value: embed.fields[0].value + ', <@' + this.baseMessage.member + '>', inline: true }, { name: 'Vie', value: pdv + ' ', inline: true });
             edited = true;
         }

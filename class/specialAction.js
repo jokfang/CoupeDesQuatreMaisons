@@ -70,7 +70,7 @@ export class specialAction {
         const letDiceRoll = getRandomInt(1, 4);
         try {
             const monsterMessage = await this.interraction.channel.messages.fetch(this.interraction.message.reference.messageId);
-            if (!monsterMessage.embeds[0].fields[0]?.value.includes('<@' + this.interraction.member.id + 'a>')){
+            if (!monsterMessage.embeds[0].fields[0]?.value.includes('<@' + this.interraction.member.id + '>')){
                 if (letDiceRoll == 3) {
                     if (monsterMessage)
                         new Monster(monsterMessage, this.interraction.member).counterMonstre(1000);
@@ -97,7 +97,7 @@ export class specialAction {
 
     async openCatchFields() {
         const monsterMessage = await this.interraction.channel.messages.fetch(this.interraction.message.reference.messageId);
-        if (!monsterMessage.embeds[0].fields[0]?.value.includes('<@' + this.interraction.member.id + 'a>')) {
+        if (!monsterMessage.embeds[0].fields[0]?.value.includes('<@' + this.interraction.member.id + '>')) {
             const modal = new ModalBuilder()
                 .setCustomId('myModal_' + monsterMessage.id)
                 .setTitle('My Modal');
