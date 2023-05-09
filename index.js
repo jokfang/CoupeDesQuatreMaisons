@@ -151,7 +151,7 @@ client.on("messageCreate", async function (message) {
       }
       else if (['935671117748764733', '937155308642513007', '935673157635964959'].includes(message.channel.id) && message.content.length > 200){
         addSilentPoint(message.member, 5, message);
-      } else if (encouragement(message.content)) {
+      } else if (await encouragement(message.content) == true) {
         addSilentPoint(message.member, 1, message);
       }
     }

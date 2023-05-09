@@ -96,6 +96,6 @@ export class Raid {
             .setCustomId("specialAction")
             .setLabel("Action spéciale").setStyle(ButtonStyle.Primary));
         return this.baseMessage.channel.messages.client.channels.cache.get('1083394634903994419').send({ embeds: [embedShowDuel], components:[button]
-        }).then(msg => setTimeout(() => msg.delete(), 600000));   
+        });   
     }
 }

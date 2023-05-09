@@ -32,7 +32,7 @@ export class Monster {
             .setCustomId("specialAction")
             .setLabel("Action spéciale").setStyle(ButtonStyle.Primary));
         await this.baseMessage.channel.messages.client.channels.cache.get('1083394634903994419').send({ embeds: [embedShowDuel], components:[button]
-        }).then(msg => setTimeout(() => msg.delete(), 600000));
+        });
     }
 
     async counterMonstre(puissance = 1) {
