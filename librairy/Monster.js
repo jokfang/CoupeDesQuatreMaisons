@@ -28,5 +28,10 @@ export const Monster = [
         nom: 'NanoGuardians',
         pdv: '5',
         image: 'https://64.media.tumblr.com/805f5e2bf61d5aaaeff400b9c7314c89/de356901ee0860a4-41/s540x810/7b34dcbbd63aaa341c5134397018d80b181029a0.gif'
+    },
+    {
+        nom: 'Midona',
+        pdv: '10',
+        image: 'https://i.pinimg.com/originals/5d/a1/37/5da13758bde6b2d09238290e931c9154.gif'
     }
 ]

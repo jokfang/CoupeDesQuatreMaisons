@@ -1,6 +1,6 @@
 import { Repository } from "../repository/repository.js";
 import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors } from "discord.js";
-import { getRandomInt } from "../commandes/items.js";
+import { simpleDice } from "../commandes/items.js";
 import { currentCup, bareme } from "../librairy/cupInfo.js";
 
 export class Monster {
@@ -15,7 +15,7 @@ export class Monster {
         "Un monstre attaque, défendez vous";
 
         const monsters = await new Repository().getMonster();
-        const monster = monsters[getRandomInt(0, monsters.length -1 )];
+        const monster = monsters[simpleDice(0, monsters.length -1 )];
         //Créer le message et l'envoyer*
         const embedShowDuel = new EmbedBuilder()
         .setColor(Colors.Aqua)

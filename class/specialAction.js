@@ -1,5 +1,5 @@
 import { ActionRowBuilder, StringSelectMenuBuilder, TextInputBuilder, ModalBuilder } from "@discordjs/builders";
-import { getRandomInt } from "../commandes/items.js";
+import { simpleDice } from "../commandes/items.js";
 import { currentCup } from "../librairy/cupInfo.js";
 import { Monster } from "../class/monster.js";
 import { TextInputStyle } from "discord.js";
@@ -67,7 +67,7 @@ export class specialAction {
     }
 
     async Assassiner() {
-        const letDiceRoll = getRandomInt(1, 4);
+        const letDiceRoll = simpleDice(1, 4);
         try {
             const monsterMessage = await this.interraction.channel.messages.fetch(this.interraction.message.reference.messageId);
             if (!monsterMessage.embeds[0].fields[0]?.value.includes('<@' + this.interraction.member.id + '>')){

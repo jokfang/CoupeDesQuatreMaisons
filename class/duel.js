@@ -1,4 +1,4 @@
-import { getRandomInt } from "../commandes/items.js";
+import { duelRoll } from "../commandes/items.js";
 import { SpellRepository } from "../repository/spellRepository.js";
 import { EmbedBuilder, Colors } from "discord.js";
 import { bareme, currentCup } from "../librairy/cupInfo.js";
@@ -12,10 +12,9 @@ export class Duel{
         this.duelNull = false;
     }
 
-    letsRoll() {
-        //Si pas de ratio (PVE) alors 0
-        this.rng_Challenger = getRandomInt(1, 10+Number(this.dataDuel.ratioChallenger)) || 0;
-        this.rng_Opponent = getRandomInt(1, 10+Number(this.dataDuel.ratioOpponent)) || 0;
+    DoubleRoll() {
+        this.rng_Challenger = duelRoll(1, 10 + Number(this.dataDuel.ratioChallenger));
+        this.rng_Opponent = duelRoll(1, 10 + Number(this.dataDuel.ratioOpponent));
     }
 
     setDataWin() {
