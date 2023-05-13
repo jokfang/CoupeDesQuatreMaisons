@@ -205,7 +205,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
             content:
               "Vous avez ajoutée " +
               point +
-              " points à la maison " +
+              " points au clan " +
               interaction.customId.split("_")[1],
             ephemeral: false,
           });
@@ -225,7 +225,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
             content:
               "Vous avez ajoutée " +
               point +
-              " points à la maison " +
+              " points au clan " +
               interaction.customId.split("_")[1],
             ephemeral: false,
           });

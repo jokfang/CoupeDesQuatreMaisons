@@ -1,4 +1,4 @@
-import { duelRoll } from "../commandes/items.js";
+import { duelRoll, formatString } from "../commandes/items.js";
 import { SpellRepository } from "../repository/spellRepository.js";
 import { EmbedBuilder, Colors } from "discord.js";
 import { bareme, currentCup } from "../librairy/cupInfo.js";
@@ -80,7 +80,7 @@ export class Duel{
 
             if (!winMessage) {
                 winMessage =
-                    "Oh ! Leurs attaques s'entre-choc et s'annulent toutes les deux. c'est une égalité !";
+                    "Oh ! Leurs attaques s'entre-choc et s'annulent toutes les deux. C'est une égalité !";
             } else {
                 if (dataWin.nameLooser == '') {
                     dataWin.nameLooser = 'une créature';
@@ -115,9 +115,9 @@ export class Duel{
             .setTitle("Duel Terminé !")
             .setDescription(winMessage)
             .addFields(
-                { name: challengerName, value: challengerResult, inline: true },
+                { name: challengerName, value: formatString(challengerResult), inline: true },
                 { name: "Vs", value: "\u200B", inline: true },
-                { name: opponentName, value: opponentResult, inline: true }
+                { name: opponentName, value: formatString(opponentResult), inline: true }
             );
     }
 }

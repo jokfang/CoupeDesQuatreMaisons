@@ -33,3 +33,7 @@ export function swDice(max, joker = false) {
   
   return roll;
 }
+
+export function formatString(string) {
+  return string.substring(1,1).toUpperCase() + string.substring(2).toLowerCase()
+}
