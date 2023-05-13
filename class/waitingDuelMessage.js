@@ -2,7 +2,7 @@ import { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle, Colors } fr
 export class WaitingDuelMessage {
     constructor(dataDuel) {
         this.dataDuel = dataDuel;
-        this.houseDescription = " de la maison ";
+        this.houseDescription = " du clan ";
     }
 
     createDuelMessage() {
