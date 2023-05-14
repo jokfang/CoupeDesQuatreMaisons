@@ -12,7 +12,7 @@ export class Duel{
         this.duelNull = false;
     }
 
-    DoubleRoll() {
+    doubleRoll() {
         this.rng_Challenger = duelRoll(1, 10 + Number(this.dataDuel.ratioChallenger));
         this.rng_Opponent = duelRoll(1, 10 + Number(this.dataDuel.ratioOpponent));
     }
@@ -46,7 +46,7 @@ export class Duel{
     }
 
     async resolveDuel(interaction) {
-        this.letsRoll();
+        this.doubleRoll();
         const dataWin = await this.setDataWin();
 
         // Création du message du combat

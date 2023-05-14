@@ -284,7 +284,7 @@ function checkMessage(message) {
   if (!messageContent.startsWith("!")) {
     return false;
   }
-  if (message?.webhookId == "1021509750321586236") {
+  if (message?.webhookId == "1104798868031426600") {
     return true;
   }
   // Droit Modération
