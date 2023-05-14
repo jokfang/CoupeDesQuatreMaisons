@@ -1,0 +1,10 @@
+CREATE TABLE team(  
+    channel VARCHAR(100),
+    serveur VARCHAR(100),
+    nom VARCHAR(255),
+    blason VARCHAR(1000),
+    couleur VARCHAR(255),
+    messageId VARCHAR(100),
+    roleId VARCHAR(100),
+    ratio int
+);

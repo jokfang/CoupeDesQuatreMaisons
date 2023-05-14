@@ -150,6 +150,7 @@ client.on("messageCreate", async function (message) {
         new Monster(message).aWildMonsterAppear();
       }
       else if (['935671117748764733', '937155308642513007', '935673157635964959'].includes(message.channel.id) && message.content.length > 200){
+        //On ajoute 5 points pour un avis dans Lecture, Film/série, Jeux Vidéo
         addSilentPoint(message.member, 5, message);
       } else if (await encouragement(message.content) == true) {
         addSilentPoint(message.member, 1, message);

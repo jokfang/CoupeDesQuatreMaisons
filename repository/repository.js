@@ -8,11 +8,47 @@ export class Repository {
   constructor() {}
   //Ajoute des points à une maison en prenant son id et le montant de point à ajouter
   async getMaison(house) {
-    return maisons.find(maison => maison.nom == house);
+    const con = mysql.createConnection({
+      host: houses.default.host,
+      user: houses.default.user,
+      password: houses.default.password,
+      port: houses.default.port,
+      database: houses.default.database,
+    });
+    con.connect(function (err) {
+      if (err) {
+        if (err.message.code === "ETIMEDOUT") {
+          console.log("TimeOut de la BDD");
+        }
+      }
+      //console.log("Connected to MySQLDB");
+    });
+    const query = "select * from team where nom = ?";
+    const retour = await con.promise().query(query, [house]);
+    con.end();
+    return retour[0][0];
   }
 
   async getMaisons() {
-    return maisons;
+    const con = mysql.createConnection({
+      host: houses.default.host,
+      user: houses.default.user,
+      password: houses.default.password,
+      port: houses.default.port,
+      database: houses.default.database,
+    });
+    con.connect(function (err) {
+      if (err) {
+        if (err.message.code === "ETIMEDOUT") {
+          console.log("TimeOut de la BDD");
+        }
+      }
+      //console.log("Connected to MySQLDB");
+    });
+    const query = "select * from team";
+    const retour = await con.promise().query(query, []);
+    con.end();
+    return retour[0];
   }
 
   async deleteMaison(messageId) {
@@ -31,7 +67,7 @@ export class Repository {
       }
       //console.log("Connected to MySQLDB");
     });
-    const query = "delete from Coupe where messageId = ?";
+    const query = "delete from team where messageId = ?";
     const retour = await con.promise().query(query, [messageId]);
     con.end();
   }
