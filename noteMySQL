@@ -8,3 +8,17 @@ CREATE TABLE team(
     roleId VARCHAR(100),
     ratio int
 );
+
+CREATE TABLE monster(  
+    nom VARCHAR(100) NOT NULL PRIMARY KEY,
+    pdv INT,
+    image VARCHAR(1000)
+);
+
+CREATE TABLE spell(  
+    serverId VARCHAR(100),
+    channelId VARCHAR(100),
+    roleId VARCHAR(100),
+    spellName VARCHAR(100) NOT NULL PRIMARY KEY,
+    spellMessage  VARCHAR(250)
+);

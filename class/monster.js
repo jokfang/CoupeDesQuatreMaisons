@@ -14,7 +14,7 @@ export class Monster {
         const duelMessage =
         "Un monstre attaque, défendez vous";
 
-        const monsters = await new Repository().getMonster();
+        const monsters = await new Repository().getMonsters();
         const monster = monsters[simpleDice(0, monsters.length -1 )];
         //Créer le message et l'envoyer*
         const embedShowDuel = new EmbedBuilder()
