@@ -31,6 +31,27 @@ export class SpellRepository {
   }
 
   async getSpellsOfHouse(channel, idHousePlayer) {
-    return spells.filter(spell => spell.roleId == idHousePlayer && spell.channelId == channel);
+    try {
+      const con = mysql.createConnection({
+        host: houses.default.host,
+        user: houses.default.user,
+        password: houses.default.password,
+        port: houses.default.port,
+        database: houses.default.database,
+      });
+      con.connect(function (err) {
+        if (err) {
+          if (err.message.code === "ETIMEDOUT") {
+            console.log("TimeOut de la BDD");
+          }
+        }
+        //console.log("Connected to MySQLDB");
+      });
+      const query = "select * from spell where channelId = ? and roleId = ?";
+      const retour = await con.promise().query(query, [channel.id, idHousePlayer]);
+      con.end();
+      return retour[0];
+    }
+    catch (error) { console.log(error); }
   }
 }

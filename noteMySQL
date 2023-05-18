@@ -22,3 +22,23 @@ CREATE TABLE spell(
     spellName VARCHAR(100) NOT NULL PRIMARY KEY,
     spellMessage  VARCHAR(250)
 );
+
+
+CREATE TABLE membre(  
+    idDiscord VARCHAR(100) NOT NULL PRIMARY KEY,
+    maison VARCHAR(100),
+    twitchName VARCHAR(100)
+);
+
+CREATE TABLE objet(  
+    id VARCHAR(100) NOT NULL PRIMARY KEY,
+    name VARCHAR(255)
+);
+
+CREATE TABLE inventory(  
+    idDiscord VARCHAR(100),
+    idObject VARCHAR(100),
+    quantity INT,
+    Foreign Key (idDiscord) REFERENCES membre(idDiscord),
+    FOREIGN KEY (idObject) REFERENCES object(id)
+);

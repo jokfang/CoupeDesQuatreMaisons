@@ -1,9 +1,9 @@
 import { specialAction } from "./specialAction.js";
 
-export class useItem {
+export class useCode {
     constructor(interractionReceived) {
         this.challenger = interractionReceived.member;
-        this.interraction = interractionReceived;
+        this.interraction = interractionReceived
         this.monsterMessage = interractionReceived.customId.split('_')[1];
         this.objectCode = interractionReceived.fields.components[0].components[0].value;
     }

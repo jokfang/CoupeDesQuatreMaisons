@@ -136,5 +136,30 @@ export class Repository {
   
   async getRaidById(list) {
     return Raids.find(raid => raid.id == list);
-}
+  }
+  
+  async insertIntoMembre(idDiscord, maison) {
+        try {
+      const con = mysql.createConnection({
+        host: houses.default.host,
+        user: houses.default.user,
+        password: houses.default.password,
+        port: houses.default.port,
+        database: houses.default.database,
+      });
+      con.connect(function (err) {
+        if (err) {
+          if (err.message.code === "ETIMEDOUT") {
+            console.log("TimeOut de la BDD");
+          }
+        }
+        //console.log("Connected to MySQLDB");
+      });
+      const query = "insert ignore into membre values(?,?,'')";
+      const retour = await con.promise().query(query, [idDiscord, maison]);
+      con.end();
+      return retour[0];
+    }
+    catch (error) { console.log(error); }
+  }
 }

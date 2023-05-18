@@ -17,7 +17,7 @@ import { bareme, bareme_multiple, roles } from "./librairy/cupInfo.js";
 import * as timers from "node:timers/promises";
 import { Monster } from "./class/monster.js";
 import { specialAction } from "./class/specialAction.js";
-import { useItem } from "./class/useItem.js";
+import { useCode } from "./class/useCode.js";
 import { Raid } from "./class/raid.js";
 const wait = timers.setTimeout;
 
@@ -276,7 +276,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
       new specialAction(interaction).setAction();
     }
   } else if (interaction.isModalSubmit()) {
-    new useItem(interaction).useThis();
+    new useCode(interaction).useThis();
   }
 });
 

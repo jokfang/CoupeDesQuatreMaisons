@@ -28,9 +28,14 @@ export class specialAction {
 						},
 						{
 							label: 'Utiliser un objet',
-							description: 'Permet d\'utiliser un code',
+							description: 'Permet d\'utiliser un objet',
 							value: 'useItem',
-						},
+                        },
+                        {
+							label: 'Utiliser un code',
+							description: 'Permet d\'utiliser un code',
+							value: 'useCode',
+						}
 					),
 			);
 
@@ -61,7 +66,7 @@ export class specialAction {
         if (this.interraction.values[0] == 'assassin') {
             this.Assassiner();
         }
-        else if (this.interraction.values[0] == 'useItem') {
+        else if (this.interraction.values[0] == 'useCode') {
             this.openCatchFields();
         }
     }
