@@ -155,8 +155,33 @@ export class Repository {
         }
         //console.log("Connected to MySQLDB");
       });
-      const query = "insert ignore into membre values(?,?,'')";
+      const query = "insert ignore into membre values(?,?,'',current_date())";
       const retour = await con.promise().query(query, [idDiscord, maison]);
+      con.end();
+      return retour[0];
+    }
+    catch (error) { console.log(error); }
+  }
+
+  async getListItem(id) {
+        try {
+      const con = mysql.createConnection({
+        host: houses.default.host,
+        user: houses.default.user,
+        password: houses.default.password,
+        port: houses.default.port,
+        database: houses.default.database,
+      });
+      con.connect(function (err) {
+        if (err) {
+          if (err.message.code === "ETIMEDOUT") {
+            console.log("TimeOut de la BDD");
+          }
+        }
+        //console.log("Connected to MySQLDB");
+      });
+      const query = "select objet.name, objet.description, objet.id from inventory, objet where inventory.idDiscord = ? and inventory.idObject = objet.id";
+      const retour = await con.promise().query(query, [id]);
       con.end();
       return retour[0];
     }
