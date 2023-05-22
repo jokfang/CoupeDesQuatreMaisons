@@ -133,8 +133,9 @@ client.on("messageCreate", async function (message) {
       const houseOpponent = await houseMembre(message.mentions.members.first());
       if (await checkError(message, duelStatus, false, false, houseChallenger, houseOpponent)) {
         await createSelectMenuSpell(message, houseChallenger.id, duelStatus);
+        new DiscordMessageMethod(message).delete();
       }
-      new DiscordMessageMethod(message).delete();
+      
 
     } else if (message.content.split(" ")[0] === "!dé") {
       if (message.content.split(" ").length > 1) {

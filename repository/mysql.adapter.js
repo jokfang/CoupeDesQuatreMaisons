@@ -12,7 +12,7 @@ export class MysqlRequest{
       });
     }
 
-  async query(request, bind = []) {
+  async query(request, binds = []) {
     try {
       this.con.connect(function (err) {
         if (err) {
@@ -22,8 +22,8 @@ export class MysqlRequest{
         }
         //console.log("Connected to MySQLDB");
       });
-      const retour = await con.promise().query(request, binds);
-      con.end();
+      const retour = await this.con.promise().query(request, binds);
+      this.con.end();
       return retour;
     } catch (error) {
       throw error;

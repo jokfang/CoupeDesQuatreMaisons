@@ -6,15 +6,18 @@ export class Repository {
   constructor() {}
   //Ajoute des points à une maison en prenant son id et le montant de point à ajouter
   async getMaison(house) {
-    return new MysqlRequest().query("select * from team where nom = ?", [house])[0][0];
+    const retour = await new MysqlRequest().query("select * from team where nom = ?", [house]);
+    return retour[0][0];
   }
 
   async getMaisons() {
-    return new MysqlRequest().query("select * from team")[0];
+    const retour = await new MysqlRequest().query("select * from team");
+    const finalretour = retour[0];
+    return retour[0];
   }
 
   async deleteMaison(messageId) {
-    return new MysqlRequest().query("delete from team where messageId = ?", [messageId]);
+    return await new MysqlRequest().query("delete from team where messageId = ?", [messageId]);
   }
 
   async updateHouse(channel, messageId, maison) {
@@ -30,7 +33,8 @@ export class Repository {
   }
 
   async getMonsters() {
-    return new MysqlRequest().query("select * from monster")[0];
+    const retour = await new MysqlRequest().query("select * from monster");
+    return retour[0];
   }
   
   async getRaidById(list) {
@@ -38,10 +42,11 @@ export class Repository {
   }
   
   async insertIntoMembre(idDiscord, maison) {
-    return new MysqlRequest().query("insert ignore into membre values(?,?,'',current_date())", [idDiscord, maison])[0];
+    return await new MysqlRequest().query("insert ignore into membre values(?,?,'',current_date())", [idDiscord, maison]);
   }
 
   async getListItem(id) {
-    return new MysqlRequest().query("select objet.name, objet.description, objet.id from inventory, objet where inventory.idDiscord = ? and inventory.idObject = objet.id", [id])[0];
+    const retour = await new MysqlRequest().query("select objet.name, objet.description, objet.id from inventory, objet where inventory.idDiscord = ? and inventory.idObject = objet.id", [id]);
+    return retour[0];
   }
 }
