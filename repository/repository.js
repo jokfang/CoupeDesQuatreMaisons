@@ -1,103 +1,24 @@
-import mysql from "mysql2";
-import * as houses from "../data/info.cjs";
 import { Raids } from "../librairy/raids.js";
+import { MysqlRequest } from "./mysql.adapter.js";
 
 export class Repository {
   
   constructor() {}
   //Ajoute des points à une maison en prenant son id et le montant de point à ajouter
   async getMaison(house) {
-    try {
-      const con = mysql.createConnection({
-        host: houses.default.host,
-        user: houses.default.user,
-        password: houses.default.password,
-        port: houses.default.port,
-        database: houses.default.database,
-      });
-      con.connect(function (err) {
-        if (err) {
-          if (err.message.code === "ETIMEDOUT") {
-            console.log("TimeOut de la BDD");
-          }
-        }
-        //console.log("Connected to MySQLDB");
-      });
-      const query = "select * from team where nom = ?";
-      const retour = await con.promise().query(query, [house]);
-      con.end();
-      return retour[0][0];
-    }
-    catch (error) { console.log(error); }
+    return new MysqlRequest().query("select * from team where nom = ?", [house])[0][0];
   }
 
   async getMaisons() {
-    try {
-      const con = mysql.createConnection({
-        host: houses.default.host,
-        user: houses.default.user,
-        password: houses.default.password,
-        port: houses.default.port,
-        database: houses.default.database,
-      });
-      con.connect(function (err) {
-        if (err) {
-          if (err.message.code === "ETIMEDOUT") {
-            console.log("TimeOut de la BDD");
-          }
-        }
-        //console.log("Connected to MySQLDB");
-      });
-      const query = "select * from team";
-      const retour = await con.promise().query(query, []);
-      con.end();
-      return retour[0];
-    }
-    catch (error) { console.log(error); }
+    return new MysqlRequest().query("select * from team")[0];
   }
 
   async deleteMaison(messageId) {
-    const con = mysql.createConnection({
-      host: houses.default.host,
-      user: houses.default.user,
-      password: houses.default.password,
-      port: houses.default.port,
-      database: houses.default.database,
-    });
-    con.connect(function (err) {
-      if (err) {
-        if (err.message.code === "ETIMEDOUT") {
-          console.log("TimeOut de la BDD");
-        }
-      }
-      //console.log("Connected to MySQLDB");
-    });
-    const query = "delete from team where messageId = ?";
-    const retour = await con.promise().query(query, [messageId]);
-    con.end();
+    return new MysqlRequest().query("delete from team where messageId = ?", [messageId]);
   }
 
   async updateHouse(channel, messageId, maison) {
-    const con = mysql.createConnection({
-      host: houses.default.host,
-      user: houses.default.user,
-      password: houses.default.password,
-      port: houses.default.port,
-      database: houses.default.database,
-    });
-    con.connect(function (err) {
-      if (err) {
-        if (err.message.code === "ETIMEDOUT") {
-          console.log("TimeOut de la BDD");
-        }
-      }
-      //console.log("Connected to MySQLDB");
-    });
-    const query =
-      "update Coupe set channel = ?, serveur = ?, nom = ?, blason = ?, couleur = ?, messageId = ? where messageId = ?";
-    const retour = await con
-      .promise()
-      .query(query, [
+    return new MysqlRequest().query("update Coupe set channel = ?, serveur = ?, nom = ?, blason = ?, couleur = ?, messageId = ? where messageId = ?", [
         channel.id,
         channel.guildId,
         maison.nom,
@@ -106,32 +27,10 @@ export class Repository {
         maison.messageId,
         messageId,
       ]);
-    con.end();
   }
 
   async getMonsters() {
-    try {
-      const con = mysql.createConnection({
-        host: houses.default.host,
-        user: houses.default.user,
-        password: houses.default.password,
-        port: houses.default.port,
-        database: houses.default.database,
-      });
-      con.connect(function (err) {
-        if (err) {
-          if (err.message.code === "ETIMEDOUT") {
-            console.log("TimeOut de la BDD");
-          }
-        }
-        //console.log("Connected to MySQLDB");
-      });
-      const query = "select * from monster";
-      const retour = await con.promise().query(query, []);
-      con.end();
-      return retour[0];
-    }
-    catch (error) { console.log(error); }
+    return new MysqlRequest().query("select * from monster")[0];
   }
   
   async getRaidById(list) {
@@ -139,52 +38,10 @@ export class Repository {
   }
   
   async insertIntoMembre(idDiscord, maison) {
-        try {
-      const con = mysql.createConnection({
-        host: houses.default.host,
-        user: houses.default.user,
-        password: houses.default.password,
-        port: houses.default.port,
-        database: houses.default.database,
-      });
-      con.connect(function (err) {
-        if (err) {
-          if (err.message.code === "ETIMEDOUT") {
-            console.log("TimeOut de la BDD");
-          }
-        }
-        //console.log("Connected to MySQLDB");
-      });
-      const query = "insert ignore into membre values(?,?,'',current_date())";
-      const retour = await con.promise().query(query, [idDiscord, maison]);
-      con.end();
-      return retour[0];
-    }
-    catch (error) { console.log(error); }
+    return new MysqlRequest().query("insert ignore into membre values(?,?,'',current_date())", [idDiscord, maison])[0];
   }
 
   async getListItem(id) {
-        try {
-      const con = mysql.createConnection({
-        host: houses.default.host,
-        user: houses.default.user,
-        password: houses.default.password,
-        port: houses.default.port,
-        database: houses.default.database,
-      });
-      con.connect(function (err) {
-        if (err) {
-          if (err.message.code === "ETIMEDOUT") {
-            console.log("TimeOut de la BDD");
-          }
-        }
-        //console.log("Connected to MySQLDB");
-      });
-      const query = "select objet.name, objet.description, objet.id from inventory, objet where inventory.idDiscord = ? and inventory.idObject = objet.id";
-      const retour = await con.promise().query(query, [id]);
-      con.end();
-      return retour[0];
-    }
-    catch (error) { console.log(error); }
+    return new MysqlRequest().query("select objet.name, objet.description, objet.id from inventory, objet where inventory.idDiscord = ? and inventory.idObject = objet.id", [id])[0];
   }
 }
