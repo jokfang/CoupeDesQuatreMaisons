@@ -2,6 +2,8 @@ import { duelRoll, formatString } from "../commandes/items.js";
 import { SpellRepository } from "../repository/spellRepository.js";
 import { EmbedBuilder, Colors } from "discord.js";
 import { bareme, currentCup } from "../librairy/cupInfo.js";
+import { DiscordMessageMethod } from "./discordMethod.js";
+
 export class Duel{
     constructor(dataDuel,messageDuel) {
         this.dataDuel = dataDuel;
@@ -53,8 +55,9 @@ export class Duel{
         const winMessage = await this.createWinMessage(dataWin, this.channel);
 
         await this.channel.send({ embeds: [winMessage] });
-        await interaction.message.delete();
-        await this.messageDuel.delete();
+        
+        new DiscordMessageMethod(interaction.message).delete();
+        new DiscordMessageMethod(this.messageDuel).delete();
 
         if (!this.duelNull) {
             const cptChannel = this.channel.messages.client.channels.cache.get(

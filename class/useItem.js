@@ -1,20 +1,22 @@
-import { specialAction } from "./specialAction.js";
+import { Monster } from "./monster.js";
 
 export class useItem {
     constructor(interractionReceived) {
         this.challenger = interractionReceived.member;
         this.interraction = interractionReceived;
-        this.monsterMessage = interractionReceived.customId.split('_')[1];
-        this.objectCode = interractionReceived.fields.components[0].components[0].value;
+        this.monsterMessageId = interractionReceived.customId.split('_')[1];
+        this.objectId = interractionReceived.values[0].split('_')[1];
     }
 
-    async useThis() {
-        const object = JSON.parse(Buffer.from(this.objectCode, 'base64').toString());
+    async react() {
         //si l'objet est valide
-        if (object.member) {
-            if (this.matchingUser(object.member)) {
-                new specialAction(this.interraction).Assassiner();
-            }
+        const importClass = (await import('../item/' + this.objectId + '.js'))[this.objectId];
+        const result = new importClass().onMonster();
+        if (result.result == 4) {
+            const monsterMessage = await this.interraction.channel.messages.fetch(this.monsterMessageId);
+            if (monsterMessage)
+                        new Monster(monsterMessage, this.interraction.member).counterMonstre(1);
+            this.interraction.reply({ content: result.message, ephemeral: true });
         }
     }
 

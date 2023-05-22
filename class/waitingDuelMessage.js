@@ -1,5 +1,6 @@
 import { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle, Colors } from "discord.js";
 import { Repository } from "../repository/repository.js";
+import { DiscordMessageMethod } from "./discordMethod.js";
 export class WaitingDuelMessage {
     constructor(dataDuel) {
         this.dataDuel = dataDuel;
@@ -31,6 +32,7 @@ export class WaitingDuelMessage {
             .setDescription(this.createDuelMessage());
 
         interaction.message.channel.send({ embeds: [embedShowDuel], components :[this.createDuelButton()] });
-        interaction.message.delete();
+        new DiscordMessageMethod(interaction.message).delete();
+        
     }
 }

@@ -3,11 +3,12 @@ import { simpleDice } from "../commandes/items.js";
 import { currentCup } from "../librairy/cupInfo.js";
 import { Monster } from "../class/monster.js";
 import { TextInputStyle } from "discord.js";
+import { Repository } from "../repository/repository.js";
 
 export class specialAction {
     constructor(interractionReceived) { 
         this.idChallenger = interractionReceived.member.id;
-        this.interraction = interractionReceived
+        this.interraction = interractionReceived;
     }
 
     async sendPannel() {
@@ -26,11 +27,6 @@ export class specialAction {
 							description: 'Peut faire disparaitre une créature, risqué',
 							value: 'assassin',
 						},
-						{
-							label: 'Utiliser un objet',
-							description: 'Permet d\'utiliser un objet',
-							value: 'useItem',
-                        },
                         {
 							label: 'Utiliser un code',
 							description: 'Permet d\'utiliser un code',
@@ -65,6 +61,8 @@ export class specialAction {
     async setAction() {
         if (this.interraction.values[0] == 'assassin') {
             this.Assassiner();
+        } else if (this.interraction.values[0] == 'useItem') {
+            this.chooseItem(this.idChallenger);
         }
         else if (this.interraction.values[0] == 'useCode') {
             this.openCatchFields();
@@ -119,5 +117,28 @@ export class specialAction {
             // Show the modal to the user
             await this.interraction.showModal(modal);
         }
+    }
+
+    async chooseItem(id) {
+        const repo = new Repository();
+        const listItem = await repo.getListItem(id)
+        const selectMenu = new StringSelectMenuBuilder()
+            .setCustomId('selectObject_'+this.interraction.message.id)
+            .setPlaceholder('Choisis ton objet');
+        for (const item of listItem) {
+            selectMenu.addOptions(
+                {
+                    label: item.name,
+                    description: item.description,
+                    value: 'useItem_'+item.id,
+                }
+            );
+        }
+        const row = new ActionRowBuilder()
+			.addComponents(
+				selectMenu
+			);
+        const monsterMessage = await this.interraction.message;
+        await this.interraction.reply({ content: 'Choisis l\'objet que tu veux utiliser !', ephemeral: true, components: [row] });
     }
 }

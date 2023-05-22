@@ -32,7 +32,8 @@ CREATE TABLE membre(
 
 CREATE TABLE objet(  
     id VARCHAR(100) NOT NULL PRIMARY KEY,
-    name VARCHAR(255)
+    name VARCHAR(255),
+    description varchar(1000)
 );
 
 CREATE TABLE inventory(  

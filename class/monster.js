@@ -2,6 +2,7 @@ import { Repository } from "../repository/repository.js";
 import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors } from "discord.js";
 import { simpleDice } from "../commandes/items.js";
 import { currentCup, bareme } from "../librairy/cupInfo.js";
+import { DiscordMessageMethod } from "./discordMethod.js";
 
 export class Monster {
     constructor(message, author) {
@@ -31,12 +32,16 @@ export class Monster {
         button.addComponents(new ButtonBuilder()
             .setCustomId("specialAction")
             .setLabel("Action spéciale").setStyle(ButtonStyle.Primary));
+        
+        button.addComponents(new ButtonBuilder()
+            .setCustomId("selectObject")
+            .setLabel("Utiliser un objet").setStyle(ButtonStyle.Primary));
         await this.baseMessage.channel.messages.client.channels.cache.get('1083394634903994419').send({ embeds: [embedShowDuel], components:[button]
         });
     }
 
     async counterMonstre(puissance = 1) {
-        const embed = this.baseMessage.message.embeds[0];
+        const embed = this.baseMessage.message ? this.baseMessage.message.embeds[0] : this.baseMessage.embeds[0];
         const pdv = parseInt(embed.fields[1].value) - puissance;
         const embedsEdited = new EmbedBuilder()
             .setColor(embed.color)
@@ -59,7 +64,7 @@ export class Monster {
 
         if (edited) {
             if (parseInt(embedsEdited.data.fields[1].value) <= 0) {
-            this.baseMessage.message.delete();
+                new DiscordMessageMethod(this.baseMessage.message).delete();
             }
             else {
             this.baseMessage.message.edit({ embeds: [embedsEdited] });

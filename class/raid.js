@@ -5,6 +5,7 @@ import {
 import { Raids } from "../librairy/raids.js";
 import { currentCup } from "../librairy/cupInfo.js";
 import { bareme } from "../librairy/cupInfo.js";
+import { DiscordMessageMethod } from "./discordMethod.js";
 
 export class Raid {
     constructor(message, author) {
@@ -49,7 +50,7 @@ export class Raid {
         if (edited) {
             if (parseInt(embedsEdited.data.fields[1].value) <= 0) {
                 this.next();
-                this.baseMessage.message.delete();
+                new DiscordMessageMethod(this.baseMessage.message).delete();
             }
             else {
             this.baseMessage.message.edit({ embeds: [embedsEdited] });
