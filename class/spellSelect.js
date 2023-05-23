@@ -1,5 +1,6 @@
 import { SpellRepository } from "../repository/spellRepository.js";
 import { ActionRowBuilder, StringSelectMenuBuilder } from "discord.js";
+import { DiscordMessageMethod } from "./discordMethod.js";
 
 export class SpellSelect{
     constructor(interractionReceived, duelParameter) {
@@ -17,6 +18,7 @@ export class SpellSelect{
         this.idOpponent = this.interraction.mentions.members.first().id;
         this.spellList = await this.setSpellList(this.spellRepository);
         this.sendSpellSelect(this.idChallenger);
+        new DiscordMessageMethod(this.interraction).delete();
     }
 
     async sendCounterSelect() {
