@@ -10,6 +10,7 @@ export class MysqlRequest{
         password: houses.default.password,
         port: houses.default.port,
         database: houses.default.database,
+        connectTimeout: 30000
       });
       con.connect(function (err) {
         if (err) {
@@ -20,10 +21,12 @@ export class MysqlRequest{
         //console.log("Connected to MySQLDB");
       });
       const retour = await con.promise().query(request, binds);
-      con.end();
+      con.destroy();
       return retour;
     } catch (error) {
-      throw error;
+      console.log(request);
+      console.log(binds);
+      console.log(error);
     }
   }
 }

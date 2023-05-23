@@ -7,7 +7,8 @@ export class Repository {
   //Ajoute des points à une maison en prenant son id et le montant de point à ajouter
   async getMaison(house) {
     const retour = await new MysqlRequest().query("select * from team where nom = ?", [house]);
-    return retour[0][0];
+    if(retour)
+      return retour[0][0];
   }
 
   async getMaisons() {

@@ -31,8 +31,8 @@ export class WaitingDuelMessage {
             .setThumbnail("https://cdn.shopify.com/s/files/1/0003/8263/1983/files/Triforce_Shards_1_large.png?v=1578654003")
             .setDescription(this.createDuelMessage());
 
-        interaction.message.channel.send({ embeds: [embedShowDuel], components :[this.createDuelButton()] });
-        new DiscordMessageMethod(interaction.message).delete();
+        interaction.message.channel.send({ embeds: [embedShowDuel], components: [this.createDuelButton()] })
+            .then(new DiscordMessageMethod(interaction.message).delete());
         
     }
 }
