@@ -1,8 +1,17 @@
 import mysql from "mysql2";
 import * as houses from "../data/info.cjs";
+import { setCache, verifyCache } from "./cache.js";
 
 export class MysqlRequest{
   async query(request, binds = []) {
+    let key = request;
+    for (const bind of binds) {
+      key = key.replace('?', bind);
+    }
+    const cached = verifyCache(key);
+    if (cached) {
+      return cached;
+    }
     let retry = 0;
     while (retry < 3) {
       try {
@@ -24,6 +33,7 @@ export class MysqlRequest{
         });
         const retour = await con.promise().query(request, binds);
         con.destroy();
+        setCache(key, retour);
         return retour;
       } catch (error) {
         retry += 1;

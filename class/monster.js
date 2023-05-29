@@ -3,6 +3,7 @@ import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors } fr
 import { simpleDice } from "../commandes/items.js";
 import { currentCup, bareme } from "../librairy/cupInfo.js";
 import { DiscordMessageMethod } from "./discordMethod.js";
+import { addSilentPoint } from "../commandes/point.js";
 
 export class Monster {
     constructor(message, author) {
@@ -71,7 +72,7 @@ export class Monster {
             }
             if (puissance > 0) {
                 const cptChannel = this.baseMessage.message.client.channels.cache.get(currentCup);
-                cptChannel.send("!add " + (bareme.duel / 2).toString() + " to <@" + this.baseMessage.member + '>');
+                addSilentPoint(this.baseMessage.author || this.baseMessage.member, bareme.duel / 2, { channel: this.baseMessage.channel });
             }
         }
     }
