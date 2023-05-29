@@ -43,11 +43,20 @@ export class Repository {
   }
   
   async insertIntoMembre(idDiscord, maison) {
-    return await new MysqlRequest().query("insert ignore into membre values(?,?,'',current_date())", [idDiscord, maison]);
+    return await new MysqlRequest().query("insert ignore into membre values(?,?,'',current_date(), 0)", [idDiscord, maison]);
   }
 
   async getListItem(id) {
     const retour = await new MysqlRequest().query("select objet.name, objet.description, objet.id from inventory, objet where inventory.idDiscord = ? and inventory.idObject = objet.id", [id]);
     return retour[0];
+  }
+
+  async setPoint(id, point) {
+    const retour = await new MysqlRequest().query("update membre set battlePoint = ? where idDiscord = ?", [point, id]);
+  }
+
+  async getMemberInfo(id) {
+    const retour = await new MysqlRequest().query("select * from membre where idDiscord = ?", [id]);
+    return retour[0][0];
   }
 }

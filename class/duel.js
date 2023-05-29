@@ -3,6 +3,7 @@ import { SpellRepository } from "../repository/spellRepository.js";
 import { EmbedBuilder, Colors } from "discord.js";
 import { bareme, currentCup } from "../librairy/cupInfo.js";
 import { DiscordMessageMethod } from "./discordMethod.js";
+import { Repository } from "../repository/repository.js";
 
 export class Duel{
     constructor(dataDuel,messageDuel) {
@@ -19,7 +20,15 @@ export class Duel{
         this.rng_Opponent = duelRoll(1, 10 + Number(this.dataDuel.ratioOpponent));
     }
 
-    setDataWin() {
+    async setDataWin() {
+        const repo = new Repository();
+        //get MemberInfo
+        const opponent = await repo.getMemberInfo(this.dataDuel.opponent.id);
+        const challenger = await repo.getMemberInfo(this.dataDuel.challenger.id); 
+        //add point
+        if (opponent) repo.setPoint(opponent.idDiscord, parseInt(opponent.battlePoint) + 1);
+        if (challenger) repo.setPoint(challenger.idDiscord, parseInt(challenger.battlePoint) + 1);
+
         let dataWin = {
             nameWinner: "",
             houseWinner: "",
