@@ -1,0 +1,45 @@
+CREATE TABLE team(  
+    channel VARCHAR(100),
+    serveur VARCHAR(100),
+    nom VARCHAR(255),
+    blason VARCHAR(1000),
+    couleur VARCHAR(255),
+    messageId VARCHAR(100),
+    roleId VARCHAR(100),
+    ratio int
+);
+
+CREATE TABLE monster(  
+    nom VARCHAR(100) NOT NULL PRIMARY KEY,
+    pdv INT,
+    image VARCHAR(1000)
+);
+
+CREATE TABLE spell(  
+    serverId VARCHAR(100),
+    channelId VARCHAR(100),
+    roleId VARCHAR(100),
+    spellName VARCHAR(100) NOT NULL PRIMARY KEY,
+    spellMessage  VARCHAR(250)
+);
+
+
+CREATE TABLE membre(  
+    idDiscord VARCHAR(100) NOT NULL PRIMARY KEY,
+    maison VARCHAR(100),
+    twitchName VARCHAR(100)
+);
+
+CREATE TABLE objet(  
+    id VARCHAR(100) NOT NULL PRIMARY KEY,
+    name VARCHAR(255),
+    description varchar(1000)
+);
+
+CREATE TABLE inventory(  
+    idDiscord VARCHAR(100),
+    idObject VARCHAR(100),
+    quantity INT,
+    Foreign Key (idDiscord) REFERENCES membre(idDiscord),
+    FOREIGN KEY (idObject) REFERENCES object(id)
+);

@@ -3,11 +3,12 @@ import { simpleDice } from "../commandes/items.js";
 import { currentCup } from "../librairy/cupInfo.js";
 import { Monster } from "../class/monster.js";
 import { TextInputStyle } from "discord.js";
+import { Repository } from "../repository/repository.js";
 
 export class specialAction {
     constructor(interractionReceived) { 
         this.idChallenger = interractionReceived.member.id;
-        this.interraction = interractionReceived
+        this.interraction = interractionReceived;
     }
 
     async sendPannel() {
@@ -26,11 +27,11 @@ export class specialAction {
 							description: 'Peut faire disparaitre une créature, risqué',
 							value: 'assassin',
 						},
-						{
-							label: 'Utiliser un objet',
+                        {
+							label: 'Utiliser un code',
 							description: 'Permet d\'utiliser un code',
-							value: 'useItem',
-						},
+							value: 'useCode',
+						}
 					),
 			);
 
@@ -60,8 +61,10 @@ export class specialAction {
     async setAction() {
         if (this.interraction.values[0] == 'assassin') {
             this.Assassiner();
+        } else if (this.interraction.values[0] == 'useItem') {
+            this.chooseItem(this.idChallenger);
         }
-        else if (this.interraction.values[0] == 'useItem') {
+        else if (this.interraction.values[0] == 'useCode') {
             this.openCatchFields();
         }
     }
@@ -113,6 +116,39 @@ export class specialAction {
 
             // Show the modal to the user
             await this.interraction.showModal(modal);
+        }
+    }
+
+    async chooseItem(id) {
+        const monsterMessage = await this.interraction.channel.messages.fetch(this.interraction.message.id);
+        if (monsterMessage.embeds[0].fields[0]?.value.includes('<@' + this.interraction.member.id + '>')) { 
+            this.interraction.reply({ content: 'Tu as déjà attaqué cette créature, tu peux "rejeter" ce message et celui auquel il répond', ephemeral: true });
+        }
+        else {
+            const repo = new Repository();
+            const listItem = await repo.getListItem(id);
+            if (listItem.length) {
+                const selectMenu = new StringSelectMenuBuilder()
+                    .setCustomId('selectObject_' + this.interraction.message.id)
+                    .setPlaceholder('Choisis ton objet');
+                for (const item of listItem) {
+                    selectMenu.addOptions(
+                        {
+                            label: item.name,
+                            description: item.description,
+                            value: 'useItem_' + item.id,
+                        }
+                    );
+                }
+                const row = new ActionRowBuilder()
+                    .addComponents(
+                        selectMenu
+                    );
+                const monsterMessage = await this.interraction.message;
+                await this.interraction.reply({ content: 'Choisis l\'objet que tu veux utiliser !', ephemeral: true, components: [row] });
+            } else {
+                await this.interraction.reply({ content: 'Ton inventaire est vide', ephemeral: true });
+            }
         }
     }
 }

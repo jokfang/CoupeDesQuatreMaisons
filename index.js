@@ -17,8 +17,10 @@ import { bareme, bareme_multiple, roles } from "./librairy/cupInfo.js";
 import * as timers from "node:timers/promises";
 import { Monster } from "./class/monster.js";
 import { specialAction } from "./class/specialAction.js";
+import { useCode } from "./class/useCode.js";
 import { useItem } from "./class/useItem.js";
 import { Raid } from "./class/raid.js";
+import { DiscordMessageMethod } from "./class/discordMethod.js";
 const wait = timers.setTimeout;
 
 //Droit attribué au bot
@@ -63,7 +65,7 @@ client.on("messageCreate", async function (message) {
         //On ajoute le membre à la maison
         addMembre(message.content.split(" ")[3], message);
       }
-      message.delete();
+      new DiscordMessageMethod(message).delete();
     } else if (message.content.split(" ")[0] === "!remove" && isOK) {
       if (!isNaN(message.content.split(" ")[1])) {
         //On retire les points en modifiant le message, puis on supprime la commande
@@ -76,7 +78,7 @@ client.on("messageCreate", async function (message) {
         //On retire le membre de la maison
         removeMembre(message.content.split(" ")[3], message);
       }
-      message.delete();
+      new DiscordMessageMethod(message).delete();
     } else if (message.content.split(" ")[0] === "!setBlason" && isOK) {
       //On modifie le blason, puis on supprime la commande
       setBlason(
@@ -84,7 +86,7 @@ client.on("messageCreate", async function (message) {
         message.content.split(" ")[1],
         message.channel
       );
-      message.delete();
+      new DiscordMessageMethod(message).delete();
     } else if (message.content.split(" ")[0] === "!setNom" && isOK) {
       //On modifie le nom, puis on supprime la commande
       setNom(
@@ -92,7 +94,7 @@ client.on("messageCreate", async function (message) {
         message.content.split(" ")[1],
         message.channel
       );
-      message.delete();
+      new DiscordMessageMethod(message).delete();
     } else if (message.content.split(" ")[0] === "!setPoint" && isOK) {
       //On attribue les points en modifiant le message, puis on supprime la commande
       setPoint(
@@ -100,7 +102,7 @@ client.on("messageCreate", async function (message) {
         parseInt(message.content.split(" ")[1]),
         message.channel
       );
-      message.delete();
+      new DiscordMessageMethod(message).delete();
     } else if (message.content.split(" ")[0] === "!setCouleur" && isOK) {
       //On attribue la couleur en modifiant le message, puis on supprime la commande
       setColor(
@@ -108,7 +110,7 @@ client.on("messageCreate", async function (message) {
         message.content.split(" ")[1],
         message.channel
       );
-      message.delete();
+      new DiscordMessageMethod(message).delete();
     } else if (message.content.split(" ")[0] === "!newHouseCup" && isOK) {
       //Si les points sont renseigné on envois les points, sinon on créé les messages avec 0 points
       if (message.content.split(" ").length > 1) {
@@ -116,15 +118,15 @@ client.on("messageCreate", async function (message) {
       } else {
         newHouseCup(message.channel);
       }
-      message.delete();
+      new DiscordMessageMethod(message).delete();
     } else if (message.content.split(" ")[0] === "!bouton" && isOK) {
       // Ouvre l'interface des boutons
       getButtonInterface(message);
-      message.delete();
+      new DiscordMessageMethod(message).delete();
     } else if (message.content.split(" ")[0] === "!helpHouseCup") {
       //Si les points sont renseigné on envois les points, sinon on créé les messages avec 0 points
       help(message);
-      message.delete();
+      new DiscordMessageMethod(message).delete();
     } else if (message.content.split(" ")[0] === "!duel") {
       const duelStatus = "attack";
       const houseChallenger = await houseMembre(message.member);
@@ -132,7 +134,7 @@ client.on("messageCreate", async function (message) {
       if (await checkError(message, duelStatus, false, false, houseChallenger, houseOpponent)) {
         await createSelectMenuSpell(message, houseChallenger.id, duelStatus);
       }
-      message.delete();
+      
 
     } else if (message.content.split(" ")[0] === "!dé") {
       if (message.content.split(" ").length > 1) {
@@ -146,10 +148,11 @@ client.on("messageCreate", async function (message) {
      } else {
       const sec = new Date().getSeconds().toString();
       const min = new Date().getMinutes().toString();
-      if ((message.author.id != '1015931608773169193' && sec%29 == 0 && min%2 == 0)||(message.author.id == '250329835388272641' && message.content=='!mobSpawns')) {
+      if ((message.author.id != '1015931608773169193' && sec%29 == 0 && min%2 == 0)||(message.author.id == '250329835388272641' && message.content=='!mobSpawn')) {
         new Monster(message).aWildMonsterAppear();
       }
       else if (['935671117748764733', '937155308642513007', '935673157635964959'].includes(message.channel.id) && message.content.length > 200){
+        //On ajoute 5 points pour un avis dans Lecture, Film/série, Jeux Vidéo
         addSilentPoint(message.member, 5, message);
       } else if (await encouragement(message.content) == true) {
         addSilentPoint(message.member, 1, message);
@@ -195,7 +198,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
           );
           break;
         case "interfaceExit":
-          interaction.message.delete();
+          new DiscordMessageMethod(interaction.message).delete();
           break;
         case "add":
           point = bareme[interaction.customId.split("_")[2]];
@@ -254,6 +257,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
       case "specialAction":
         new specialAction(interaction).sendPannel();
         break;
+      case 'selectObject':
+        new specialAction(interaction).chooseItem(interaction.user.id);
+        break;
     }
   }
   else if (interaction.isStringSelectMenu()) {
@@ -274,8 +280,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
     } else if (interaction.customId == 'selectAction') {
       new specialAction(interaction).setAction();
     }
+     else if (interaction.customId.split("_")[0] == 'selectObject') {
+      new useItem(interaction).react();
+    }
   } else if (interaction.isModalSubmit()) {
-    new useItem(interaction).useThis();
+    new useCode(interaction).useThis();
   }
 });
 
@@ -284,7 +293,7 @@ function checkMessage(message) {
   if (!messageContent.startsWith("!")) {
     return false;
   }
-  if (message?.webhookId == "1021509750321586236") {
+  if (message?.webhookId == "1104798868031426600") {
     return true;
   }
   // Droit Modération

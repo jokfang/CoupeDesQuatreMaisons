@@ -103,7 +103,7 @@ export async function addSilentPoint(author, montant, source) {
   if (author.id) {
     const maisons = await myRepository.getMaisons();
     let member = author;
-    let findMaison = maisons.find((house) =>
+    let findMaison = maisons?.find((house) =>
       member._roles.find((memberRole) => memberRole == house.roleId)
     );
     if(findMaison)

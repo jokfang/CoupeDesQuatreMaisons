@@ -1,6 +1,6 @@
 export function duelRoll(min, max) {
     //Si pas de ratio (PVE) alors 0
-  let roll = simpleDice(1, 10 + Number(this.dataDuel.ratioChallenger)) || 0;
+  let roll = simpleDice(1, max) || 0;
   if (roll > 10) { roll = 10; }
   while (roll % 10 == 0 && roll > 0) {
       roll += simpleDice(1, 10);
@@ -35,5 +35,5 @@ export function swDice(max, joker = false) {
 }
 
 export function formatString(string) {
-  return string.substring(1,1).toUpperCase() + string.substring(2).toLowerCase()
+  return string.substring(0,1).toUpperCase() + string.substring(1).toLowerCase()
 }

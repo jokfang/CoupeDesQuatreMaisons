@@ -18,7 +18,7 @@ export async function createSelectMenuSpell(message, idHousePlayer, duelStatus) 
       return spellSelect.sendAttackSelect();  
   } else if (duelStatus == 'counter') {
       return spellSelect.sendCounterSelect();
-    }
+  }
 }
 
 export async function showDuel(interaction, dataSelectMenu, duelStatus) {
