@@ -120,25 +120,35 @@ export class specialAction {
     }
 
     async chooseItem(id) {
-        const repo = new Repository();
-        const listItem = await repo.getListItem(id)
-        const selectMenu = new StringSelectMenuBuilder()
-            .setCustomId('selectObject_'+this.interraction.message.id)
-            .setPlaceholder('Choisis ton objet');
-        for (const item of listItem) {
-            selectMenu.addOptions(
-                {
-                    label: item.name,
-                    description: item.description,
-                    value: 'useItem_'+item.id,
-                }
-            );
+        const monsterMessage = await this.interraction.channel.messages.fetch(this.interraction.message.id);
+        if (monsterMessage.embeds[0].fields[0]?.value.includes('<@' + this.interraction.member.id + '>')) { 
+            this.interraction.reply({ content: 'Tu as déjà attaqué cette créature, tu peux "rejeter" ce message et celui auquel il répond', ephemeral: true });
         }
-        const row = new ActionRowBuilder()
-			.addComponents(
-				selectMenu
-			);
-        const monsterMessage = await this.interraction.message;
-        await this.interraction.reply({ content: 'Choisis l\'objet que tu veux utiliser !', ephemeral: true, components: [row] });
+        else {
+            const repo = new Repository();
+            const listItem = await repo.getListItem(id);
+            if (listItem.length) {
+                const selectMenu = new StringSelectMenuBuilder()
+                    .setCustomId('selectObject_' + this.interraction.message.id)
+                    .setPlaceholder('Choisis ton objet');
+                for (const item of listItem) {
+                    selectMenu.addOptions(
+                        {
+                            label: item.name,
+                            description: item.description,
+                            value: 'useItem_' + item.id,
+                        }
+                    );
+                }
+                const row = new ActionRowBuilder()
+                    .addComponents(
+                        selectMenu
+                    );
+                const monsterMessage = await this.interraction.message;
+                await this.interraction.reply({ content: 'Choisis l\'objet que tu veux utiliser !', ephemeral: true, components: [row] });
+            } else {
+                await this.interraction.reply({ content: 'Ton inventaire est vide', ephemeral: true });
+            }
+        }
     }
 }

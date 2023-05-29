@@ -258,7 +258,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
         new specialAction(interaction).sendPannel();
         break;
       case 'selectObject':
-        //new specialAction(interaction).chooseItem(interaction.user.id);
+        new specialAction(interaction).chooseItem(interaction.user.id);
         break;
     }
   }
