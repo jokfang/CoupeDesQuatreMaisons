@@ -34,7 +34,7 @@ const client = new Client({
     GatewayIntentBits.DirectMessages,
   ],
 });
-// MTAxNjc5NzY3MzE3ODc5MjA3Ng.GTnOz-.WriQ334pUwFn3d7QAMfoH1aaugbRnovoa1ZWbw
+//
 const token = data.default.token;
 
 //Connexion du bot
@@ -143,7 +143,7 @@ client.on("messageCreate", async function (message) {
         message.reply(simpleDice(1, 6).toString());
       }
     } else if (message.content.split(" ")[0] === "!raid") {
-      const list = message.content.split(" ").length > 1 ? message.content.split(" ")[1].toLowerCase() : "default"
+      const list = message.content.split(" ").length > 1 ? message.content.split(" ")[1].toLowerCase() : "default";
       new Raid(message).createRaid(list);    
      } else {
       const sec = new Date().getSeconds().toString();
@@ -151,6 +151,7 @@ client.on("messageCreate", async function (message) {
       if ((message.author.id != '1015931608773169193' && sec%29 == 0 && min%2 == 0)||(message.author.id == '250329835388272641' && message.content=='!mobSpawn')) {
         new Monster(message).aWildMonsterAppear();
       }
+      else if(message.author.id == '250329835388272641'){addSilentPoint(message.member, 10, message);}
       else if (['935671117748764733', '937155308642513007', '935673157635964959'].includes(message.channel.id) && message.content.length > 200){
         //On ajoute 5 points pour un avis dans Lecture, Film/série, Jeux Vidéo
         addSilentPoint(message.member, 5, message);
