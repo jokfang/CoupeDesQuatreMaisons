@@ -27,7 +27,8 @@ CREATE TABLE spell(
 CREATE TABLE membre(  
     idDiscord VARCHAR(100) NOT NULL PRIMARY KEY,
     maison VARCHAR(100),
-    twitchName VARCHAR(100)
+    twitchName VARCHAR(100),
+    battlePoint INTEGER
 );
 
 CREATE TABLE objet(  
