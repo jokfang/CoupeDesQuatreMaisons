@@ -1,6 +1,7 @@
 import { EmbedBuilder } from "discord.js";
 import { Repository } from "../repository/repository.js";
 import { currentCup } from "../librairy/cupInfo.js";
+import { Colors } from "discord.js";
 
 export async function setPoint(houseName, montant, channel) {
   const myRepository = new Repository();
@@ -17,7 +18,7 @@ export async function setPoint(houseName, montant, channel) {
 
   //On construit le message qui sera appliqué en annule et remplace du précédent
   const embed = new EmbedBuilder()
-    .setColor(maison.couleur)
+    .setColor(Colors[maison.couleur])
     .setTitle(maison.nom)
     .setThumbnail(maison.blason)
     .setDescription(cpt.toString());
@@ -82,7 +83,7 @@ export async function addPoint(houseName, montant, message) {
     const msg = await channelCup.messages.fetch(maison.messageId);
   
     //On incrémente le compteur
-    let cpt = parseInt(msg.embeds[0].data.description);
+    let cpt = parseInt(msg.embeds ? msg.embeds[0]?.data.description : 0);
     cpt += parseInt(montant);
 
     //On construit le message qui sera appliqué en annule et remplace du précédent
@@ -92,7 +93,7 @@ export async function addPoint(houseName, montant, message) {
       .setThumbnail(maison.blason)
       .setDescription(cpt.toString());
     //On édit le message
-    msg.edit({ embeds: [embed] });
+    msg.edit({ content: '', embeds: [embed] });
   }
 }
 
