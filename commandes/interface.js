@@ -1,7 +1,7 @@
-import { Repository } from "../repository/repository.js";
 import * as Discord from "discord.js";
 import { bareme, bareme_multiple, currentCup } from "../librairy/cupInfo.js";
 import { ButtonStyle } from "discord.js";
+import { HouseRepository } from "../repository/houseRepository.js";
 
 // Obtient un menu de bouton.
 export function getButtonInterface(message) {
@@ -34,9 +34,9 @@ export function getButtonInterface(message) {
 //Création d'un interface de bouton d'ajoute de point
 
 export async function getButtonInterface_PointByHouse(interaction) {
-  const myRepository = new Repository();
+  const houseRepos = new HouseRepository();
   const channelCup = currentCup;
-  const maisons = await myRepository.getMaisons();
+  const maisons = await houseRepos.getMaisons();
 
   // Création des boutons pour les quatre premières maisons
 
@@ -78,9 +78,9 @@ export async function getButtonInterface_PointByHouse(interaction) {
 }
 
 export async function getButtonInterface_house(interaction, house) {
-  const myRepository = new Repository();
+  const houseRepos = new HouseRepository();
   const channelCup = currentCup;
-  const maisons = await myRepository.getMaisons();
+  const maisons = await houseRepos.getMaisons();
 
   let rowBits = new Discord.ActionRowBuilder().addComponents(
     new Discord.ButtonBuilder()
@@ -155,9 +155,9 @@ export async function getButtonInterface_house(interaction, house) {
 }
 
 export async function getButtonInterface_PointByMember(interaction) {
-  const myRepository = new Repository();
+  const houseRepos = new HouseRepository();
   const channelCup = currentCup;
-  const maisons = await myRepository.getMaisons();
+  const maisons = await houseRepos.getMaisons();
 
   const rowMember = new Discord.ActionRowBuilder();
 }

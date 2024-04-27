@@ -1,13 +1,13 @@
-import { Repository } from "../repository/repository.js";
 import { bareme, currentCup } from "../librairy/cupInfo.js";
+import { HouseRepository } from "../repository/houseRepository.js";
 
 export async function addMembre(houseName, message) {
   let role = message.guild.roles.cache.find((role) => role.name == houseName);
   let member = message.mentions.members.first();
-  const myRepository = new Repository();
+  const houseRepos = new HouseRepository();
 
   const channelCup = currentCup;
-  const maisons = await myRepository.getMaisons();
+  const maisons = await houseRepos.getMaisons();
   if (
     !maisons.find((maison) =>
       member._roles.find((memberRole) => memberRole == maison.roleId)
@@ -20,17 +20,17 @@ export async function addMembre(houseName, message) {
 export async function removeMembre(houseName, message) {
   let role = message.guild.roles.cache.find((role) => role.name == houseName);
   let member = message.mentions.members.first();
-  const myRepository = new Repository();
+  const houseRepos = new HouseRepository();
 
   const channelCup = currentCup;
   member.roles.remove(role);
 }
 
 export async function houseMembre(member) {
-  const myRepository = new Repository();
+  const houseRepos = new HouseRepository();
 
   const channelCup = currentCup;
-  const maisons = await myRepository.getMaisons();
+  const maisons = await houseRepos.getMaisons();
   let houseMember = {
     name: '',
     id: ''
@@ -46,10 +46,10 @@ export async function houseMembre(member) {
 }
 
 export async function houseMembreDuel(dataDuel) {
-  const myRepository = new Repository();
+  const houseRepos = new HouseRepository();
 
   const channelCup = currentCup;
-  const maisons = await myRepository.getMaisons();
+  const maisons = await houseRepos.getMaisons();
 
   for (let maison of maisons) {
     // check house Challenger

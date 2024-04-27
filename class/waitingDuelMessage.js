@@ -1,6 +1,6 @@
 import { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle, Colors } from "discord.js";
-import { Repository } from "../repository/repository.js";
 import { DiscordMessageMethod } from "./discordMethod.js";
+import { HouseRepository } from "../repository/houseRepository.js";
 export class WaitingDuelMessage {
     constructor(dataDuel) {
         this.dataDuel = dataDuel;
@@ -8,12 +8,12 @@ export class WaitingDuelMessage {
     }
 
     createDuelMessage() {
-        const repo = new Repository();
-        repo.insertIntoMembre(this.dataDuel.idChallenger, this.dataDuel.houseChallenger);
-        repo.insertIntoMembre(this.dataDuel.idOpponent, this.dataDuel.houseOpponent);
+        const houseRepos = new HouseRepository();
+        houseRepos.insertIntoMembre(this.dataDuel.idChallenger, this.dataDuel.houseChallenger);
+        houseRepos.insertIntoMembre(this.dataDuel.idOpponent, this.dataDuel.houseOpponent);
         return this.dataDuel.challenger.toString() + this.houseDescription + this.dataDuel.houseChallenger +
             " tente d'utiliser " + this.dataDuel.spellChallenger.toLowerCase() + " sur " + this.dataDuel.opponent.toString() +
-            this.houseDescription + this.dataDuel.houseOpponent + "."; 
+            this.houseDescription + this.dataDuel.houseOpponent + ".";
     }
 
     createDuelButton() {
@@ -33,6 +33,6 @@ export class WaitingDuelMessage {
 
         interaction.message.channel.send({ embeds: [embedShowDuel], components: [this.createDuelButton()] })
             .then(new DiscordMessageMethod(interaction.message).delete());
-        
+
     }
 }
