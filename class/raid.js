@@ -1,4 +1,4 @@
-import { Repository } from "../repository/repository.js";
+import { MonsterRepository } from "../repository/monsterRepository.js";
 import {
     EmbedBuilder, Colors, ActionRowBuilder, ButtonBuilder, ButtonStyle
 } from "discord.js";
@@ -19,7 +19,7 @@ export class Raid {
     }
 
     async aRaidMonsterAppear(list) {
-        const raid = await new Repository().getRaidById(list);
+        const raid = await new MonsterRepository().getRaidById(list);
 
         //Créer le message et l'envoyer*
         this.aMonsterAppear(raid.monsters[0], raid.name)
@@ -33,10 +33,10 @@ export class Raid {
             .setTitle(embed.title)
             .setDescription(embed.description)
             .setThumbnail(embed.thumbnail.url);
-        
-        
+
+
         let edited = false;
-        if(embed.fields[0].value == ''){   
+        if (embed.fields[0].value == '') {
             embedsEdited.addFields({ name: 'Attaquant', value: '<@' + this.baseMessage.member + '>', inline: true }, { name: 'Vie', value: pdv + ' ', inline: true });
             this.baseMessage.message.edit({ embeds: [embedsEdited] });
             edited = true;
@@ -45,7 +45,7 @@ export class Raid {
             embedsEdited.addFields({ name: 'Attaquant', value: embed.fields[0].value + ', <@' + this.baseMessage.member + '>', inline: true }, { name: 'Vie', value: pdv + ' ', inline: true });
             edited = true;
         }
-        
+
 
         if (edited) {
             if (parseInt(embedsEdited.data.fields[1].value) <= 0) {
@@ -53,7 +53,7 @@ export class Raid {
                 new DiscordMessageMethod(this.baseMessage.message).delete();
             }
             else {
-            this.baseMessage.message.edit({ embeds: [embedsEdited] });
+                this.baseMessage.message.edit({ embeds: [embedsEdited] });
             }
             if (puissance > 0) {
                 const cptChannel = this.baseMessage.message.client.channels.cache.get(currentCup);
@@ -71,32 +71,33 @@ export class Raid {
             const nextMonster = list.monsters.find(monster =>
                 monster.image == thisMonster.nextImage);
             this.aMonsterAppear(nextMonster, list.name);
-            
+
         }
     }
 
     aMonsterAppear(monster, raidName) {
-     const embedTitle = raidName;
+        const embedTitle = raidName;
 
         const duelMessage =
             "Un monstre attaque, défendez vous";
-        
+
         //Créer le message et l'envoyer*
         const embedShowDuel = new EmbedBuilder()
-        .setColor(Colors.Aqua)
-        .setTitle(embedTitle)
-        .setDescription(duelMessage)
-        .setThumbnail(monster.image)
-        .addFields({ name: 'Attaquant', value: ' ', inline: true }, { name: 'Vie', value: monster.pdv + ' ', inline: true });
+            .setColor(Colors.Aqua)
+            .setTitle(embedTitle)
+            .setDescription(duelMessage)
+            .setThumbnail(monster.image)
+            .addFields({ name: 'Attaquant', value: ' ', inline: true }, { name: 'Vie', value: monster.pdv + ' ', inline: true });
 
         const button = new ActionRowBuilder().addComponents(new ButtonBuilder()
             .setCustomId("contreRaid")
             .setLabel("Contre").setStyle(ButtonStyle.Success));
-        
+
         button.addComponents(new ButtonBuilder()
             .setCustomId("specialAction")
             .setLabel("Action spéciale").setStyle(ButtonStyle.Primary));
-        return this.baseMessage.channel.messages.client.channels.cache.get('1083394634903994419').send({ embeds: [embedShowDuel], components:[button]
-        });   
+        return this.baseMessage.channel.messages.client.channels.cache.get('1083394634903994419').send({
+            embeds: [embedShowDuel], components: [button]
+        });
     }
 }

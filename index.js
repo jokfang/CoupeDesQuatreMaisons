@@ -1,5 +1,4 @@
 import { Client, GatewayIntentBits, Events } from "discord.js";
-import { Repository } from "./repository/repository.js";
 import * as data from "./data/info.cjs";
 // commandes
 import { help } from "./commandes/help.js";
@@ -44,7 +43,7 @@ client.once("ready", () => {
 client.login(token);
 
 //Création de l'accès à la BDD
-const myRepository = new Repository();
+// const myRepository = new Repository();
 
 //Lorsqu'on reçoit un message:
 client.on("messageCreate", async function (message) {
@@ -134,7 +133,7 @@ client.on("messageCreate", async function (message) {
       if (await checkError(message, duelStatus, false, false, houseChallenger, houseOpponent)) {
         await createSelectMenuSpell(message, houseChallenger.id, duelStatus);
       }
-      
+
 
     } else if (message.content.split(" ")[0] === "!dé") {
       if (message.content.split(" ").length > 1) {
@@ -144,15 +143,15 @@ client.on("messageCreate", async function (message) {
       }
     } else if (message.content.split(" ")[0] === "!raid") {
       const list = message.content.split(" ").length > 1 ? message.content.split(" ")[1].toLowerCase() : "default";
-      new Raid(message).createRaid(list);    
-     } else {
+      new Raid(message).createRaid(list);
+    } else {
       const sec = new Date().getSeconds().toString();
       const min = new Date().getMinutes().toString();
-      if ((message.author.id != '1015931608773169193' && sec%29 == 0 && min%2 == 0)||(message.author.id == '250329835388272641' && message.content=='!mobSpawn')) {
+      if ((message.author.id != '1015931608773169193' && sec % 29 == 0 && min % 2 == 0) || (message.author.id == '250329835388272641' && message.content == '!mobSpawn')) {
         new Monster(message).aWildMonsterAppear();
       }
-      else if(message.author.id == '250329835388272641'){addSilentPoint(message.member, 10, message);}
-      else if (['935671117748764733', '937155308642513007', '935673157635964959'].includes(message.channel.id) && message.content.length > 200){
+      else if (message.author.id == '250329835388272641') { addSilentPoint(message.member, 10, message); }
+      else if (['935671117748764733', '937155308642513007', '935673157635964959'].includes(message.channel.id) && message.content.length > 200) {
         //On ajoute 5 points pour un avis dans Lecture, Film/série, Jeux Vidéo
         addSilentPoint(message.member, 5, message);
       } else if (await encouragement(message.content) == true) {
@@ -281,7 +280,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     } else if (interaction.customId == 'selectAction') {
       new specialAction(interaction).setAction();
     }
-     else if (interaction.customId.split("_")[0] == 'selectObject') {
+    else if (interaction.customId.split("_")[0] == 'selectObject') {
       new useItem(interaction).react();
     }
   } else if (interaction.isModalSubmit()) {

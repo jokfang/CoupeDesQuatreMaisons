@@ -1,12 +1,12 @@
 import { EmbedBuilder } from "discord.js";
-import { Repository } from "../repository/repository.js";
+import { HouseRepository } from "../repository/houseRepository.js";
 
 //Ajoute des points à une maison en prenant son id et le montant de point à ajouter
 export async function newHouseCup(channel, points) {
   //Pour chaque maisons on créé un message
   //Un passage en base de données pourrait être intéressant pour stabiliser le bot
-  const myRepository = new Repository();
-  const maisons = await myRepository.getMaisons();
+  const houseRepos = new HouseRepository();
+  const maisons = await houseRepos.getMaisons();
 
   if (maisons[0]) {
     for (let i = 0; i < maisons.length; i++) {
@@ -30,7 +30,7 @@ export async function newHouseCup(channel, points) {
       //On met à jour les données du bot
       const newMaison = maisons[i];
       newMaison.messageId = message.id;
-      //await myRepository.updateHouse(channel, messageId, newMaison);
+      //await houseRepos.updateHouse(channel, messageId, newMaison);
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Repository } from "../repository/repository.js";
+import { MonsterRepository } from "../repository/monsterRepository.js";
 import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors } from "discord.js";
 import { simpleDice } from "../commandes/items.js";
 import { currentCup, bareme } from "../librairy/cupInfo.js";
@@ -7,37 +7,38 @@ import { addSilentPoint } from "../commandes/point.js";
 
 export class Monster {
     constructor(message, author) {
-        this.baseMessage = message.content == '' ? {message: message, channel: message.channel, member: author} : message;
+        this.baseMessage = message.content == '' ? { message: message, channel: message.channel, member: author } : message;
     }
 
     async aWildMonsterAppear() {
         const embedTitle = "Une créature apparait !";
 
         const duelMessage =
-        "Un monstre attaque, défendez vous";
+            "Un monstre attaque, défendez vous";
 
-        const monsters = await new Repository().getMonsters();
-        const monster = monsters[simpleDice(0, monsters.length -1 )];
+        const monsters = await new MonsterRepository().getMonsters();
+        const monster = monsters[simpleDice(0, monsters.length - 1)];
         //Créer le message et l'envoyer*
         const embedShowDuel = new EmbedBuilder()
-        .setColor(Colors.Aqua)
-        .setTitle(embedTitle)
-        .setDescription(duelMessage)
-        .setThumbnail(monster.image)
-        .addFields({ name: 'Attaquant', value: ' ', inline: true }, { name: 'Vie', value: monster.pdv + ' ', inline: true });
+            .setColor(Colors.Aqua)
+            .setTitle(embedTitle)
+            .setDescription(duelMessage)
+            .setThumbnail(monster.image)
+            .addFields({ name: 'Attaquant', value: ' ', inline: true }, { name: 'Vie', value: monster.pdv + ' ', inline: true });
 
         const button = new ActionRowBuilder().addComponents(new ButtonBuilder()
             .setCustomId("contreMonsters")
             .setLabel("Contre").setStyle(ButtonStyle.Success));
-        
+
         button.addComponents(new ButtonBuilder()
             .setCustomId("specialAction")
             .setLabel("Action spéciale").setStyle(ButtonStyle.Primary));
-        
+
         button.addComponents(new ButtonBuilder()
             .setCustomId("selectObject")
             .setLabel("Utiliser un objet").setStyle(ButtonStyle.Primary));
-        await this.baseMessage.channel.messages.client.channels.cache.get('1083394634903994419').send({ embeds: [embedShowDuel], components:[button]
+        await this.baseMessage.channel.messages.client.channels.cache.get('1083394634903994419').send({
+            embeds: [embedShowDuel], components: [button]
         });
     }
 
@@ -49,10 +50,10 @@ export class Monster {
             .setTitle(embed.title)
             .setDescription(embed.description)
             .setThumbnail(embed.thumbnail.url);
-        
-        
+
+
         let edited = false;
-        if(embed.fields[0].value == ''){   
+        if (embed.fields[0].value == '') {
             embedsEdited.addFields({ name: 'Attaquant', value: '<@' + this.baseMessage.member + '>', inline: true }, { name: 'Vie', value: pdv + ' ', inline: true });
             this.baseMessage.message.edit({ embeds: [embedsEdited] });
             edited = true;
@@ -61,14 +62,14 @@ export class Monster {
             embedsEdited.addFields({ name: 'Attaquant', value: embed.fields[0].value + ', <@' + this.baseMessage.member + '>', inline: true }, { name: 'Vie', value: pdv + ' ', inline: true });
             edited = true;
         }
-        
+
 
         if (edited) {
             if (parseInt(embedsEdited.data.fields[1].value) <= 0) {
                 new DiscordMessageMethod(this.baseMessage.message).delete();
             }
             else {
-            this.baseMessage.message.edit({ embeds: [embedsEdited] });
+                this.baseMessage.message.edit({ embeds: [embedsEdited] });
             }
             if (puissance > 0) {
                 const cptChannel = this.baseMessage.message.client.channels.cache.get(currentCup);

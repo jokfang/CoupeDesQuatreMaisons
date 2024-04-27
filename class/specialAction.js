@@ -3,10 +3,10 @@ import { simpleDice } from "../commandes/items.js";
 import { currentCup } from "../librairy/cupInfo.js";
 import { Monster } from "../class/monster.js";
 import { TextInputStyle } from "discord.js";
-import { Repository } from "../repository/repository.js";
+import { ItemRepository } from "../repository/itemRepository.js";
 
 export class specialAction {
-    constructor(interractionReceived) { 
+    constructor(interractionReceived) {
         this.idChallenger = interractionReceived.member.id;
         this.interraction = interractionReceived;
     }
@@ -17,26 +17,26 @@ export class specialAction {
 
     async sendHideMessage(id) {
         const row = new ActionRowBuilder()
-			.addComponents(
-				new StringSelectMenuBuilder()
-					.setCustomId('selectAction')
-					.setPlaceholder('Choisis ton action')
-					.addOptions(
-						{
-							label: 'Assassiner',
-							description: 'Peut faire disparaitre une créature, risqué',
-							value: 'assassin',
-						},
+            .addComponents(
+                new StringSelectMenuBuilder()
+                    .setCustomId('selectAction')
+                    .setPlaceholder('Choisis ton action')
+                    .addOptions(
                         {
-							label: 'Utiliser un code',
-							description: 'Permet d\'utiliser un code',
-							value: 'useCode',
-						}
-					),
-			);
+                            label: 'Assassiner',
+                            description: 'Peut faire disparaitre une créature, risqué',
+                            value: 'assassin',
+                        },
+                        {
+                            label: 'Utiliser un code',
+                            description: 'Permet d\'utiliser un code',
+                            value: 'useCode',
+                        }
+                    ),
+            );
 
-		await this.interraction.reply({ content: '<@' + id + '> choisis ton action !', ephemeral: true, components: [row] });
-      //this.interraction.reply({ content: 'test', components:[new ActionRowBuilder().addComponents(this.buildRows())], ephemeral: false });
+        await this.interraction.reply({ content: '<@' + id + '> choisis ton action !', ephemeral: true, components: [row] });
+        //this.interraction.reply({ content: 'test', components:[new ActionRowBuilder().addComponents(this.buildRows())], ephemeral: false });
     }
 
     async buildRows() {
@@ -73,7 +73,7 @@ export class specialAction {
         const letDiceRoll = simpleDice(1, 4);
         try {
             const monsterMessage = await this.interraction.channel.messages.fetch(this.interraction.message.reference.messageId);
-            if (!monsterMessage.embeds[0].fields[0]?.value.includes('<@' + this.interraction.member.id + '>')){
+            if (!monsterMessage.embeds[0].fields[0]?.value.includes('<@' + this.interraction.member.id + '>')) {
                 if (letDiceRoll == 3) {
                     if (monsterMessage)
                         new Monster(monsterMessage, this.interraction.member).counterMonstre(1000);
@@ -93,8 +93,8 @@ export class specialAction {
             } else {
                 this.interraction.reply({ content: 'Tu as déjà attaqué cette créature, tu peux "rejeter" ce message et celui auquel il répond', ephemeral: true });
             }
-        }catch {
-                    this.interraction.reply({ content: 'La créature n\'existe plus, tu peux "rejeter" ce message et celui auquel il répond', ephemeral: true });
+        } catch {
+            this.interraction.reply({ content: 'La créature n\'existe plus, tu peux "rejeter" ce message et celui auquel il répond', ephemeral: true });
         }
     }
 
@@ -121,12 +121,12 @@ export class specialAction {
 
     async chooseItem(id) {
         const monsterMessage = await this.interraction.channel.messages.fetch(this.interraction.message.id);
-        if (monsterMessage.embeds[0].fields[0]?.value.includes('<@' + this.interraction.member.id + '>')) { 
+        if (monsterMessage.embeds[0].fields[0]?.value.includes('<@' + this.interraction.member.id + '>')) {
             this.interraction.reply({ content: 'Tu as déjà attaqué cette créature, tu peux "rejeter" ce message et celui auquel il répond', ephemeral: true });
         }
         else {
-            const repo = new Repository();
-            const listItem = await repo.getListItem(id);
+            const itemRepos = new ItemRepository();
+            const listItem = await itemRepos.getListItem(id);
             if (listItem.length) {
                 const selectMenu = new StringSelectMenuBuilder()
                     .setCustomId('selectObject_' + this.interraction.message.id)
