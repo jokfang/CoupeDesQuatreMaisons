@@ -30,7 +30,7 @@ export async function newHouseCup(channel, points) {
       //On met à jour les données du bot
       const newMaison = maisons[i];
       newMaison.messageId = message.id;
-      //await houseRepos.updateHouse(channel, messageId, newMaison);
+      await houseRepos.updateHouse(messageId, newMaison);
     }
   }
 }

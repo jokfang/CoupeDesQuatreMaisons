@@ -25,10 +25,9 @@ export class HouseRepository {
         return await new MysqlRequest().query("delete from team where messageId = ?", [messageId]);
     }
 
-    async updateHouse(channel, messageId, maison) {
-        return new MysqlRequest().query("update Coupe set channel = ?, serveur = ?, nom = ?, blason = ?, couleur = ?, messageId = ? where messageId = ?", [
-            channel.id,
-            channel.guildId,
+    async updateHouse(messageId, maison) {
+        return new MysqlRequest().query("update team set gameId = ?, nom = ?, blason = ?, couleur = ?, messageId = ? where messageId = ?", [
+            maison.gameId,
             maison.nom,
             maison.blason,
             maison.couleur,
