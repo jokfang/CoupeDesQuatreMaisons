@@ -1,7 +1,7 @@
 import { MonsterRepository } from "../repository/monsterRepository.js";
 import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors } from "discord.js";
 import { simpleDice } from "../commandes/items.js";
-import { currentCup, bareme } from "../librairy/cupInfo.js";
+import { currentCup, bareme, currentCupDuel } from "../librairy/cupInfo.js";
 import { DiscordMessageMethod } from "./discordMethod.js";
 import { addSilentPoint } from "../commandes/point.js";
 
@@ -37,7 +37,7 @@ export class Monster {
         button.addComponents(new ButtonBuilder()
             .setCustomId("selectObject")
             .setLabel("Utiliser un objet").setStyle(ButtonStyle.Primary));
-        await this.baseMessage.channel.messages.client.channels.cache.get('1083394634903994419').send({
+        await this.baseMessage.channel.messages.client.channels.cache.get(currentCupDuel).send({
             embeds: [embedShowDuel], components: [button]
         });
     }
