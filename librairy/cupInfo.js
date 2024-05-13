@@ -2,7 +2,7 @@ export const idRoom = {
   ohana: "1021509224343281764",
   hogwart: "1064833759293210684",
   hyrule: "1083394176655310948",
-  future: "1231489516313903167"
+  future: "1231488955636125806"
 };
 
 export const currentCup = idRoom.future;
