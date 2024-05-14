@@ -1,11 +1,17 @@
-export const idRoom = {
+export const idRoomScore = {
   ohana: "1021509224343281764",
   hogwart: "1064833759293210684",
   hyrule: "1083394176655310948",
   future: "1231488955636125806"
 };
 
-export const currentCup = idRoom.future;
+export const idRoomDuel = {
+  hyrule: "1083394634903994419",
+  future: "1231489516313903167"
+}
+export const currentCup = idRoomScore.future;
+
+export const currentCupDuel = idRoomDuel.future;
 
 export const roles = {
   //ID des Roles
