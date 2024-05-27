@@ -20,6 +20,8 @@ import { useCode } from "./class/useCode.js";
 import { useItem } from "./class/useItem.js";
 import { Raid } from "./class/raid.js";
 import { DiscordMessageMethod } from "./class/discordMethod.js";
+import { duel_start, duel_request } from "./commandes/games/duel.js";
+import { isDuelist } from "./commandes/games/_gameManager.js";
 const wait = timers.setTimeout;
 
 //Droit attribué au bot
@@ -133,8 +135,10 @@ client.on("messageCreate", async function (message) {
       if (await checkError(message, duelStatus, false, false, houseChallenger, houseOpponent)) {
         await createSelectMenuSpell(message, houseChallenger.id, duelStatus);
       }
-
-
+    }
+    else if (message.content.split(" ")[0] === "!duel2") {
+      if (message.mentions.members.first())
+        duel_start(message, message.member, message.mentions.members.first());
     } else if (message.content.split(" ")[0] === "!dé") {
       if (message.content.split(" ").length > 1) {
         message.reply(simpleDice(1, message.content.split(" ")[1]).toString());
@@ -277,7 +281,16 @@ client.on(Events.InteractionCreate, async (interaction) => {
           duelingPreparation(interaction, dataSelectMenu, duelStatus)
         }
       }
-    } else if (interaction.customId == 'selectAction') {
+
+    } else if (interaction.customId.split("_")[0] === "duel") {
+      if (interaction.customId.split("_")[1] === "spellChallenger") {
+        if (await isDuelist(interaction))
+          duel_request(interaction);
+      }
+      if (interaction.customId.split("_")[1] === "spellOpponent") {
+      }
+    }
+    else if (interaction.customId == 'selectAction') {
       new specialAction(interaction).setAction();
     }
     else if (interaction.customId.split("_")[0] == 'selectObject') {
