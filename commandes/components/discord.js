@@ -1,3 +1,3 @@
 export async function getMemberById(channel, id) {
-    return await channel.guild.members.fetch(id)
+    return channel.guild.members.fetch(id);
 }

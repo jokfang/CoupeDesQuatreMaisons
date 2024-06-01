@@ -7,7 +7,7 @@ import { SpellRepository } from "../../repository/spellRepository.js";
 import { bareme, currentCup } from "../../librairy/cupInfo.js";
 import { MemberRepository } from "../../repository/memberRepository.js";
 
-export class DuelRequest {
+export class Duel {
 
     constructor(message, challenger, opponent, spellChallenger = "", spellOpponent = "", messageReferent = "") {
         this.message = message;
@@ -80,9 +80,9 @@ export class DuelRequest {
         let indice = 0;
         if (winner && looser) {
             memberRepos.setBattlePoint(winner.idDiscord, parseInt(winner.battlePoint) + 1);
-            memberRepos.setPoint(winner.idDiscord, parseInt(winner.battlePoint) + 1);
             memberRepos.setBattlePoint(looser.idDiscord, parseInt(looser.battlePoint) + 1);
             if (!results.isNull) {
+                memberRepos.setPoint(winner.idDiscord, parseInt(winner.point) + 10);
                 cptChannel.send("!add " + (parseInt(bareme.duel) + parseInt(indice)).toString() + " to " + results.winner.member.house.name);
                 cptChannel.send("!remove " + bareme.duel + " to " + results.looser.member.house.name);
             }

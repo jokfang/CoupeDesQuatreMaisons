@@ -1,10 +1,8 @@
 
-import { DuelRequest } from "../../class/games/duelRequest.js";
 import { Player } from "../../class/player.js";
-import { getMemberById } from "../components/member.js";
 import { isHouse, isRival } from "./_gameManager.js";
-import { Duel } from "../../class/duel.js";
-
+import { Duel } from "../../class/games/duel.js";
+import { getMemberById } from "../components/discord.js";
 
 export async function duel_getSpellOfThechallenger(message, challenger, opponent) {
     const Challenger = new Player(message.channel, challenger);
@@ -32,9 +30,9 @@ export async function duel_sendRequestDuel(interaction) {
     const challenger = new Player(interaction.channel, interaction.member);
     const spellChallenger = interaction.values[0];
 
-    const duelRequest = new DuelRequest(interaction.message, challenger, opponent, spellChallenger);
-    await duelRequest.setDuelMessage();
-    await duelRequest.sendDuelMessage();
+    const duel = new Duel(interaction.message, challenger, opponent, spellChallenger);
+    await duel.setDuelMessage();
+    await duel.sendDuelMessage();
 }
 
 export async function duel_getSpellOfTheOpponent(interaction) {
@@ -64,7 +62,7 @@ export async function duel_dataCreate(interaction) {
     await opponent.getHouse();
     const spellOpponent = interaction.values[0];
 
-    return new DuelRequest(interaction.message, challenger, opponent, spellChallenger, spellOpponent, messageReferent);
+    return new Duel(interaction.message, challenger, opponent, spellChallenger, spellOpponent, messageReferent);
 }
 
 export async function resolveDuel(interaction) {
