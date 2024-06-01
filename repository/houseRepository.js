@@ -2,13 +2,27 @@ import { MysqlRequest } from "./mysql.adapter.js";
 
 export class HouseRepository {
 
-    constructor() { }
+    constructor() {
+        this.id = '';
+        this.roleId = '';
+        this.ratio = 0;
+    }
 
     async insertIntoMembre(idDiscord, maison) {
         return await new MysqlRequest().query("insert ignore into membre values(?,?,'',current_date(), 0)", [idDiscord, maison]);
     }
 
-    //Ajoute des points à une maison en prenant son id et le montant de point à ajouter
+    async updateHouse(messageId, maison) {
+        return new MysqlRequest().query("update team set gameId = ?, nom = ?, blason = ?, couleur = ?, messageId = ? where messageId = ?", [
+            maison.gameId,
+            maison.nom,
+            maison.blason,
+            maison.couleur,
+            maison.messageId,
+            messageId,
+        ]);
+    }
+
     async getMaison(house) {
         const retour = await new MysqlRequest().query("select t.*, g.scoreChannelId as 'scoreChannel' from team t, game g where nom = ? and t.gameId = g.id", [house]);
         if (retour)
@@ -21,18 +35,21 @@ export class HouseRepository {
         return retour[0];
     }
 
-    async deleteMaison(messageId) {
-        return await new MysqlRequest().query("delete from team where messageId = ?", [messageId]);
+    async getHouseByRole(roles) {
+        const houseRepos = new HouseRepository();
+        const maisons = await houseRepos.getMaisons();
+
+        for (let maison of maisons) {
+            if (roles.find((memberRole) => memberRole == maison.roleId)) {
+                this.name = await maison.nom;
+                this.id = await maison.roleId;
+                this.ratio = await maison.ratio;
+            }
+        }
+        return { 'id': this.id, 'name': this.name, 'ratio': this.ratio };
     }
 
-    async updateHouse(messageId, maison) {
-        return new MysqlRequest().query("update team set gameId = ?, nom = ?, blason = ?, couleur = ?, messageId = ? where messageId = ?", [
-            maison.gameId,
-            maison.nom,
-            maison.blason,
-            maison.couleur,
-            maison.messageId,
-            messageId,
-        ]);
+    async deleteMaison(messageId) {
+        return await new MysqlRequest().query("delete from team where messageId = ?", [messageId]);
     }
 }
