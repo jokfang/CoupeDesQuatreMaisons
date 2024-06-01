@@ -6,7 +6,6 @@ import { addMembre, removeMembre, houseMembre } from "./commandes/membre.js";
 import { setPoint, addPoint, removePoint, addSilentPoint } from "./commandes/point.js";
 import { setColor, setNom, setBlason } from "./commandes/setMaison.js";
 import { getButtonInterface, getButtonInterface_PointByHouse, getButtonInterface_house } from "./commandes/interface.js";
-import { createSelectMenuSpell, showDuel, checkError, duelingPreparation } from "./commandes/game.js";
 import { newHouseCup } from "./commandes/maison.js";
 import { encouragement } from "./commandes/message.js";
 import { simpleDice } from "./commandes/items.js";
@@ -128,15 +127,8 @@ client.on("messageCreate", async function (message) {
       //Si les points sont renseigné on envois les points, sinon on créé les messages avec 0 points
       help(message);
       new DiscordMessageMethod(message).delete();
-    } else if (message.content.split(" ")[0] === "!duel") {
-      const duelStatus = "attack";
-      const houseChallenger = await houseMembre(message.member);
-      const houseOpponent = await houseMembre(message.mentions.members.first());
-      if (await checkError(message, duelStatus, false, false, houseChallenger, houseOpponent)) {
-        await createSelectMenuSpell(message, houseChallenger.id, duelStatus);
-      }
     }
-    else if (message.content.split(" ")[0] === "!duel2") {
+    else if (message.content.split(" ")[0] === "!duel") {
       if (message.mentions.members.first())
         duel_getSpellOfThechallenger(message, message.member, message.mentions.members.first());
     } else if (message.content.split(" ")[0] === "!dé") {
@@ -248,13 +240,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
       }
     }
     switch (interaction.customId.split("_")[0]) {
-      case "contreDuel":
-        const duelStatus = "counter";
-        if (await checkError(interaction, duelStatus)) {
-          const houseOpponent = await houseMembre(interaction.message.member);
-          createSelectMenuSpell(interaction, houseOpponent.id, duelStatus);
-        }
-        break;
       case "duel":
         if (interaction.customId.split("_")[1] == "yes" && await isOpponent(interaction)) {
           duel_getSpellOfTheOpponent(interaction);
@@ -285,22 +270,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
   }
   else if (interaction.isStringSelectMenu()) {
-    if (interaction.customId.split("_")[1] === "spell") {
-      const dataSelectMenu = interaction.values[0];
-      const duelStatus = interaction.customId.split("_")[2];
-
-      if (interaction.customId.split("_")[2] == "attack") {
-        if (await checkError(interaction, duelStatus, interaction.customId.split("_")[1], interaction.values[0].split("_")[1])) {
-          showDuel(interaction, dataSelectMenu, duelStatus);
-        }
-      }
-      else if (interaction.customId.split("_")[2] == "counter") {
-        if (await checkError(interaction, duelStatus, interaction.customId.split("_")[1], interaction.values[0].split("_")[2])) {
-          duelingPreparation(interaction, dataSelectMenu, duelStatus)
-        }
-      }
-
-    } else if (interaction.customId.split("_")[0] === "duel") {
+    if (interaction.customId.split("_")[0] === "duel") {
       if (interaction.customId.split("_")[1] === "spellChallenger") {
         if (await isChallenger(interaction))
           duel_sendRequestDuel(interaction);
