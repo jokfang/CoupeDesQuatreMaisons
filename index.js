@@ -20,8 +20,8 @@ import { useCode } from "./class/useCode.js";
 import { useItem } from "./class/useItem.js";
 import { Raid } from "./class/raid.js";
 import { DiscordMessageMethod } from "./class/discordMethod.js";
-import { duel_start, duel_request } from "./commandes/games/duel.js";
-import { isDuelist } from "./commandes/games/_gameManager.js";
+import { duel_getSpellOfThechallenger, duel_sendRequestDuel, duel_getSpellOfTheOpponent, resolveDuel } from "./commandes/games/duel.js";
+import { isChallenger, isOpponent } from "./commandes/games/_gameManager.js";
 const wait = timers.setTimeout;
 
 //Droit attribué au bot
@@ -138,7 +138,7 @@ client.on("messageCreate", async function (message) {
     }
     else if (message.content.split(" ")[0] === "!duel2") {
       if (message.mentions.members.first())
-        duel_start(message, message.member, message.mentions.members.first());
+        duel_getSpellOfThechallenger(message, message.member, message.mentions.members.first());
     } else if (message.content.split(" ")[0] === "!dé") {
       if (message.content.split(" ").length > 1) {
         message.reply(simpleDice(1, message.content.split(" ")[1]).toString());
@@ -178,6 +178,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
       (memberRole) => memberRole == roles.administrateur
     ) ||
     interaction.message.member._roles.find(
+      (memberRole) => memberRole == roles.moderateur
+    ) ||
+    interaction.member._roles.find(
+      (memberRole) => memberRole == roles.administrateur
+    ) ||
+    interaction.member._roles.find(
       (memberRole) => memberRole == roles.moderateur
     );
 
@@ -250,6 +256,19 @@ client.on(Events.InteractionCreate, async (interaction) => {
           createSelectMenuSpell(interaction, houseOpponent.id, duelStatus);
         }
         break;
+      case "duel":
+        if (interaction.customId.split("_")[1] == "yes" && await isOpponent(interaction)) {
+          duel_getSpellOfTheOpponent(interaction);
+        } else if (interaction.customId.split("_")[1] == "no" && (moderationRoleByInteraction || await isOpponent(interaction))) {
+          if (interaction.message.embeds[0].data.footer) {
+            const idReply = interaction.message.embeds[0].data.footer.text.substring(1, 20);
+            const messageSelector = await interaction.channel.messages.fetch(idReply);
+            new DiscordMessageMethod(messageSelector).delete();
+          }
+          new DiscordMessageMethod(interaction.message).delete();
+        }
+
+        break;
       case "contreMonsters":
         new Monster(interaction).counterMonstre();
         interaction.deferUpdate();
@@ -284,10 +303,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     } else if (interaction.customId.split("_")[0] === "duel") {
       if (interaction.customId.split("_")[1] === "spellChallenger") {
-        if (await isDuelist(interaction))
-          duel_request(interaction);
+        if (await isChallenger(interaction))
+          duel_sendRequestDuel(interaction);
       }
       if (interaction.customId.split("_")[1] === "spellOpponent") {
+        if (await isOpponent(interaction))
+          resolveDuel(interaction);
       }
     }
     else if (interaction.customId == 'selectAction') {
@@ -300,6 +321,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     new useCode(interaction).useThis();
   }
 });
+
 
 function checkMessage(message) {
   let messageContent = message.content + "";

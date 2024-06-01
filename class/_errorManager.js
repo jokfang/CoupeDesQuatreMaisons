@@ -16,6 +16,7 @@ export class ErorrManager {
 }
 
 const data = {
+    'duel_notOpponent': "Vous ne pouvez pas accepter/refuser le duel de quelqu'un d'autre.",
     'duel_notPlayer': "Vous ne pouvez pas choisir la compétence de quelqu'un d'autre.",
     'duel_notRival': "Vous ne pouvez pas attaquer un membre de votre maison ou bien vous-même.",
     'notHouse_challenger': "Vous ne possède pas de maison.",

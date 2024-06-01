@@ -12,11 +12,13 @@ export class EmbedEvent {
         this.embed.setThumbnail(thumb);
     }
 
-    setFields(fields) {
-        this.embed.setFields(fields);
+    setFooter(footer) {
+        this.embed.setFooter(footer);
     }
 
     getEmbedEvent() {
         return this.embed;
     }
 }
+
+export default EmbedEvent
