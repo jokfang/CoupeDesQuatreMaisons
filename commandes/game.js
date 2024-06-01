@@ -3,6 +3,7 @@ import { duelDescription } from "../type/duelParam.class.js";
 import { SpellSelect } from "../class/spellSelect.js";
 import { WaitingDuelMessage } from "../class/waitingDuelMessage.js";
 import { Duel } from "../class/duel.js";
+import { ErorrManager } from "../class/_errorManager.js";
 
 export async function createDataDuel(message, dataSelectMenu, duelStatus) {
   let dataDuelInit = await Object.create(duelDescription);
@@ -14,10 +15,10 @@ export async function createDataDuel(message, dataSelectMenu, duelStatus) {
 
 export async function createSelectMenuSpell(message, idHousePlayer, duelStatus) {
   const spellSelect = new SpellSelect(message, { duelStatus: duelStatus });
-  if (duelStatus == 'attack') { 
-      return spellSelect.sendAttackSelect();  
+  if (duelStatus == 'attack') {
+    return spellSelect.sendAttackSelect();
   } else if (duelStatus == 'counter') {
-      return spellSelect.sendCounterSelect();
+    return spellSelect.sendCounterSelect();
   }
 }
 
@@ -44,6 +45,7 @@ export async function duel(messageDuel, dataDuel, interaction) {
 // Function qui vérifie tout les erreurs possibles.
 //Attention le paramètre message, peu être aussi un messageInteraction.
 export async function checkError(message, duelStatus, status, selectMenuData_id, houseChallenger, houseOpponent) {
+  const errorManager = new ErorrManager();
   if (!message.content) {
     message.message.author = message.member;
     message = message.message;
@@ -58,17 +60,17 @@ export async function checkError(message, duelStatus, status, selectMenuData_id,
       if (idChallenger === idChallengerDuel) {
         return true;
       } else {
-        message.reply({ content: "Vous ne pouvez pas choisir l'attaque de quelqu'un d'autre.", ephemeral: true })
+        errorManager.sendAuthor(message, 'duel_notPlayer');
         return false;
       }
     }
     // Vérifie si l'Oppossant à une maison ou bien qu'il n'est pas dans celle du challenger.
     else {
       if (!houseOpponent.id) {
-        await message.author.send("Votre cible ne possède pas de maison.");
+        errorManager.sendAuthor(message, 'notHouse_opponent');
       }
       else if (houseChallenger.id === houseOpponent.id) {
-        await message.author.send("Vous ne pouvez pas attaquer un membre de votre maison ou bien vous-même.")
+        errorManager.sendAuthor(message, 'duel_notRival');
       }
       else {
         return true;
@@ -86,7 +88,7 @@ export async function checkError(message, duelStatus, status, selectMenuData_id,
       if (idOpponent === idOpponentDuel) {
         return true;
       } else {
-        message.reply({ content: "Vous ne pouvez pas choisir l'attaque de quelqu'un d'autre.", ephemeral: true })
+        errorManager.sendAuthor(message, 'duel_notPlayer');
         return false;
       }
     } else {
@@ -103,12 +105,12 @@ export async function checkError(message, duelStatus, status, selectMenuData_id,
       if (idOpponent === idOpponentDuel || duelDescription == 'Une créature apparait, capturez là') {
         if (duelDescription == 'Une créature apparait, capturez là') {
           return true;
-          
+
         } else {
           return true;
         }
       } else {
-        await message.author.send("Vous n'êtes pas l'adversaire attendu du duel en cours.")
+        errorManager.sendAuthor(message, 'duel_notOpponent')
         return false;
       }
     }

@@ -2,7 +2,7 @@ import { SpellRepository } from "../repository/spellRepository.js";
 import { ActionRowBuilder, StringSelectMenuBuilder } from "discord.js";
 import { DiscordMessageMethod } from "./discordMethod.js";
 
-export class SpellSelect{
+export class SpellSelect {
     constructor(interractionReceived, duelParameter) {
         this.duelParam = duelParameter;
         this.spellRepository = new SpellRepository();
@@ -37,9 +37,9 @@ export class SpellSelect{
             for (let i = 0; i < spells.length; i++) {
                 list.addOptions(
                     {
-                        label: spells[i].spellName.charAt(0).toUpperCase() + spells[i].spellName.slice(1),
-                        description: spells[i].spellDescription,
-                        value: spells[i].spellName + '_' + this.idChallenger + '_' + this.idOpponent
+                        label: spells[i].name.charAt(0).toUpperCase() + spells[i].name.slice(1),
+                        description: spells[i].description,
+                        value: spells[i].name + '_' + this.idChallenger + '_' + this.idOpponent
                     }
                 );
             }
@@ -50,8 +50,8 @@ export class SpellSelect{
     }
 
     sendSpellSelect(id) {
-      const row = new ActionRowBuilder().addComponents(this.spellList);
-      return this.interraction.reply({ content: '<@' + id + '> choisis ton Sort !', components: [row], ephemeral: false });
+        const row = new ActionRowBuilder().addComponents(this.spellList);
+        return this.interraction.reply({ content: '<@' + id + '> choisis ton Sort !', components: [row], ephemeral: false });
     }
-        
+
 }
