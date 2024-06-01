@@ -116,7 +116,7 @@ export async function addSilentPoint(author, montant, source) {
   }
 
   if (maison) {
-    const msg = await source.channel.messages.client.channels.cache.get(maison.channel).messages.fetch(maison.messageId);
+    const msg = await source.channel.messages.client.channels.cache.get(maison.scoreChannel).messages.fetch(maison.messageId);
 
     //On incrémente le compteur
     let cpt = parseInt(msg.embeds[0].data.description);

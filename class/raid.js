@@ -3,7 +3,7 @@ import {
     EmbedBuilder, Colors, ActionRowBuilder, ButtonBuilder, ButtonStyle
 } from "discord.js";
 import { Raids } from "../librairy/raids.js";
-import { currentCup } from "../librairy/cupInfo.js";
+import { currentCup, currentCupDuel } from "../librairy/cupInfo.js";
 import { bareme } from "../librairy/cupInfo.js";
 import { DiscordMessageMethod } from "./discordMethod.js";
 
@@ -96,7 +96,7 @@ export class Raid {
         button.addComponents(new ButtonBuilder()
             .setCustomId("specialAction")
             .setLabel("Action spéciale").setStyle(ButtonStyle.Primary));
-        return this.baseMessage.channel.messages.client.channels.cache.get('1083394634903994419').send({
+        return this.baseMessage.channel.messages.client.channels.cache.get(currentCupDuel).send({
             embeds: [embedShowDuel], components: [button]
         });
     }

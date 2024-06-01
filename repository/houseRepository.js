@@ -24,13 +24,13 @@ export class HouseRepository {
     }
 
     async getMaison(house) {
-        const retour = await new MysqlRequest().query("select * from team where nom = ?", [house]);
+        const retour = await new MysqlRequest().query("select t.*, g.scoreChannelId as 'scoreChannel' from team t, game g where nom = ? and t.gameId = g.id", [house]);
         if (retour)
             return retour[0][0];
     }
 
     async getMaisons() {
-        const retour = await new MysqlRequest().query("select * from team");
+        const retour = await new MysqlRequest().query("select t.*, g.scoreChannelId as 'scoreChannel' from team t, game g where t.gameId = g.id");
         const finalretour = retour[0];
         return retour[0];
     }

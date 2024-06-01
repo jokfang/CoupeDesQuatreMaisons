@@ -1,12 +1,14 @@
 import { MonsterRepository } from "../repository/monsterRepository.js";
-import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors } from "discord.js";
 import { simpleDice } from "../commandes/items.js";
-import { currentCup, bareme } from "../librairy/cupInfo.js";
+import { currentCup, bareme, currentCupDuel } from "../librairy/cupInfo.js";
 import { DiscordMessageMethod } from "./discordMethod.js";
 import { addSilentPoint } from "../commandes/point.js";
+import { event } from "./event.js";
 
-export class Monster {
+export class Monster extends event{
     constructor(message, author) {
+        super();
         this.baseMessage = message.content == '' ? { message: message, channel: message.channel, member: author } : message;
     }
 
@@ -19,13 +21,14 @@ export class Monster {
         const monsters = await new MonsterRepository().getMonsters();
         const monster = monsters[simpleDice(0, monsters.length - 1)];
         //Créer le message et l'envoyer*
-        const embedShowDuel = new EmbedBuilder()
-            .setColor(Colors.Aqua)
+        const embedShowDuel = this.event
             .setTitle(embedTitle)
             .setDescription(duelMessage)
             .setThumbnail(monster.image)
             .addFields({ name: 'Attaquant', value: ' ', inline: true }, { name: 'Vie', value: monster.pdv + ' ', inline: true });
 
+        this.setColor(Colors.Aqua);
+        
         const button = new ActionRowBuilder().addComponents(new ButtonBuilder()
             .setCustomId("contreMonsters")
             .setLabel("Contre").setStyle(ButtonStyle.Success));
@@ -37,7 +40,7 @@ export class Monster {
         button.addComponents(new ButtonBuilder()
             .setCustomId("selectObject")
             .setLabel("Utiliser un objet").setStyle(ButtonStyle.Primary));
-        await this.baseMessage.channel.messages.client.channels.cache.get('1083394634903994419').send({
+        await this.baseMessage.channel.messages.client.channels.cache.get(currentCupDuel).send({
             embeds: [embedShowDuel], components: [button]
         });
     }
@@ -45,12 +48,12 @@ export class Monster {
     async counterMonstre(puissance = 1) {
         const embed = this.baseMessage.message ? this.baseMessage.message.embeds[0] : this.baseMessage.embeds[0];
         const pdv = parseInt(embed.fields[1].value) - puissance;
-        const embedsEdited = new EmbedBuilder()
-            .setColor(embed.color)
+        const embedsEdited = this.event
             .setTitle(embed.title)
             .setDescription(embed.description)
             .setThumbnail(embed.thumbnail.url);
 
+        this.setColor(embed.color)
 
         let edited = false;
         if (embed.fields[0].value == '') {
