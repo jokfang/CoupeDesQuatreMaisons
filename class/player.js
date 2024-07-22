@@ -25,27 +25,31 @@ export class Player {
         const spell = new SpellRepository();
         const spellList = await spell.getSpells(this.channel);
 
-        // Create selector
-        const spellSelector = new SelectorMenu({ id: id_spell, placeholder: 'Sort non sélectionné' });
-        spellSelector.setOptions(spellList);
+        if (spellList) {
+            // Create selector
+            const spellSelector = new SelectorMenu({ id: id_spell, placeholder: 'Sort non sélectionné' });
+            spellSelector.setOptions(spellList);
 
-        // Send selector
-        const selector = new ActionRowBuilder()
-            .addComponents(spellSelector.getSelector())
+            // Send selector
+            const selector = new ActionRowBuilder()
+                .addComponents(spellSelector.getSelector())
 
-        const selectorMessage = await message.reply({ content: message_selector, components: [selector], ephemeral: false });
+            const selectorMessage = await message.reply({ content: message_selector, components: [selector], ephemeral: false });
 
-        if (isDelete) {
-            await new Promise(resolve => setTimeout(resolve, 500));
-            new DiscordMessageMethod(message).delete();
+            if (isDelete) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                new DiscordMessageMethod(message).delete();
+            } else {
+                message.components[0].components[0] = ButtonBuilder.from(message.components[0].components[0]).setDisabled(true);
+                const footer =
+                    message.embeds[0] = EmbedBuilder.from(message.embeds[0]).setFooter({ text: '[' + selectorMessage.id + '] En cours de sélection de compétence' });
+                interaction.update({
+                    embeds: [message.embeds[0]],
+                    components: [interaction.message.components[0]]
+                });
+            }
         } else {
-            message.components[0].components[0] = ButtonBuilder.from(message.components[0].components[0]).setDisabled(true);
-            const footer =
-                message.embeds[0] = EmbedBuilder.from(message.embeds[0]).setFooter({ text: '[' + selectorMessage.id + '] En cours de sélection de compétence' });
-            interaction.update({
-                embeds: [message.embeds[0]],
-                components: [interaction.message.components[0]]
-            });
+            throw new Error('Aucune compétence trouvée dans la base de donnée.')
         }
     }
 
