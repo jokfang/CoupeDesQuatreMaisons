@@ -6,7 +6,6 @@ import { addMembre, removeMembre, houseMembre } from "./commandes/membre.js";
 import { setPoint, addPoint, removePoint, addSilentPoint } from "./commandes/point.js";
 import { setColor, setNom, setBlason } from "./commandes/setMaison.js";
 import { getButtonInterface, getButtonInterface_PointByHouse, getButtonInterface_house } from "./commandes/interface.js";
-import { createSelectMenuSpell, showDuel, checkError, duelingPreparation } from "./commandes/game.js";
 import { newHouseCup } from "./commandes/maison.js";
 import { encouragement } from "./commandes/message.js";
 import { simpleDice } from "./commandes/items.js";
@@ -20,6 +19,8 @@ import { useCode } from "./class/useCode.js";
 import { useItem } from "./class/useItem.js";
 import { Raid } from "./class/raid.js";
 import { DiscordMessageMethod } from "./class/discordMethod.js";
+import { duel_getSpellOfThechallenger, duel_sendRequestDuel, duel_getSpellOfTheOpponent, resolveDuel } from "./commandes/games/duel.js";
+import { isChallenger, isOpponent } from "./commandes/games/_gameManager.js";
 const wait = timers.setTimeout;
 
 //Droit attribué au bot
@@ -126,15 +127,10 @@ client.on("messageCreate", async function (message) {
       //Si les points sont renseigné on envois les points, sinon on créé les messages avec 0 points
       help(message);
       new DiscordMessageMethod(message).delete();
-    } else if (message.content.split(" ")[0] === "!duel") {
-      const duelStatus = "attack";
-      const houseChallenger = await houseMembre(message.member);
-      const houseOpponent = await houseMembre(message.mentions.members.first());
-      if (await checkError(message, duelStatus, false, false, houseChallenger, houseOpponent)) {
-        await createSelectMenuSpell(message, houseChallenger.id, duelStatus);
-      }
-
-
+    }
+    else if (message.content.split(" ")[0] === "!duel") {
+      if (message.mentions.members.first())
+        duel_getSpellOfThechallenger(message, message.member, message.mentions.members.first());
     } else if (message.content.split(" ")[0] === "!dé") {
       if (message.content.split(" ").length > 1) {
         message.reply(simpleDice(1, message.content.split(" ")[1]).toString());
@@ -173,6 +169,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
       (memberRole) => memberRole == roles.administrateur
     ) ||
     interaction.message.member._roles.find(
+      (memberRole) => memberRole == roles.moderateur
+    ) ||
+    interaction.member._roles.find(
+      (memberRole) => memberRole == roles.administrateur
+    ) ||
+    interaction.member._roles.find(
       (memberRole) => memberRole == roles.moderateur
     );
 
@@ -238,12 +240,18 @@ client.on(Events.InteractionCreate, async (interaction) => {
       }
     }
     switch (interaction.customId.split("_")[0]) {
-      case "contreDuel":
-        const duelStatus = "counter";
-        if (await checkError(interaction, duelStatus)) {
-          const houseOpponent = await houseMembre(interaction.message.member);
-          createSelectMenuSpell(interaction, houseOpponent.id, duelStatus);
+      case "duel":
+        if (interaction.customId.split("_")[1] == "yes" && await isOpponent(interaction)) {
+          duel_getSpellOfTheOpponent(interaction);
+        } else if (interaction.customId.split("_")[1] == "no" && (moderationRoleByInteraction || await isOpponent(interaction))) {
+          if (interaction.message.embeds[0].data.footer) {
+            const idReply = interaction.message.embeds[0].data.footer.text.substring(1, 20);
+            const messageSelector = await interaction.channel.messages.fetch(idReply);
+            new DiscordMessageMethod(messageSelector).delete();
+          }
+          new DiscordMessageMethod(interaction.message).delete();
         }
+
         break;
       case "contreMonsters":
         new Monster(interaction).counterMonstre();
@@ -262,21 +270,17 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
   }
   else if (interaction.isStringSelectMenu()) {
-    if (interaction.customId.split("_")[1] === "spell") {
-      const dataSelectMenu = interaction.values[0];
-      const duelStatus = interaction.customId.split("_")[2];
-
-      if (interaction.customId.split("_")[2] == "attack") {
-        if (await checkError(interaction, duelStatus, interaction.customId.split("_")[1], interaction.values[0].split("_")[1])) {
-          showDuel(interaction, dataSelectMenu, duelStatus);
-        }
+    if (interaction.customId.split("_")[0] === "duel") {
+      if (interaction.customId.split("_")[1] === "spellChallenger") {
+        if (await isChallenger(interaction))
+          duel_sendRequestDuel(interaction);
       }
-      else if (interaction.customId.split("_")[2] == "counter") {
-        if (await checkError(interaction, duelStatus, interaction.customId.split("_")[1], interaction.values[0].split("_")[2])) {
-          duelingPreparation(interaction, dataSelectMenu, duelStatus)
-        }
+      if (interaction.customId.split("_")[1] === "spellOpponent") {
+        if (await isOpponent(interaction))
+          resolveDuel(interaction);
       }
-    } else if (interaction.customId == 'selectAction') {
+    }
+    else if (interaction.customId == 'selectAction') {
       new specialAction(interaction).setAction();
     }
     else if (interaction.customId.split("_")[0] == 'selectObject') {
@@ -286,6 +290,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     new useCode(interaction).useThis();
   }
 });
+
 
 function checkMessage(message) {
   let messageContent = message.content + "";

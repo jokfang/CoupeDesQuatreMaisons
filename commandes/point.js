@@ -7,23 +7,25 @@ export async function setPoint(houseName, montant, channel) {
   const houseRepos = new HouseRepository();
 
   const channelCup = currentCup;
-  const maison = await houseRepos.getMaison(houseName);
-  const msg = await channelCup.messages.fetch(maison.messageId);
+  if ((channel.id === channelCup)) {
+    const maison = await houseRepos.getMaison(houseName);
+    const msg = await channel.messages.fetch(maison.messageId);
 
-  let cpt = parseInt(montant);
+    let cpt = parseInt(montant);
 
-  if (cpt < 0) {
-    cpt = 0;
+    if (cpt < 0 || isNaN(cpt)) {
+      cpt = 0;
+    }
+
+    //On construit le message qui sera appliqué en annule et remplace du précédent
+    const embed = new EmbedBuilder()
+      .setColor(Colors[maison.couleur])
+      .setTitle(maison.nom)
+      .setThumbnail(maison.blason)
+      .setDescription(cpt.toString());
+    //On édit le message
+    msg.edit({ embeds: [embed] });
   }
-
-  //On construit le message qui sera appliqué en annule et remplace du précédent
-  const embed = new EmbedBuilder()
-    .setColor(Colors[maison.couleur])
-    .setTitle(maison.nom)
-    .setThumbnail(maison.blason)
-    .setDescription(cpt.toString());
-  //On édit le message
-  msg.edit({ embeds: [embed] });
 }
 
 //Retire des points à une maison en prenant son id et le montant de point à retirer

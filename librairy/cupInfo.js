@@ -7,18 +7,19 @@ export const idRoomScore = {
 
 export const idRoomDuel = {
   hyrule: "1083394634903994419",
-  future: "1231489516313903167"
+  future: "1026619386481627256"
 }
-export const currentCup = idRoomScore.future;
 
+export const currentCup = idRoomScore.future;
 export const currentCupDuel = idRoomDuel.future;
 
 export const roles = {
   //ID des Roles
-  administrateur: "935655300730613850",
-  moderateur: "936625195656024104",
-  BOT: "935667324931965028",
+  administrateur: "1023967588121837590",
+  moderateur: "1023967588121837590",
+  BOT: "1032713198211702788",
 };
+
 
 // Barème des Bits & Subs
 export const bareme = {

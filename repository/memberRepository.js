@@ -3,8 +3,12 @@ import { MysqlRequest } from "./mysql.adapter.js";
 export class MemberRepository {
     constructor() { }
 
-    async setPoint(id, point) {
+    async setBattlePoint(id, point) {
         const retour = await new MysqlRequest().query("update membre set battlePoint = ? where idDiscord = ?", [point, id]);
+    }
+
+    async setPoint(id, point) {
+        const retour = await new MysqlRequest().query("update membre set point = ? where idDiscord = ?", [point, id]);
     }
 
     async getMemberInfo(id) {
